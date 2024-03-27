@@ -2,41 +2,59 @@
 
 import PackageDescription
 
-let package = Package(
-    name: "swift-react-poc",
+func swiftSettings() -> [SwiftSetting] {
+    return [
+        .enableExperimentalFeature("AccessLevelOnImport")
+    ]
+}
 
+let package = Package(
+    name: "swift-react",
     products: [
-        .library(
-            name: "swift-react-poc",
-            targets: ["swift-react-poc"]
-        ),
+        .library(name: "React", targets: ["React"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections", from: "1.1.0")
     ],
     targets: [
         .target(
-            name: "SRTCore"
+            name: "SRTCore",
+            swiftSettings: swiftSettings()
+        ),
+        .target(
+            name: "ReactInterface",
+            swiftSettings: swiftSettings()
         ),
         .target(
             name: "DOMModule",
             dependencies: [
                 .product(name: "Collections", package: "swift-collections"),
                 .target(name: "SRTCore")
-            ]
+            ],
+            swiftSettings: swiftSettings()
+        ),
+        .target(
+            name: "VDOMModule",
+            dependencies: [
+                .target(name: "DOMModule"),
+                .target(name: "ReactInterface")
+            ],
+            swiftSettings: swiftSettings()
+        ),
+        .target(
+            name: "React",
+            dependencies: [
+                .target(name: "DOMModule"),
+                .target(name: "VDOMModule")
+            ],
+            swiftSettings: swiftSettings()
         ),
         .testTarget(
             name: "DOMModuleTests",
             dependencies: [
                 .target(name: "DOMModule")
-            ]
-        ),
-        .target(
-            name: "swift-react-poc"
-        ),
-        .testTarget(
-            name: "swift-react-pocTests",
-            dependencies: ["swift-react-poc"]
-        ),
+            ],
+            swiftSettings: swiftSettings()
+        )
     ]
 )
