@@ -32,10 +32,10 @@ extension VNode {
                 node.walk { (node) in
                     if let node = node as? VTagNode {
                         found = node
-                        return false
+                        return .break
                     }
 
-                    return true
+                    return .continue
                 }
 
                 if let found {
@@ -51,16 +51,48 @@ extension VNode {
         }
     }
 
-    @discardableResult
-    public func walk(step: (VNode) -> Bool) -> Bool {
-        guard step(self) else { return false }
+    public var shallowTagNodes: [VTagNode] {
+        var result: [VTagNode] = []
 
-        if let p = self as? VParentNode {
+        walk { (node) in
+            if let node = node as? VTagNode {
+                result.append(node)
+                return .skipChildren
+            }
+
+            return .continue
+        }
+
+        return result
+    }
+
+    public enum WalkControl {
+        case `continue`
+        case skipChildren
+        case `break`
+    }
+
+    @discardableResult
+    public func walk(step: (VNode) -> WalkControl) -> WalkControl {
+        let c: Bool
+        switch step(self) {
+        case .continue:
+            c = true
+        case .skipChildren:
+            c = false
+        case .break: return .break
+        }
+
+        if c, let p = self as? VParentNode {
             for x in p.children {
-                guard x.walk(step: step) else { return false }
+                switch x.walk(step: step) {
+                case .continue,
+                        .skipChildren: continue
+                case .break: return .break
+                }
             }
         }
 
-        return true
+        return .continue
     }
 }

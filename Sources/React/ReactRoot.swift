@@ -22,6 +22,7 @@ public final class ReactRoot {
         do {
             let newTree = try buildVTree(node: node)
             try render(newTree: newTree, oldTree: tree, oldTreeParent: nil)
+            self.tree = newTree
         } catch {
             print(error)
         }
@@ -46,7 +47,7 @@ public final class ReactRoot {
                 }
             }
             return v
-        case let component as ReactComponent:
+        case let component as any ReactComponent:
             let v = VComponentNode(
                 component: component
             )
@@ -73,35 +74,73 @@ public final class ReactRoot {
         guard let newTree else {
             if let oldTree {
                 try destroyInstance(node: oldTree)
-                return
             }
+            return
+        }
 
+        if let oldTree, newTree.isEqual(to: oldTree) {
+            try updateInstance(newNode: newTree, oldNode: oldTree)
             return
         }
 
         switch newTree {
         case let newTree as VTagNode:
-            if let oldTree = oldTree as? VTagNode {
-                // TODO: update
-            } else {
-                if let oldTree {
-                    try destroyInstance(node: oldTree)
-                }
+            if let oldTree {
+                try destroyInstance(node: oldTree)
             }
-
             try createInstance(node: newTree)
         case let newTree as VComponentNode:
-            if let oldTree = oldTree as? VComponentNode {
-                // TODO: update
-            } else {
-                if let oldTree {
-                    try destroyInstance(node: oldTree)
-                }
+            if let oldTree {
+                try destroyInstance(node: oldTree)
             }
-
             try createInstance(node: newTree)
         default:
             throw VNode.unknownNode(newTree)
+        }
+    }
+
+    private struct ChildDiffAdapter: Equatable & Hashable {
+        var node: VNode
+        var token: VNode.EQToken
+
+        init(node: VNode) {
+            self.node = node
+            self.token = node.eqToken
+        }
+
+        static func ==(a: Self, b: Self) -> Bool { a.token == b.token }
+        func hash(into hasher: inout Hasher) { hasher.combine(token) }
+    }
+
+    private func renderChildren(
+        newTree: VParentNode,
+        oldTree: VParentNode
+    ) throws {
+        let newChildren = newTree.children.map(ChildDiffAdapter.init)
+        let oldChildren = oldTree.children.map(ChildDiffAdapter.init)
+
+        let diff = newChildren.difference(from: oldChildren)
+            .inferringMoves()
+
+        for patch in diff {
+            switch patch {
+            case .remove(offset: let offset, element: let oldNode, associatedWith: let dest):
+                if let dest {
+                    for x in oldNode.node.shallowTagNodes {
+                        let dom = try x.dom.unwrap("dom")
+                        dom.removeFromParent()
+                    }
+                } else {
+                    try destroyInstance(node: oldNode.node)
+                }
+            case .insert(offset: let offset, element: let newNode, associatedWith: let source):
+                if let source {
+                    // TODO
+                } else {
+                    try createInstance(node: newNode.node)
+                }
+                break
+            }
         }
     }
 
@@ -113,8 +152,8 @@ public final class ReactRoot {
                 attributes: node.attributes
             )
             node.dom = dom
-            try appendDOM(node: node, dom: dom)
-            
+            try attachDOM(node: node, dom: dom)
+
             for x in node.children {
                 try createInstance(node: x)
             }
@@ -127,7 +166,7 @@ public final class ReactRoot {
         }
     }
 
-    private func appendDOM(node: VNode, dom: DOMTagNode) throws {
+    private func attachDOM(node: VNode, dom: DOMTagNode) throws {
         let parent = try parentDOM(node: node)
         let index = if let prev = try prevSiblingDOM(node: node) {
             (
@@ -169,6 +208,23 @@ public final class ReactRoot {
             }
         default:
             throw VNode.unknownNode(node)
+        }
+    }
+
+    private func updateInstance(newNode: VNode, oldNode: VNode) throws {
+        switch newNode {
+        case let newNode as VTagNode:
+            let oldNode = try (oldNode as? VTagNode).unwrap("oldNode as VTagNode")
+            let dom = try oldNode.dom.unwrap("oldNode.dom")
+            dom.attributes = newNode.attributes
+            newNode.dom = dom
+
+            // TODO: children
+        case let node as VComponentNode:
+            // TODO
+            break
+        default:
+            throw VNode.unknownNode(newNode)
         }
     }
 }

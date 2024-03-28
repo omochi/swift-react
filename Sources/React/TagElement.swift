@@ -17,4 +17,6 @@ public struct TagElement: ReactNode {
     public var tagName: String
     public var attributes: TagAttributes
     public var children: [any ReactNode]
+
+    public func render() -> (any ReactNode)? { self }
 }
