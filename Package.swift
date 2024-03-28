@@ -55,6 +55,13 @@ let package = Package(
                 .target(name: "DOMModule")
             ],
             swiftSettings: swiftSettings()
+        ),
+        .testTarget(
+            name: "ReactTests",
+            dependencies: [
+                .target(name: "React")
+            ],
+            swiftSettings: swiftSettings()
         )
     ]
 )

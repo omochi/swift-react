@@ -1,4 +1,5 @@
 import Collections
+import SRTCore
 import ReactInterface
 import DOMModule
 
@@ -13,6 +14,10 @@ public class VNode {
     }
 
     internal weak var _parent: VParentNode?
+
+    public static func unknownNode(_ node: VNode) -> any Error {
+        MessageError("unknown VNode: \(type(of: node))")
+    }
 }
 
 public class VParentNode: VNode {
@@ -60,7 +65,7 @@ public final class VTagNode: VParentNode {
     public var tagName: String
     public var attributes: VAttributes
 
-    public var dom: DOMNode?
+    public var dom: DOMTagNode?
 }
 
 public final class VComponentNode: VParentNode {

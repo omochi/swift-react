@@ -8,10 +8,10 @@ public class DOMNode: CustomStringConvertible {
     public var parent: DOMNode? { _parent }
 
     public func removeFromParent() {
-        (_parent as? DOMTagNode)?._removeChild(self)
+        _parent?._removeChild(self)
     }
 
-    internal weak var _parent: DOMNode?
+    internal weak var _parent: DOMParentNode?
 
     public var description: String {
         let p = PrettyPrinter()
@@ -24,9 +24,40 @@ public class DOMNode: CustomStringConvertible {
     }
 }
 
+public class DOMParentNode: DOMNode {
+    internal override init() {}
+
+    public var children: [DOMNode] {
+        get { _children }
+        set {
+            _children = newValue
+            for x in _children {
+                x._parent = self
+            }
+        }
+    }
+
+    internal var _children: [DOMNode] = []
+
+    public func appendChild(_ child: DOMNode) {
+        _children.append(child)
+        child._parent = self
+    }
+
+    public func insertChild(_ child: DOMNode, at index: Int) {
+        _children.insert(child, at: index)
+        child._parent = self
+    }
+
+    internal func _removeChild(_ child: DOMNode) {
+        _children.removeAll { $0 === child }
+        child._parent = nil
+    }
+}
+
 public typealias DOMAttributes = OrderedDictionary<String, String>
 
-public final class DOMTagNode: DOMNode {
+public final class DOMTagNode: DOMParentNode {
     public init(
         tagName: String,
         attributes: DOMAttributes = [:],
@@ -45,27 +76,6 @@ public final class DOMTagNode: DOMNode {
     public var tagName: String
     public var attributes: DOMAttributes
 
-    public var children: [DOMNode] {
-        get { _children }
-        set {
-            _children = newValue
-            for x in _children {
-                x._parent = self
-            }
-        }
-    }
-
-    private var _children: [DOMNode] = []
-
-    public func appendChild(_ child: DOMNode) {
-        _children.append(child)
-        child._parent = self
-    }
-
-    internal func _removeChild(_ child: DOMNode) {
-        _children.removeAll { $0 === child }
-        child._parent = nil
-    }
 
     private func printAttributes(to p: PrettyPrinter) {
         let q = "\""
