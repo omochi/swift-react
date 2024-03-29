@@ -1,4 +1,4 @@
-public struct NodeCollection: Element {
+package struct NodeCollection: Element {
     public init(_ children: [Node]) {
         self.children = children
     }

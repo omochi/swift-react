@@ -23,7 +23,7 @@ let package = Package(
             swiftSettings: swiftSettings()
         ),
         .target(
-            name: "ReactInterface",
+            name: "DOMModule",
             dependencies: [
                 .product(name: "Collections", package: "swift-collections"),
                 .target(name: "SRTCore")
@@ -31,10 +31,11 @@ let package = Package(
             swiftSettings: swiftSettings()
         ),
         .target(
-            name: "DOMModule",
+            name: "ReactInterface",
             dependencies: [
                 .product(name: "Collections", package: "swift-collections"),
-                .target(name: "SRTCore")
+                .target(name: "SRTCore"),
+                .target(name: "DOMModule")
             ],
             swiftSettings: swiftSettings()
         ),

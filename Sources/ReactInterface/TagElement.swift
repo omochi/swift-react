@@ -5,7 +5,7 @@ public struct TagElement: Component {
 
     public init(
         tagName: String,
-        attributes: TagAttributes = [:],
+        attributes: TagAttributes = .init(),
         children: [Node] = []
     ) {
         self.tagName = tagName

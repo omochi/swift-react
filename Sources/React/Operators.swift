@@ -1,10 +1,10 @@
 import SRTCore
 
-struct IDComponent<IDType: Hashable>: Component {
-    typealias ID = Tuple2<AnyHashable, IDType>
+struct IDComponent<C: Component, IDType: Hashable>: Component {
+    typealias ID = Tuple2<C.ID, IDType>
 
     var id: ID
-    var component: any Component
+    var component: C
 
     func render() -> Node {
         component.render()
@@ -13,8 +13,8 @@ struct IDComponent<IDType: Hashable>: Component {
 
 extension Component {
     public func id<ID: Hashable>(_ id: ID) -> some Component {
-        return IDComponent<ID>(
-            id: Tuple2(AnyHashable(self.id), id),
+        return IDComponent<Self, ID>(
+            id: Tuple2(self.id, id),
             component: self
         )
     }

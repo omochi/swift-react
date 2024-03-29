@@ -87,7 +87,7 @@ public final class VNode {
 
     public static func tag(
         _ name: String,
-        _ attributes: TagAttributes = [:],
+        _ attributes: TagAttributes = .init(),
         _ children: [Node] = []
     ) -> VNode {
         VNode(

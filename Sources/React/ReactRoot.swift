@@ -7,7 +7,7 @@ public final class ReactRoot {
         element: DOMTagNode
     ) {
         self.dom = element
-        self.root = VNode(component: Fragment([]))
+        self.root = VNode(component: Fragment())
     }
 
     public let dom: DOMTagNode
@@ -19,7 +19,7 @@ public final class ReactRoot {
          */
 
         do {
-            let newRoot = VNode(component: Fragment([]))
+            let newRoot = VNode(component: Fragment())
             let newTree = try renderVTree(node: node)
             newRoot.appendChildren(newTree)
             try update(newTree: newTree, oldTree: root.children)
@@ -133,7 +133,7 @@ public final class ReactRoot {
             print("create \(tag.tagName)")
             let dom = DOMTagNode(
                 tagName: tag.tagName,
-                attributes: tag.attributes
+                attributes: tag.attributes.values
             )
             node.dom = dom
             try attachDOM(node: node)
@@ -185,7 +185,7 @@ public final class ReactRoot {
     private func updateInstance(newNode: VNode, oldNode: VNode) throws {
         if let newTag = newNode.tagElement {
             let dom = try oldNode.dom.unwrap("oldNode.dom")
-            dom.attributes = newTag.attributes
+            dom.attributes = newTag.attributes.values
             newNode.dom = dom
 
             let newLocation = try domLocation(node: newNode)

@@ -153,4 +153,14 @@ final class RenderTests: XCTestCase {
         </body>
         """)
     }
+
+    struct MyApp: Component {
+        func render() -> Node {
+            div {
+//                h1 { "Hello My App" }
+//                p { "hello" }
+                button()
+            }
+        }
+    }
 }

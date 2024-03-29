@@ -1,5 +1,5 @@
 public struct Fragment: Component {
-    public init(_ children: [Node]) {
+    public init(children: [Node] = []) {
         self.children = children
     }
 
