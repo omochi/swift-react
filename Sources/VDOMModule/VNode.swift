@@ -3,50 +3,52 @@ import SRTCore
 import ReactInterface
 import DOMModule
 
-public class VNode {
+public final class VNode {
     public struct EQToken: Hashable {
-        enum Payload: Hashable {
-            case tag(String)
-            case component(type: ObjectIdentifier, id: AnyHashable)
+        var type: Any.Type
+        var id: AnyHashable
+
+        var value: (ObjectIdentifier, AnyHashable) {
+            (ObjectIdentifier(type), id)
         }
 
-        var payload: Payload
-
-        public static func tag(name: String) -> EQToken {
-            return EQToken(payload: .tag(name))
+        init(component: any Component) {
+            self.type = Swift.type(of: component)
+            self.id = component.anyID
         }
 
-        public static func component(type: any ReactComponent.Type, id: any Hashable) -> EQToken {
-            return EQToken(
-                payload: .component(
-                    type: ObjectIdentifier(type),
-                    id: AnyHashable(id)
-                )
-            )
+        public static func ==(a: Self, b: Self) -> Bool { a.value == b.value }
+
+        public func hash(into hasher: inout Hasher) {
+            let value = self.value
+            hasher.combine(value.0)
+            hasher.combine(value.1)
         }
     }
 
-    internal init() {
+    public init(
+        component: any Component
+    ) {
+        self.component = component
     }
 
-    public var eqToken: EQToken { fatalError("unimplemented") }
+    public var eqToken: EQToken {
+        return EQToken(component: component)
+    }
 
     public func isEqual(to other: VNode) -> Bool { eqToken == other.eqToken }
 
-    public var parent: VParentNode? { _parent }
+    public let component: any Component
+    public var dom: DOMTagNode?
+
+    public var parent: VNode? { _parent }
 
     public func removeFromParent() {
         _parent?._removeChild(self)
     }
 
-    internal weak var _parent: VParentNode?
+    internal weak var _parent: VNode?
 
-    public static func unknownNode(_ node: VNode) -> any Error {
-        MessageError("unknown VNode: \(type(of: node))")
-    }
-}
-
-public class VParentNode: VNode {
     public var children: [VNode] {
         get { _children }
         set {
@@ -64,55 +66,36 @@ public class VParentNode: VNode {
         child._parent = self
     }
 
-    internal func _removeChild(_ child: VNode) {
-        _children.removeAll { $0 === child }
-        child._parent = nil
-    }
-}
-
-public typealias VAttributes = OrderedDictionary<String, String>
-
-public final class VTagNode: VParentNode {
-    public init(
-        tagName: String,
-        attributes: VAttributes = [:],
-        children: [VNode] = []
-    ) {
-        self.tagName = tagName
-        self.attributes = attributes
-        
-        super.init()
-
+    public func appendChildren(_ children: [VNode]) {
         for x in children {
             appendChild(x)
         }
     }
 
-    public override var eqToken: VNode.EQToken {
-        .tag(name: tagName)
+    internal func _removeChild(_ child: VNode) {
+        _children.removeAll { $0 === child }
+        child._parent = nil
     }
 
-    public var tagName: String
-    public var attributes: VAttributes
-
-    public var dom: DOMTagNode?
-}
-
-public final class VComponentNode: VParentNode {
-    public init(
-        component: any ReactComponent
-    ) {
-        self.component = component
-
-        super.init()
+    public func index(of child: VNode) -> Int? {
+        _children.firstIndex { $0 === child }
     }
 
-    public override var eqToken: VNode.EQToken {
-        return .component(
-            type: type(of: component),
-            id: component.id
+    public static func unknownNode(_ node: VNode) -> any Error {
+        MessageError("unknown VNode: \(type(of: node))")
+    }
+
+    public static func tag(
+        _ name: String,
+        _ attributes: TagAttributes = [:],
+        _ children: [Node] = []
+    ) -> VNode {
+        VNode(
+            component: TagElement(
+                tagName: name,
+                attributes: attributes,
+                children: children
+            )
         )
     }
-
-    public var component: any ReactComponent
 }

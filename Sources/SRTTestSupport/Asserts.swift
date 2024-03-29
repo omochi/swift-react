@@ -1,4 +1,5 @@
 import XCTest
+import DOMModule
 
 public func XCTAssertArrayIdentical(
     _ actual: [AnyObject?],
@@ -11,4 +12,12 @@ public func XCTAssertArrayIdentical(
     for (a, e) in zip(actual, expect) {
         XCTAssertIdentical(a, e, file: file, line: line)
     }
+}
+
+public func XCTAssertPrint(
+    _ node: DOMNode, _ expected: String,
+    file: StaticString = #file, line: UInt = #line
+) {
+    let actual = node.description
+    XCTAssertEqual(actual, expected, file: file, line: line)
 }

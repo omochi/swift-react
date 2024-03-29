@@ -1,22 +1,25 @@
 import Collections
-import ReactInterface
 
-public typealias TagAttributes = OrderedDictionary<String, String>
+public struct TagElement: Component {
+    public typealias ID = String
 
-public struct TagElement: ReactElement {
     public init(
         tagName: String,
         attributes: TagAttributes = [:],
-        children: [ReactNode] = []
+        children: [Node] = []
     ) {
         self.tagName = tagName
         self.attributes = attributes
         self.children = children
     }
 
+    public var id: ID { tagName }
+
     public var tagName: String
     public var attributes: TagAttributes
-    public var children: [ReactNode]
+    public var children: [Node]
 
-    public func render() -> ReactNode { self }
+    public func render() -> Node {
+        NodeCollection(children)
+    }
 }

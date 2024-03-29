@@ -111,6 +111,7 @@ public final class DOMTagNode: DOMParentNode {
         p.nest {
             for x in _children {
                 x.print(to: p)
+                p.writeNewline()
             }
         }
         p.write("</" + tagName + ">")

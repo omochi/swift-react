@@ -1,14 +1,15 @@
 import XCTest
+import SRTTestSupport
 import DOMModule
 
 final class DOMPrintTests: XCTestCase {
     func testPrints() {
-        assertPrint(
+        XCTAssertPrint(
             DOMTagNode(tagName: "html"),
             "<html />"
         )
 
-        assertPrint(
+        XCTAssertPrint(
             DOMTagNode(tagName: "html", children: [
                 DOMTagNode(tagName: "body", children: [])
             ]),
@@ -19,14 +20,14 @@ final class DOMPrintTests: XCTestCase {
             """
         )
 
-        assertPrint(
+        XCTAssertPrint(
             DOMTagNode(tagName: "div", attributes: ["class": "box"]),
             """
             <div class="box" />
             """
         )
 
-        assertPrint(
+        XCTAssertPrint(
             DOMTagNode(tagName: "div", attributes: ["class": "box"], children: [
                 DOMTagNode(tagName: "p")
             ]),
@@ -37,7 +38,7 @@ final class DOMPrintTests: XCTestCase {
             """
         )
 
-        assertPrint(
+        XCTAssertPrint(
             DOMTagNode(tagName: "p", children: [
                 DOMTextNode(text: "hello")
             ]),
@@ -48,14 +49,4 @@ final class DOMPrintTests: XCTestCase {
             """
         )
     }
-
-    func assertPrint(
-        _ node: DOMNode, _ expected: String,
-        file: StaticString = #file, line: UInt = #line
-    ) {
-        let actual = node.description
-
-        XCTAssertEqual(actual, expected, file: file, line: line)
-    }
-
 }

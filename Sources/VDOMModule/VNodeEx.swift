@@ -1,13 +1,19 @@
+import ReactInterface
+
 extension VNode {
-    public var parentTagNode: VTagNode? {
+    public var tagElement: TagElement? {
+        component as? TagElement
+    }
+
+    public var parentTagNode: VNode? {
         get {
-            var nodeO: VParentNode? = self.parent
+            var nodeO: VNode? = self.parent
             while true {
                 guard let node = nodeO else {
                     return nil
                 }
 
-                if let node = node as? VTagNode {
+                if let _ = node.tagElement {
                     return node
                 }
 
@@ -16,21 +22,21 @@ extension VNode {
         }
     }
 
-    public var prevSiblingTagNode: VTagNode? {
+    public var prevSiblingTagNode: VNode? {
         get throws {
             guard let parent = self.parent else {
                 return nil
             }
 
-            let selfIndex = try parent.children.firstIndex(where: { $0 === self }).unwrap("index")
+            let selfIndex = try parent.index(of: self).unwrap("index")
 
             for index in stride(from: selfIndex - 1, through: 0, by: -1) {
                 let node = parent.children[index]
 
-                var found: VTagNode? = nil
+                var found: VNode? = nil
 
                 node.walk { (node) in
-                    if let node = node as? VTagNode {
+                    if let _ = node.tagElement {
                         found = node
                         return .break
                     }
@@ -43,28 +49,12 @@ extension VNode {
                 }
             }
 
-            if parent is VTagNode {
+            if let _ = parent.tagElement {
                 return nil
             }
 
             return try parent.prevSiblingTagNode
         }
-    }
-
-    // TODO: remove unused this
-    public var shallowTagNodes: [VTagNode] {
-        var result: [VTagNode] = []
-
-        walk { (node) in
-            if let node = node as? VTagNode {
-                result.append(node)
-                return .skipChildren
-            }
-
-            return .continue
-        }
-
-        return result
     }
 
     public enum WalkControl {
@@ -75,17 +65,17 @@ extension VNode {
 
     @discardableResult
     public func walk(step: (VNode) -> WalkControl) -> WalkControl {
-        let c: Bool
+        let doesWalkChildren: Bool
         switch step(self) {
         case .continue:
-            c = true
+            doesWalkChildren = true
         case .skipChildren:
-            c = false
+            doesWalkChildren = false
         case .break: return .break
         }
 
-        if c, let p = self as? VParentNode {
-            for x in p.children {
+        if doesWalkChildren {
+            for x in children {
                 switch x.walk(step: step) {
                 case .continue,
                         .skipChildren: continue

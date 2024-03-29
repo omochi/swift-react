@@ -25,6 +25,7 @@ let package = Package(
         .target(
             name: "ReactInterface",
             dependencies: [
+                .product(name: "Collections", package: "swift-collections"),
                 .target(name: "SRTCore")
             ],
             swiftSettings: swiftSettings()
@@ -59,6 +60,7 @@ let package = Package(
         .testTarget(
             name: "DOMModuleTests",
             dependencies: [
+                .target(name: "SRTTestSupport"),
                 .target(name: "DOMModule")
             ],
             swiftSettings: swiftSettings()
@@ -74,6 +76,7 @@ let package = Package(
         .testTarget(
             name: "ReactTests",
             dependencies: [
+                .target(name: "SRTTestSupport"),
                 .target(name: "React")
             ],
             swiftSettings: swiftSettings()
