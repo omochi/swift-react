@@ -1,35 +1,35 @@
 import SRTCore
 
-public protocol ReactNode: Identifiable {
-    associatedtype ID: Hashable = Empty
+public typealias ReactNode = (any ReactElement)?
 
-    func render() -> (any ReactNode)?
+public protocol ReactElement {
+    var anyID: AnyHashable { get }
 }
 
-extension ReactNode where ID == Empty {
+extension ReactElement {
+    public var anyID: AnyHashable { Empty() }
+}
+
+public protocol ReactComponent: ReactElement & Identifiable {
+    associatedtype ID: Hashable = Empty
+
+    func render() -> ReactNode
+}
+
+extension ReactComponent {
+    public var anyID: AnyHashable { AnyHashable(id) }
+}
+
+extension ReactComponent where ID == Empty {
     public var id: ID { Empty() }
 }
 
-public protocol ReactComponent: ReactNode {
-    func render() -> (any ReactNode)?
-}
-
-struct IDComponent<T: ReactNode, IDType: Hashable>: ReactComponent {
-    typealias ID = Tuple2<T.ID, IDType>
-
-    var id: ID
-    var component: T
-
-    func render() -> (any ReactNode)? {
-        component.render()
+public struct ReactFragment: ReactElement {
+    public init(_ children: [ReactNode] = []) {
+        self.children = children
     }
-}
 
-extension ReactNode {
-    public func id<ID: Hashable>(_ id: ID) -> some ReactComponent {
-        return IDComponent<Self, ID>(
-            id: Tuple2(self.id, id),
-            component: self
-        )
-    }
+    public var children: [ReactNode]
+
+    public func render() -> ReactNode { self }
 }

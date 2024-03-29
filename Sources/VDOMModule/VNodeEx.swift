@@ -51,6 +51,7 @@ extension VNode {
         }
     }
 
+    // TODO: remove unused this
     public var shallowTagNodes: [VTagNode] {
         var result: [VTagNode] = []
 

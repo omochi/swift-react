@@ -3,11 +3,11 @@ import ReactInterface
 
 public typealias TagAttributes = OrderedDictionary<String, String>
 
-public struct TagElement: ReactNode {
+public struct TagElement: ReactElement {
     public init(
         tagName: String,
         attributes: TagAttributes = [:],
-        children: [any ReactNode] = []
+        children: [ReactNode] = []
     ) {
         self.tagName = tagName
         self.attributes = attributes
@@ -16,7 +16,7 @@ public struct TagElement: ReactNode {
 
     public var tagName: String
     public var attributes: TagAttributes
-    public var children: [any ReactNode]
+    public var children: [ReactNode]
 
-    public func render() -> (any ReactNode)? { self }
+    public func render() -> ReactNode { self }
 }

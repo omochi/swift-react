@@ -5,7 +5,7 @@ public class DOMNode: CustomStringConvertible {
     internal init() {
     }
 
-    public var parent: DOMNode? { _parent }
+    public var parent: DOMParentNode? { _parent }
 
     public func removeFromParent() {
         _parent?._removeChild(self)
@@ -21,6 +21,14 @@ public class DOMNode: CustomStringConvertible {
 
     internal func print(to p: PrettyPrinter) {
         fatalError()
+    }
+
+    public var location: DOMLocation? {
+        guard let parent else { return nil }
+        return DOMLocation(
+            parent: parent,
+            index: parent.index(of: self)!
+        )
     }
 }
 
@@ -52,6 +60,10 @@ public class DOMParentNode: DOMNode {
     internal func _removeChild(_ child: DOMNode) {
         _children.removeAll { $0 === child }
         child._parent = nil
+    }
+    
+    public func index(of child: DOMNode) -> Int? {
+        _children.firstIndex { $0 === child }
     }
 }
 
@@ -117,5 +129,32 @@ public final class DOMTextNode: DOMNode {
 
     internal override func print(to p: PrettyPrinter) {
         p.write(text)
+    }
+}
+
+public struct DOMLocation: Hashable {
+    public init(
+        parent: DOMParentNode,
+        index: Int
+    ) {
+        self.parent = parent
+        self.index = index
+    }
+
+    public var parent: DOMParentNode
+    public var index: Int
+
+    private var value: (ObjectIdentifier, Int) {
+        (ObjectIdentifier(parent), index)
+    }
+
+    public static func ==(a: DOMLocation, b: DOMLocation) -> Bool {
+        a.value == b.value
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        let value = self.value
+        hasher.combine(value.0)
+        hasher.combine(value.1)
     }
 }

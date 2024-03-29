@@ -54,7 +54,17 @@ final class RenderTests: XCTestCase {
                 <div class="box" />
             </body>
             """)
+        }
 
+        do {
+            let dom = DOMTagNode(tagName: "body")
+            let root = ReactRoot(element: dom)
+            root.render(node: TagElement(tagName: "div"))
+            assertPrint(dom, """
+            <body>
+                <div />
+            </body>
+            """)
         }
     }
 
