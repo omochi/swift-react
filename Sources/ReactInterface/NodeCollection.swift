@@ -1,4 +1,4 @@
-package struct NodeCollection: Component {
+package struct NodeCollection: Element {
     public init(_ children: [Node]) {
         self.children = children
     }
@@ -8,6 +8,4 @@ package struct NodeCollection: Component {
     }
 
     public var children: [Node]
-
-    public func render() -> Node { self }
 }

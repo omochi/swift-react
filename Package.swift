@@ -4,6 +4,14 @@ import PackageDescription
 
 func swiftSettings() -> [SwiftSetting] {
     return [
+        .enableUpcomingFeature("ForwardTrailingClosures"),
+        .enableUpcomingFeature("ConciseMagicFile"),
+        .enableUpcomingFeature("BareSlashRegexLiterals"),
+        .enableUpcomingFeature("ExistentialAny"),
+        .enableUpcomingFeature("IsolatedDefaultValues"),
+        .enableUpcomingFeature("DeprecateApplicationMain"),
+        .enableUpcomingFeature("DisableOutwardActorInference"),
+        .enableUpcomingFeature("ImportObjcForwardDeclarations"),
         .enableExperimentalFeature("AccessLevelOnImport")
     ]
 }

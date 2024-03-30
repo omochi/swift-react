@@ -1,1 +1,1 @@
-public typealias Node = (any Component)?
+public typealias Node = (any Element)?

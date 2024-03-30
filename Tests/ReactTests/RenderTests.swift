@@ -4,32 +4,35 @@ import DOMModule
 import React
 
 final class RenderTests: XCTestCase {
-    struct AView: Component {
-        func render() -> Node {
-            div()
+    func testRenderCreate() {
+        let dom = DOMTagNode(tagName: "body")
+        XCTAssertPrint(dom, """
+        <body />
+        """)
+
+        let root = ReactRoot(element: dom)
+        root.render(node: div())
+        XCTAssertPrint(dom, """
+        <body>
+            <div />
+        </body>
+        """)
+    }
+
+    func testRenderSingleTagComponent() {
+        struct Content: Component {
+            func render() -> Node {
+                div()
+            }
         }
-    }
 
-    func testRender1() {
         let dom = DOMTagNode(tagName: "body")
         XCTAssertPrint(dom, """
         <body />
         """)
 
         let root = ReactRoot(element: dom)
-        root.render(node: div())
-        XCTAssertPrint(dom, """
-        <body>
-            <div />
-        </body>
-        """)
-
-        root.render(node: nil)
-        XCTAssertPrint(dom, """
-        <body />
-        """)
-
-        root.render(node: AView())
+        root.render(node: Content())
         XCTAssertPrint(dom, """
         <body>
             <div />
@@ -37,7 +40,7 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRender2() {
+    func testRenderUpdateAttribute() {
         let dom = DOMTagNode(tagName: "body")
         let root = ReactRoot(element: dom)
         root.render(node: div())
@@ -47,7 +50,7 @@ final class RenderTests: XCTestCase {
         </body>
         """)
 
-        root.render(node: div(.init(["class": "box"])))
+        root.render(node: div(["class": "box"]))
         XCTAssertPrint(dom, """
         <body>
             <div class="box" />
@@ -154,13 +157,50 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    struct MyApp: Component {
-        func render() -> Node {
-            div {
-//                h1 { "Hello My App" }
-//                p { "hello" }
-                button()
+    func testRenderRootText() {
+        let dom = DOMTagNode(tagName: "body")
+        let root = ReactRoot(element: dom)
+        root.render(
+            node: "hello"
+        )
+
+        XCTAssertPrint(dom, """
+        <body>
+            hello
+        </body>
+        """)
+    }
+
+    func testRenderComplexComponent() {
+        struct Content: Component {
+            func render() -> Node {
+                div {
+                    h1 { "hello world" }
+                    button { "submit" }
+                }
             }
         }
+
+        let dom = DOMTagNode(tagName: "body")
+        XCTAssertPrint(dom, """
+        <body />
+        """)
+
+        let root = ReactRoot(element: dom)
+        root.render(node: Content())
+        XCTAssertPrint(dom, """
+        <body>
+            <div>
+                <h1>
+                    hello world
+                </h1>
+                <button>
+                    submit
+                </button>
+            </div>
+        </body>
+        """)
     }
+
+
 }

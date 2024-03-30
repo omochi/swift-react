@@ -29,16 +29,20 @@ public final class ReactRoot {
         }
     }
 
-    private func flatten(node: Node) throws -> [any Component] {
+    private func normalize(node: Node) throws -> [any Component] {
         guard let node else { return [] }
 
         switch node {
-        case let node as NodeCollection:
-            return try node.children.flatMap { (node) in
-                try flatten(node: node)
+        case let nodes as NodeCollection:
+            return try nodes.children.flatMap { (node) in
+                try normalize(node: node)
             }
+        case let text as String:
+            return [TextElement(text)]
+        case let component as any Component:
+            return [component]
         default:
-            return [node]
+            throw unknownReactNode(node)
         }
     }
 
@@ -58,7 +62,7 @@ public final class ReactRoot {
     private func renderVTree(
         node: Node
     ) throws -> [VNode] {
-        let components = try flatten(node: node)
+        let components = try normalize(node: node)
         return try components.map { (component) in
             try renderComponent(component)
         }
@@ -116,19 +120,6 @@ public final class ReactRoot {
         nextIndex = newTree.count
     }
 
-    private func createInstance(node: VNode) throws {
-        if let tag = node.tagElement {
-//            print("create \(tag.tagName)")
-            let dom = DOMTagNode(tagName: tag.tagName)
-            dom.strings = tag.strings
-            dom.eventHandlers = tag.eventHandlers
-            node.dom = dom
-            try attachDOM(node: node)
-        }
-
-        try update(newTree: node.children, oldTree: [])
-    }
-
     private func attachDOM(node: VNode) throws {
         let dom = try node.dom.unwrap("dom")
         guard dom.parent == nil else {
@@ -154,10 +145,10 @@ public final class ReactRoot {
         guard let parent = node.parentTagNode else {
             return dom
         }
-        return try parent.dom.unwrap("dom")
+        return try parent.domTag.unwrap("domTag")
     }
 
-    private func prevSiblingDOM(node: VNode) throws -> DOMTagNode? {
+    private func prevSiblingDOM(node: VNode) throws -> DOMNode? {
         guard let prev = try node.prevSiblingTagNode else {
             return nil
         }
@@ -169,17 +160,40 @@ public final class ReactRoot {
         node.dom?.removeFromParent()
     }
 
+    private func createInstance(node: VNode) throws {
+        if let tag = node.tagElement {
+//            print("create \(tag.tagName)")
+            let dom = DOMTagNode(tagName: tag.tagName)
+            dom.strings = tag.strings
+            dom.eventHandlers = tag.eventHandlers
+            node.dom = dom
+            try attachDOM(node: node)
+        } else if let text = node.textElement {
+            let dom = DOMTextNode(text: text.value)
+            node.dom = dom
+            try attachDOM(node: node)
+        }
+
+        try update(newTree: node.children, oldTree: [])
+    }
+
     private func updateInstance(newNode: VNode, oldNode: VNode) throws {
         if let tag = newNode.tagElement {
-            let dom = try oldNode.dom.unwrap("oldNode.dom")
+            let dom = try oldNode.domTag.unwrap("oldNode.domTag")
             dom.strings = tag.strings
             dom.eventHandlers = tag.eventHandlers
             newNode.dom = dom
+        } else if let text = newNode.textElement {
+            let dom = try oldNode.domText.unwrap("oldNode.domText")
+            dom.text = text.value
+            newNode.dom = dom
+        }
 
-            let newLocation = try domLocation(node: newNode)
-            if newLocation != dom.location {
+        if let dom = newNode.dom {
+            let loc = try domLocation(node: newNode)
+            if loc != dom.location {
                 dom.removeFromParent()
-                attachDOM(dom, at: newLocation)
+                attachDOM(dom, at: loc)
             }
         }
 

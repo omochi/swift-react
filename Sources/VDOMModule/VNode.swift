@@ -47,7 +47,7 @@ public final class VNode: Hashable {
 
     public let ghost: Ghost
     public let equality: Equality
-    public var dom: DOMTagNode?
+    public var dom: DOMNode?
 
     public static func ==(a: VNode, b: VNode) -> Bool {
         a.equality == b.equality

@@ -1,8 +1,21 @@
+import DOMModule
 import ReactInterface
 
 extension VNode {
     public var tagElement: TagElement? {
         ghost.component as? TagElement
+    }
+
+    package var textElement: TextElement? {
+        ghost.component as? TextElement
+    }
+
+    public var domTag: DOMTagNode? {
+        dom as? DOMTagNode
+    }
+
+    public var domText: DOMTextNode? {
+        dom as? DOMTextNode
     }
 
     public var parentTagNode: VNode? {
@@ -13,7 +26,7 @@ extension VNode {
                     return nil
                 }
 
-                if let _ = node.tagElement {
+                if node.tagElement != nil {
                     return node
                 }
 
@@ -36,7 +49,9 @@ extension VNode {
                 var found: VNode? = nil
 
                 node.walk { (node) in
-                    if let _ = node.tagElement {
+                    if node.tagElement != nil ||
+                        node.textElement != nil
+                    {
                         found = node
                         return .break
                     }
@@ -49,7 +64,7 @@ extension VNode {
                 }
             }
 
-            if let _ = parent.tagElement {
+            if parent.tagElement != nil {
                 return nil
             }
 

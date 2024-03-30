@@ -21,14 +21,14 @@ final class DOMPrintTests: XCTestCase {
         )
 
         XCTAssertPrint(
-            DOMTagNode(tagName: "div", attributes: ["class": "box"]),
+            DOMTagNode(tagName: "div", strings: ["class": "box"]),
             """
             <div class="box" />
             """
         )
 
         XCTAssertPrint(
-            DOMTagNode(tagName: "div", attributes: ["class": "box"], children: [
+            DOMTagNode(tagName: "div", strings: ["class": "box"], children: [
                 DOMTagNode(tagName: "p")
             ]),
             """

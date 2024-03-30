@@ -1,6 +1,6 @@
 import SRTCore
 
-public protocol Component {
+public protocol Component: Element {
     func render() -> Node
 
     static func _extractGhost(_ input: GhostInput<Self>) -> Ghost
