@@ -14,9 +14,7 @@ let package = Package(
     products: [
         .library(name: "React", targets: ["React"]),
     ],
-    dependencies: [
-        .package(url: "https://github.com/apple/swift-collections", from: "1.1.0")
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "SRTCore",
@@ -25,7 +23,6 @@ let package = Package(
         .target(
             name: "DOMModule",
             dependencies: [
-                .product(name: "Collections", package: "swift-collections"),
                 .target(name: "SRTCore")
             ],
             swiftSettings: swiftSettings()
@@ -33,7 +30,6 @@ let package = Package(
         .target(
             name: "ReactInterface",
             dependencies: [
-                .product(name: "Collections", package: "swift-collections"),
                 .target(name: "SRTCore"),
                 .target(name: "DOMModule")
             ],

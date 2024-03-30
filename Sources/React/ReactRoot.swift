@@ -119,10 +119,9 @@ public final class ReactRoot {
     private func createInstance(node: VNode) throws {
         if let tag = node.tagElement {
 //            print("create \(tag.tagName)")
-            let dom = DOMTagNode(
-                tagName: tag.tagName,
-                attributes: tag.attributes.values
-            )
+            let dom = DOMTagNode(tagName: tag.tagName)
+            dom.strings = tag.strings
+            dom.eventHandlers = tag.eventHandlers
             node.dom = dom
             try attachDOM(node: node)
         }
@@ -171,9 +170,10 @@ public final class ReactRoot {
     }
 
     private func updateInstance(newNode: VNode, oldNode: VNode) throws {
-        if let newTag = newNode.tagElement {
+        if let tag = newNode.tagElement {
             let dom = try oldNode.dom.unwrap("oldNode.dom")
-            dom.attributes = newTag.attributes.values
+            dom.strings = tag.strings
+            dom.eventHandlers = tag.eventHandlers
             newNode.dom = dom
 
             let newLocation = try domLocation(node: newNode)

@@ -1,14 +1,15 @@
-import Collections
 import SRTCore
 
 public final class DOMTagNode: DOMParentNode {
     public init(
         tagName: String,
-        attributes: DOMAttributes = [:],
+        strings: DOMStringAttributes = [:],
+        eventHandlers: DOMEventHandlerAttributes = [:],
         children: [DOMNode] = []
     ) {
         self.tagName = tagName
-        self.attributes = attributes
+        self.strings = strings
+        self.eventHandlers = eventHandlers
 
         super.init()
 
@@ -18,22 +19,15 @@ public final class DOMTagNode: DOMParentNode {
     }
 
     public var tagName: String
-    public var attributes: DOMAttributes
-
+    public var strings: DOMStringAttributes
+    public var eventHandlers: DOMEventHandlerAttributes
 
     private func printAttributes(to p: PrettyPrinter) {
-        for (k, v) in attributes {
-            let str = printAttributeValue(v)
-            p.write(space: " ", "\(k)=\(str)")
-        }
-    }
-
-    private func printAttributeValue(_ value: Any) -> String {
         let q = "\""
 
-        switch value {
-        case let value as String: return q + value + q
-        default: return "(" + String(describing: type(of: value)) + ")"
+        for k in strings.keys.sorted() {
+            let v = strings[k]!
+            p.write(space: " ", "\(k)=\(q)\(v)\(q)")
         }
     }
 

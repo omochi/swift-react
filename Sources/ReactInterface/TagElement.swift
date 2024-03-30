@@ -1,18 +1,21 @@
-import Collections
+import DOMModule
 
 public struct TagElement: Component {
     public init(
         tagName: String,
-        attributes: TagAttributes = .init(),
+        strings: DOMStringAttributes = [:],
+        eventHandlers: DOMEventHandlerAttributes = [:],
         children: [Node] = []
     ) {
         self.tagName = tagName
-        self.attributes = attributes
+        self.strings = strings
+        self.eventHandlers = eventHandlers
         self.children = children
     }
 
     public var tagName: String
-    public var attributes: TagAttributes
+    public var strings: DOMStringAttributes
+    public var eventHandlers: DOMEventHandlerAttributes
     public var children: [Node]
 
     public func render() -> Node {

@@ -1,4 +1,3 @@
-import Collections
 import SRTCore
 
 public class DOMNode: CustomStringConvertible {

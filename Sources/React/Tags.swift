@@ -1,52 +1,94 @@
-import Collections
+import DOMModule
 
 public func div(
-    _ attributes: TagAttributes = .init(),
+    _ strings: DOMStringAttributes = [:],
+    eventHandlers: DOMEventHandlerAttributes = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
-    TagElement(tagName: "div", attributes: attributes, children: children())
+    TagElement(
+        tagName: "div",
+        strings: strings,
+        eventHandlers: eventHandlers,
+        children: children()
+    )
 }
 
 public func p(
-    _ attributes: TagAttributes = .init(),
+    _ strings: DOMStringAttributes = [:],
+    eventHandlers: DOMEventHandlerAttributes = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
-    TagElement(tagName: "p", attributes: attributes, children: children())
+    TagElement(
+        tagName: "p",
+        strings: strings,
+        eventHandlers: eventHandlers,
+        children: children()
+    )
 }
 
 public func h1(
-    _ attributes: TagAttributes = .init(),
+    _ strings: DOMStringAttributes = [:],
+    eventHandlers: DOMEventHandlerAttributes = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
-    TagElement(tagName: "h1", attributes: attributes, children: children())
+    TagElement(
+        tagName: "h1",
+        strings: strings,
+        eventHandlers: eventHandlers,
+        children: children()
+    )
 }
 
 public func h2(
-    _ attributes: TagAttributes = .init(),
+    _ strings: DOMStringAttributes = [:],
+    eventHandlers: DOMEventHandlerAttributes = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
-    TagElement(tagName: "h2", attributes: attributes, children: children())
+    TagElement(
+        tagName: "h2",
+        strings: strings,
+        eventHandlers: eventHandlers,
+        children: children()
+    )
 }
 
 public func h3(
-    _ attributes: TagAttributes = .init(),
+    _ strings: DOMStringAttributes = [:],
+    eventHandlers: DOMEventHandlerAttributes = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
-    TagElement(tagName: "h3", attributes: attributes, children: children())
+    TagElement(
+        tagName: "h3",
+        strings: strings,
+        eventHandlers: eventHandlers,
+        children: children()
+    )
 }
 
 public func h4(
-    _ attributes: TagAttributes = .init(),
+    _ strings: DOMStringAttributes = [:],
+    eventHandlers: DOMEventHandlerAttributes = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
-    TagElement(tagName: "h4", attributes: attributes, children: children())
+    TagElement(
+        tagName: "h4",
+        strings: strings,
+        eventHandlers: eventHandlers,
+        children: children()
+    )
 }
 
 public func button(
-    _ attributes: TagAttributes = .init(),
+    _ strings: DOMStringAttributes = [:],
+    eventHandlers: DOMEventHandlerAttributes = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
-    TagElement(tagName: "button", attributes: attributes, children: children())
+    TagElement(
+        tagName: "button",
+        strings: strings,
+        eventHandlers: eventHandlers,
+        children: children()
+    )
 }
 
 

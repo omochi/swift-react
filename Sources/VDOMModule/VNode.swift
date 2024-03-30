@@ -1,4 +1,3 @@
-import Collections
 import SRTCore
 import ReactInterface
 import DOMModule
@@ -104,12 +103,12 @@ public final class VNode: Hashable {
 
     public static func tag(
         _ name: String,
-        _ attributes: TagAttributes = .init(),
+        _ strings: DOMStringAttributes = [:],
         _ children: [Node] = []
     ) -> VNode {
         let tag = TagElement(
             tagName: name,
-            attributes: attributes,
+            strings: strings,
             children: children
         )
         return component(tag)
