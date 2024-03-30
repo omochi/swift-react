@@ -37,9 +37,8 @@ public final class ReactRoot {
             return try node.children.flatMap { (node) in
                 try flatten(node: node)
             }
-        case let component as any Component:
-            return [component]
-        default: throw unknownReactNode(node)
+        default:
+            return [node]
         }
     }
 

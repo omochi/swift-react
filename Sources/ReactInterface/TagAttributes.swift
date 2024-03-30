@@ -4,6 +4,10 @@ import DOMModule
 public struct TagAttributes {
     public init() {}
 
+    public init(_ values: OrderedDictionary<String, Any>) {
+        self.values = values
+    }
+
     public init(build: (inout TagAttributes) -> Void) {
         self.init()
         build(&self)

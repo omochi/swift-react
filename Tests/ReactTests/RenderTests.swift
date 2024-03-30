@@ -47,7 +47,7 @@ final class RenderTests: XCTestCase {
         </body>
         """)
 
-        root.render(node: div(["class": "box"]))
+        root.render(node: div(.init(["class": "box"])))
         XCTAssertPrint(dom, """
         <body>
             <div class="box" />

@@ -1,6 +1,6 @@
 import SRTCore
 
-public protocol Component: Element & Identifiable {
+public protocol Component: Identifiable {
     associatedtype ID: Hashable = Empty
 
     func render() -> Node
