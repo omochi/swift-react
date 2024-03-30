@@ -56,7 +56,10 @@ let package = Package(
             swiftSettings: swiftSettings()
         ),
         .target(
-            name: "SRTTestSupport"
+            name: "SRTTestSupport",
+            dependencies: [
+                .target(name: "DOMModule")
+            ]
         ),
         .testTarget(
             name: "DOMModuleTests",

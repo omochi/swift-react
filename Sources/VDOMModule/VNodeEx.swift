@@ -2,7 +2,7 @@ import ReactInterface
 
 extension VNode {
     public var tagElement: TagElement? {
-        component as? TagElement
+        ghost.component as? TagElement
     }
 
     public var parentTagNode: VNode? {

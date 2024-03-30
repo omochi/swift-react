@@ -3,43 +3,60 @@ import SRTCore
 import ReactInterface
 import DOMModule
 
-public final class VNode {
-    public struct EQToken: Hashable {
-        var type: Any.Type
-        var id: AnyHashable
+public final class VNode: Hashable {
+    public struct Equality: Hashable {
+        var componentType: ObjectIdentifier
+        var tagName: String?
+        var idType: ObjectIdentifier?
+        var idValue: AnyHashable?
 
-        var value: (ObjectIdentifier, AnyHashable) {
-            (ObjectIdentifier(type), id)
+        init(ghost: Ghost) {
+            self.init(
+                component: ghost.component,
+                id: ghost.id
+            )
         }
 
-        init(component: any Component) {
-            self.type = Swift.type(of: component)
-            self.id = component.anyID
-        }
+        init(
+            component: any Component,
+            id: (any Hashable)?
+        ) {
+            self.componentType = ObjectIdentifier(type(of: component))
 
-        public static func ==(a: Self, b: Self) -> Bool { a.value == b.value }
+            if let tag = component as? TagElement {
+                self.tagName = tag.tagName
+            } else {
+                self.tagName = nil
+            }
 
-        public func hash(into hasher: inout Hasher) {
-            let value = self.value
-            hasher.combine(value.0)
-            hasher.combine(value.1)
+            if let id {
+                self.idType = ObjectIdentifier(type(of: id))
+                self.idValue = AnyHashable(id)
+            } else {
+                self.idType = nil
+                self.idValue = nil
+            }
         }
     }
 
     public init(
-        component: any Component
+        ghost: Ghost
     ) {
-        self.component = component
+        self.ghost = ghost
+        self.equality = Equality(ghost: ghost)
     }
 
-    public var eqToken: EQToken {
-        return EQToken(component: component)
-    }
-
-    public func isEqual(to other: VNode) -> Bool { eqToken == other.eqToken }
-
-    public let component: any Component
+    public let ghost: Ghost
+    public let equality: Equality
     public var dom: DOMTagNode?
+
+    public static func ==(a: VNode, b: VNode) -> Bool {
+        a.equality == b.equality
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(equality)
+    }
 
     public var parent: VNode? { _parent }
 
@@ -90,12 +107,17 @@ public final class VNode {
         _ attributes: TagAttributes = .init(),
         _ children: [Node] = []
     ) -> VNode {
-        VNode(
-            component: TagElement(
-                tagName: name,
-                attributes: attributes,
-                children: children
-            )
+        let tag = TagElement(
+            tagName: name,
+            attributes: attributes,
+            children: children
         )
+        return component(tag)
+    }
+
+    public static func component<C: Component>(_ component: C) -> VNode {
+        let input = GhostInput(component: component)
+        let ghost = C._extractGhost(input)
+        return VNode(ghost: ghost)
     }
 }

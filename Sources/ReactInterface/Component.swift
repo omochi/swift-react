@@ -1,15 +1,15 @@
 import SRTCore
 
-public protocol Component: Identifiable {
-    associatedtype ID: Hashable = Empty
-
+public protocol Component {
     func render() -> Node
+
+    static func _extractGhost(_ input: GhostInput<Self>) -> Ghost
 }
 
 extension Component {
-    public var anyID: AnyHashable { id }
-}
-
-extension Component where ID == Empty {
-    public var id: ID { Empty() }
+    public static func _extractGhost(_ input: GhostInput<Self>) -> Ghost {
+        Ghost(
+            component: input.component
+        )
+    }
 }

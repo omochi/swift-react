@@ -7,7 +7,7 @@ public final class ReactRoot {
         element: DOMTagNode
     ) {
         self.dom = element
-        self.root = VNode(component: Fragment())
+        self.root = VNode.component(Fragment())
     }
 
     public let dom: DOMTagNode
@@ -19,7 +19,7 @@ public final class ReactRoot {
          */
 
         do {
-            let newRoot = VNode(component: Fragment())
+            let newRoot = VNode.component(Fragment())
             let newTree = try renderVTree(node: node)
             newRoot.appendChildren(newTree)
             try update(newTree: newTree, oldTree: root.children)
@@ -42,8 +42,12 @@ public final class ReactRoot {
         }
     }
 
-    private func renderComponent(_ component: any Component) throws -> VNode {
-        let v = VNode(component: component)
+    private func renderComponent<C: Component>(_ component: C) throws -> VNode {
+        let ghost = C._extractGhost(
+            .init(component: component)
+        )
+        let v = VNode(ghost: ghost)
+
         let child = component.render()
         for vc in try renderVTree(node: child) {
             v.appendChild(vc)
@@ -64,26 +68,11 @@ public final class ReactRoot {
         MessageError("unknown ReactNode: \(type(of: node))")
     }
 
-    private struct DiffAdapter: Hashable {
-        var node: VNode
-        var token: VNode.EQToken
-
-        init(node: VNode) {
-            self.node = node
-            self.token = node.eqToken
-        }
-
-        static func ==(a: Self, b: Self) -> Bool { a.token == b.token }
-        func hash(into hasher: inout Hasher) { hasher.combine(token) }
-    }
-
     private func update(
         newTree: [VNode],
         oldTree: [VNode]
     ) throws {
-        let newTree = newTree.map(DiffAdapter.init)
-        let oldTree = oldTree.map(DiffAdapter.init)
-        var patchedOldTree: [VNode?] = oldTree.map { $0.node }
+        var patchedOldTree: [VNode?] = oldTree
 
         let diff = newTree.difference(from: oldTree)
             .inferringMoves()
@@ -98,11 +87,11 @@ public final class ReactRoot {
                 if let _ = dest {
                     // process on insert
                 } else {
-                    try destroyInstance(node: oldNode.node)
+                    try destroyInstance(node: oldNode)
                 }
             case .insert(offset: let offset, element: let newNode, associatedWith: let source):
                 for index in nextIndex..<offset {
-                    let newNode = newTree[index].node
+                    let newNode = newTree[index]
                     let oldNode = try patchedOldTree[index].unwrap("updating oldNode")
                     try updateInstance(newNode: newNode, oldNode: oldNode)
                 }
@@ -111,16 +100,16 @@ public final class ReactRoot {
                 patchedOldTree.insert(nil, at: offset)
 
                 if let source {
-                    let oldNode = oldTree[source].node
-                    try updateInstance(newNode: newNode.node, oldNode: oldNode)
+                    let oldNode = oldTree[source]
+                    try updateInstance(newNode: newNode, oldNode: oldNode)
                 } else {
-                    try createInstance(node: newNode.node)
+                    try createInstance(node: newNode)
                 }
             }
         }
 
         for index in nextIndex..<newTree.count {
-            let newNode = newTree[index].node
+            let newNode = newTree[index]
             let oldNode = try patchedOldTree[index].unwrap("updating oldNode")
             try updateInstance(newNode: newNode, oldNode: oldNode)
         }
@@ -129,7 +118,7 @@ public final class ReactRoot {
 
     private func createInstance(node: VNode) throws {
         if let tag = node.tagElement {
-            print("create \(tag.tagName)")
+//            print("create \(tag.tagName)")
             let dom = DOMTagNode(
                 tagName: tag.tagName,
                 attributes: tag.attributes.values

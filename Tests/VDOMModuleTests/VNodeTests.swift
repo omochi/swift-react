@@ -24,7 +24,7 @@ final class VNodeTests: XCTestCase {
 
         do {
             let n0 = VNode.tag("div")
-            let n1 = VNode(component: AView())
+            let n1 = VNode.component(AView())
             n0.appendChild(n1)
             let n2 = VNode.tag("p")
             n1.appendChild(n2)
@@ -46,12 +46,12 @@ final class VNodeTests: XCTestCase {
 
         do {
             let n0 = VNode.tag("div")
-            let n1_0 = VNode(component: AView())
+            let n1_0 = VNode.component(AView())
             n0.appendChild(n1_0)
             let n2_0 = VNode.tag("p")
             n1_0.appendChild(n2_0)
 
-            let n1_1 = VNode(component: AView())
+            let n1_1 = VNode.component(AView())
             n0.appendChild(n1_1)
             let n2_1 = VNode.tag("p")
             n1_1.appendChild(n2_1)
