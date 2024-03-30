@@ -16,22 +16,59 @@ func swiftSettings() -> [SwiftSetting] {
     ]
 }
 
+let usesJavaScriptKitOnMac = true
+
+let javaScriptKitShimTarget: PackageDescription.Target = {
+    var deps: [PackageDescription.Target.Dependency] = []
+
+    if usesJavaScriptKitOnMac {
+        deps += [
+            .product(name: "JavaScriptKit", package: "JavaScriptKit")
+        ]
+    } else {
+        deps += [
+            .product(name: "JavaScriptKit", package: "JavaScriptKit", condition: .when(platforms: [.wasi])),
+            .target(name: "SRTJavaScriptKit", condition: .when(platforms: [.macOS]))
+        ]
+    }
+
+    return .target(
+        name: "JavaScriptKitShim",
+        dependencies: deps
+    )
+}()
+
 let package = Package(
     name: "swift-react",
     platforms: [.macOS(.v14)],
     products: [
         .library(name: "React", targets: ["React"]),
     ],
-    dependencies: [],
+    dependencies: [
+        .package(url: "https://github.com/swiftwasm/JavaScriptKit", from: "0.19.1"),
+    ],
     targets: [
         .target(
             name: "SRTCore",
             swiftSettings: swiftSettings()
         ),
         .target(
+            name: "SRTWeb",
+            swiftSettings: swiftSettings()
+        ),
+        .target(
+            name: "SRTJavaScriptKit",
+            dependencies: [
+                .target(name: "SRTWeb")
+            ],
+            swiftSettings: swiftSettings()
+        ),
+        javaScriptKitShimTarget,
+        .target(
             name: "DOMModule",
             dependencies: [
-                .target(name: "SRTCore")
+                .target(name: "SRTCore"),
+                .target(name: "JavaScriptKitShim")
             ],
             swiftSettings: swiftSettings()
         ),
