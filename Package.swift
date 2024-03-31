@@ -53,13 +53,16 @@ let package = Package(
             swiftSettings: swiftSettings()
         ),
         .target(
-            name: "WebMock",
-            swiftSettings: swiftSettings()
-        ),
-        .target(
             name: "JavaScriptKitMock",
             dependencies: [
                 .target(name: "SRTCore")
+            ],
+            swiftSettings: swiftSettings()
+        ),
+        .target(
+            name: "WebMock",
+            dependencies: [
+                .target(name: "JavaScriptKitMock")
             ],
             swiftSettings: swiftSettings()
         ),

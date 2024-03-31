@@ -20,3 +20,9 @@ extension String: ConvertibleToJSValue {
     public var jsValue: JSValue { .string(JSString(self)) }
 }
 
+extension Optional: ConvertibleToJSValue where Wrapped: ConvertibleToJSValue {
+    public var jsValue: JSValue { 
+        self.map { $0.jsValue } ?? .null
+    }
+}
+

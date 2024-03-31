@@ -1,4 +1,6 @@
-public class WebNodeList {
+import JavaScriptKitMock
+
+public class WebNodeList: JSNativeObject {
     public init() {
     }
 
@@ -9,6 +11,14 @@ public class WebNodeList {
     public func item(_ index: Int) -> WebNode? {
         guard 0..<length ~= index else { return nil }
         return items[index]
+    }
+
+    public func _get_property(_ name: String) -> JSValue {
+        switch name {
+        case "length": return length.jsValue
+        case "item": return JSFunction(Self.item).jsValue
+        default: return .undefined
+        }
     }
 }
 

@@ -1,18 +1,18 @@
 @dynamicMemberLookup
 public class JSObject: Equatable & ConvertibleToJSValue {
-    public init(native: JSNativeObject) {
+    public init(native: any JSNativeObject) {
         self.native = native
     }
     
-    internal let native: JSNativeObject
-    
+    public let native: any JSNativeObject
+
     public subscript(_ name: String) -> JSValue {
-        get { native._get_property(name) }
+        get { native._get_property(name).jsValue }
         set { native._set_property(name, newValue) }
     }
     
     public subscript(_ index: Int) -> JSValue {
-        get { native._get_index(index) }
+        get { native._get_index(index).jsValue }
         set { native._set_index(index, newValue) }
     }
     
@@ -20,12 +20,12 @@ public class JSObject: Equatable & ConvertibleToJSValue {
         get { self[name] }
         set { self[name] = newValue }
     }
-    
-    public var jsValue: JSValue { .object(self) }
 
     public static func ==(a: JSObject, b: JSObject) -> Bool {
         a.native === b.native
     }
+
+    public var jsValue: JSValue { .object(self) }
 }
 
 extension JSObject {

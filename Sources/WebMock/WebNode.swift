@@ -1,4 +1,6 @@
-public class WebNode {
+import JavaScriptKitMock
+
+public class WebNode: JSNativeObject {
     public init() {
         self._childNodes = WebMutableNodeList()
     }

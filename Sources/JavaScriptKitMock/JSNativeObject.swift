@@ -1,4 +1,4 @@
-public protocol JSNativeObjectProtocol: AnyObject {
+public protocol JSNativeObject: ConvertibleToJSValue & AnyObject {
     func _get_property(_ name: String) -> JSValue
     func _set_property(_ name: String, _ value: JSValue)
 
@@ -6,19 +6,20 @@ public protocol JSNativeObjectProtocol: AnyObject {
     func _set_index(_ index: Int, _ value: JSValue)
 
     func _call(this: JSObject?, arguments: [JSValue]) -> JSValue
-    func _new(arguments: [JSValue]) -> JSObject
+    func _new(arguments: [JSValue]) -> JSValue
 }
 
-extension JSNativeObjectProtocol {
+extension JSNativeObject {
     public func _get_property(_ name: String) -> JSValue { .undefined }
-    public func _set_property(_ name: String, _ value: JSValue) {}
+    public func _set_property(_ name: String, _ value: JSValue) { }
 
     public func _get_index(_ index: Int) -> JSValue { .undefined }
-    public func _set_index(_ index: Int, _ value: JSValue) {}
+    public func _set_index(_ index: Int, _ value: JSValue) { }
 
     public func _call(this: JSObject?, arguments: [JSValue]) -> JSValue { .undefined }
     public func _new(arguments: [JSValue]) -> JSValue { .undefined }
 }
 
-public typealias JSNativeObject = any JSNativeObjectProtocol
-
+extension JSNativeObject {
+    public var jsValue: JSValue { .object(JSObject(native: self)) }
+}
