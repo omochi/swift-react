@@ -28,7 +28,7 @@ let javaScriptKitShimTarget: PackageDescription.Target = {
     } else {
         deps += [
             .product(name: "JavaScriptKit", package: "JavaScriptKit", condition: .when(platforms: [.wasi])),
-            .target(name: "SRTJavaScriptKit", condition: .when(platforms: [.macOS]))
+            .target(name: "JavaScriptKitMock", condition: .when(platforms: [.macOS]))
         ]
     }
 
@@ -53,13 +53,13 @@ let package = Package(
             swiftSettings: swiftSettings()
         ),
         .target(
-            name: "SRTWeb",
+            name: "WebMock",
             swiftSettings: swiftSettings()
         ),
         .target(
-            name: "SRTJavaScriptKit",
+            name: "JavaScriptKitMock",
             dependencies: [
-                .target(name: "SRTWeb")
+                .target(name: "SRTCore")
             ],
             swiftSettings: swiftSettings()
         ),
