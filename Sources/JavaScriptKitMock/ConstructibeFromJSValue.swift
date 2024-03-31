@@ -1,5 +1,6 @@
 public protocol ConstructibleFromJSValue {
-    static func construct(from value: JSValue) -> Self?
+    associatedtype Constructed = Self
+    static func construct(from value: JSValue) -> Constructed?
 }
 
 extension Bool: ConstructibleFromJSValue {
@@ -24,5 +25,14 @@ extension Int: ConstructibleFromJSValue {
     public static func construct(from value: JSValue) -> Int? {
         guard let x = value.number else { return nil }
         return Self(x)
+    }
+}
+
+extension Optional: ConstructibleFromJSValue where Wrapped: ConstructibleFromJSValue {
+    public static func construct(from value: JSValue) -> Wrapped.Constructed? {
+        switch value {
+        case .null, .undefined: return nil
+        default: return Wrapped.construct(from: value)
+        }
     }
 }

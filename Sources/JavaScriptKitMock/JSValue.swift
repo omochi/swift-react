@@ -1,3 +1,4 @@
+@dynamicMemberLookup
 public enum JSValue: Equatable & ConvertibleToJSValue {
     case boolean(Bool)
     case string(JSString)
@@ -57,3 +58,20 @@ public enum JSValue: Equatable & ConvertibleToJSValue {
     public var jsValue: JSValue { self }
 }
 
+
+extension JSValue {
+    @_disfavoredOverload
+    public subscript(dynamicMember name: String) -> ((any ConvertibleToJSValue...) -> JSValue) {
+        object![dynamicMember: name]!
+    }
+
+    public subscript(dynamicMember name: String) -> JSValue {
+        get { self.object![name] }
+        set { self.object![name] = newValue }
+    }
+
+    public subscript(_ index: Int) -> JSValue {
+        get { object![index] }
+        set { object![index] = newValue }
+    }
+}

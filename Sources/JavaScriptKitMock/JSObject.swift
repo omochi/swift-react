@@ -1,5 +1,5 @@
 @dynamicMemberLookup
-public class JSObject: Equatable & ConvertibleToJSValue {
+public class JSObject: Equatable & ConvertibleToJSValue & ConstructibleFromJSValue {
     public init(native: any JSNativeObject) {
         self.native = native
     }
@@ -26,6 +26,10 @@ public class JSObject: Equatable & ConvertibleToJSValue {
     }
 
     public var jsValue: JSValue { .object(self) }
+
+    public static func construct(from value: JSValue) -> JSObject? {
+        value.object
+    }
 }
 
 extension JSObject {

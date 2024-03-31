@@ -1,4 +1,4 @@
-public protocol JSNativeObject: ConvertibleToJSValue & AnyObject {
+public protocol JSNativeObject: ConvertibleToJSValue & ConstructibleFromJSValue & AnyObject {
     func _get_property(_ name: String) -> JSValue
     func _set_property(_ name: String, _ value: JSValue)
 
@@ -22,4 +22,9 @@ extension JSNativeObject {
 
 extension JSNativeObject {
     public var jsValue: JSValue { .object(JSObject(native: self)) }
+
+    public static func construct(from value: JSValue) -> Constructed? {
+        guard let object = value.object else { return nil }
+        return object.native as? Constructed
+    }
 }

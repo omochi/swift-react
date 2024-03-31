@@ -3,12 +3,10 @@ public class JSFunction: JSObject {
         super.init(native: native)
     }
 
-    @discardableResult
     public func callAsFunction(this: JSObject? = nil, arguments: [any ConvertibleToJSValue]) -> JSValue {
         native._call(this: this, arguments: arguments.map { $0.jsValue }).jsValue
     }
 
-    @discardableResult
     public func callAsFunction(this: JSObject? = nil, _ arguments: (any ConvertibleToJSValue)...) -> JSValue {
         self(this: this, arguments: arguments)
     }
@@ -39,7 +37,34 @@ extension JSFunction {
         _ selector: @escaping (S) -> () -> R
     ) {
         let impl = { (this: JSObject?, arguments: [JSValue]) -> JSValue in
-            selector(this! as! S)().jsValue
+            selector(this!.native as! S)().jsValue
+        }
+        self.init(impl: impl)
+    }
+
+    public convenience init<
+        S: JSNativeObject
+    >(
+        _ selector: @escaping (S) -> () -> Void
+    ) {
+        let impl = { (this: JSObject?, arguments: [JSValue]) -> JSValue in
+            selector(this!.native as! S)()
+            return .undefined
+        }
+        self.init(impl: impl)
+    }
+
+    public convenience init<
+        S: JSNativeObject,
+        A0: ConstructibleFromJSValue
+    >(
+        _ selector: @escaping (S) -> (A0) -> Void
+    ) where A0.Constructed == A0 {
+        let impl = { (this: JSObject?, arguments: [JSValue]) -> JSValue in
+            selector(this!.native as! S)(
+                A0.construct(from: arguments[0])!
+            )
+            return .undefined
         }
         self.init(impl: impl)
     }
@@ -50,10 +75,50 @@ extension JSFunction {
         R: ConvertibleToJSValue
     >(
         _ selector: @escaping (S) -> (A0) -> R
-    ) {
+    ) where A0.Constructed == A0 {
         let impl = { (this: JSObject?, arguments: [JSValue]) -> JSValue in
-            selector(this! as! S)(
+            selector(this!.native as! S)(
                 A0.construct(from: arguments[0])!
+            ).jsValue
+        }
+        self.init(impl: impl)
+    }
+
+    public convenience init<
+        S: JSNativeObject,
+        A0: ConstructibleFromJSValue,
+        A1: ConstructibleFromJSValue
+    >(
+        _ selector: @escaping (S) -> (A0, A1) -> Void
+    ) where
+        A0.Constructed == A0,
+        A1.Constructed == A1
+    {
+        let impl = { (this: JSObject?, arguments: [JSValue]) -> JSValue in
+            selector(this!.native as! S)(
+                A0.construct(from: arguments[0])!,
+                A1.construct(from: arguments[1])!
+            )
+            return .undefined
+        }
+        self.init(impl: impl)
+    }
+
+    public convenience init<
+        S: JSNativeObject,
+        A0: ConstructibleFromJSValue,
+        A1: ConstructibleFromJSValue,
+        R: ConvertibleToJSValue
+    >(
+        _ selector: @escaping (S) -> (A0, A1) -> R
+    ) where
+        A0.Constructed == A0,
+        A1.Constructed == A1
+    {
+        let impl = { (this: JSObject?, arguments: [JSValue]) -> JSValue in
+            selector(this!.native as! S)(
+                A0.construct(from: arguments[0])!,
+                A1.construct(from: arguments[1])!
             ).jsValue
         }
         self.init(impl: impl)

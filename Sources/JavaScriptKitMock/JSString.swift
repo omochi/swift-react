@@ -1,4 +1,4 @@
-public struct JSString: Equatable & LosslessStringConvertible & ConvertibleToJSValue {
+public struct JSString: Equatable & LosslessStringConvertible & ConvertibleToJSValue & ConstructibleFromJSValue {
     public init(_ value: String) {
         self.value = value
     }
@@ -10,4 +10,8 @@ public struct JSString: Equatable & LosslessStringConvertible & ConvertibleToJSV
     }
 
     public var jsValue: JSValue { .string(self) }
+
+    public static func construct(from value: JSValue) -> JSString? {
+        value.jsString
+    }
 }

@@ -15,15 +15,27 @@ public class WebNodeList: JSNativeObject {
 
     public func _get_property(_ name: String) -> JSValue {
         switch name {
-        case "length": return length.jsValue
-        case "item": return JSFunction(Self.item).jsValue
-        default: return .undefined
+        case "length": length.jsValue
+        case "item": JSFunction(Self.item).jsValue
+        default: .undefined
         }
     }
 }
 
-extension WebNodeList {
-    internal func index(of node: WebNode) -> Int? {
+extension WebNodeList: RandomAccessCollection {
+    public typealias Element = WebNode
+    public typealias Index = Int
+
+    public var startIndex: Int { 0 }
+    public var endIndex: Int { items.count }
+
+    public subscript(position: Int) -> WebNode {
+        _read {
+            yield items[position]
+        }
+    }
+
+    public func index(of node: WebNode) -> Int? {
         items.firstIndex { $0 === node }
     }
 }

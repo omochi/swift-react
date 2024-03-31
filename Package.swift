@@ -16,7 +16,7 @@ func swiftSettings() -> [SwiftSetting] {
     ]
 }
 
-let usesJavaScriptKitOnMac = true
+let usesJavaScriptKitOnMac = false
 
 let javaScriptKitShimTarget: PackageDescription.Target = {
     var deps: [PackageDescription.Target.Dependency] = []
@@ -102,8 +102,15 @@ let package = Package(
         .target(
             name: "SRTTestSupport",
             dependencies: [
-                .target(name: "DOMModule")
             ]
+        ),
+        .testTarget(
+            name: "WebMockTests",
+            dependencies: [
+                .target(name: "SRTTestSupport"),
+                .target(name: "WebMock")
+            ],
+            swiftSettings: swiftSettings()
         ),
         .testTarget(
             name: "DOMModuleTests",
