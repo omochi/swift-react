@@ -26,3 +26,12 @@ extension Optional: ConvertibleToJSValue where Wrapped: ConvertibleToJSValue {
     }
 }
 
+extension Array: ConvertibleToJSValue where Element: ConvertibleToJSValue {
+    public var jsValue: JSValue {
+        let array = JSNativeArray()
+        for x in self {
+            array.push(x.jsValue)
+        }
+        return array.jsValue
+    }
+}

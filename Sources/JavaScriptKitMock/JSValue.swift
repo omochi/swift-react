@@ -1,5 +1,5 @@
 @dynamicMemberLookup
-public enum JSValue: Equatable & ConvertibleToJSValue {
+public enum JSValue: Equatable & ConvertibleToJSValue & ConstructibleFromJSValue {
     case boolean(Bool)
     case string(JSString)
     case number(Double)
@@ -56,6 +56,10 @@ public enum JSValue: Equatable & ConvertibleToJSValue {
     }
 
     public var jsValue: JSValue { self }
+
+    public static func construct(from value: JSValue) -> JSValue? {
+        value
+    }
 }
 
 

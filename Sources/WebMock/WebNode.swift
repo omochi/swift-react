@@ -50,9 +50,9 @@ public class WebNode: JSNativeObject & CustomStringConvertible {
         case "firstChild": firstChild.jsValue
         case "parentNode": parentNode.jsValue
         case "description": description.jsValue
-        case "appendChild": JSFunction(WebNode.appendChild).jsValue
-        case "insertBefore": JSFunction(WebNode.insertBefore).jsValue
-        case "removeChild": JSFunction(WebNode.removeChild).jsValue
+        case "appendChild": JSFunction(Self.appendChild).jsValue
+        case "insertBefore": JSFunction(Self.insertBefore).jsValue
+        case "removeChild": JSFunction(Self.removeChild).jsValue
         default: .undefined
         }
     }

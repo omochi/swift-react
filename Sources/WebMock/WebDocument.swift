@@ -13,8 +13,8 @@ public final class WebDocument: WebNode {
 
     public override func _get_property(_ name: String) -> JSValue {
         switch name {
-        case "createElement": JSFunction(WebDocument.createElement).jsValue
-        case "createTextNode": JSFunction(WebDocument.createTextNode).jsValue
+        case "createElement": JSFunction(Self.createElement).jsValue
+        case "createTextNode": JSFunction(Self.createTextNode).jsValue
         default: super._get_property(name)
         }
     }
