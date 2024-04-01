@@ -1,17 +1,24 @@
 import SRTCore
-import DOMModule
+import SRTDOM
+import JavaScriptKitShim
 package import VDOMModule
 
 public final class ReactRoot {
     public init(
-        element: DOMTagNode
+        element: JSHTMLElement
     ) {
         self.dom = element
         self.root = VNode.component(Fragment())
+
+        self.window = JSWindow.global
+        self.document = window.document
     }
 
-    public let dom: DOMTagNode
+    public let dom: JSHTMLElement
     package var root: VNode
+
+    private let window: JSWindow
+    private let document: JSDocument
 
     public func render(node: Node) {
         /*
@@ -122,33 +129,27 @@ public final class ReactRoot {
 
     private func attachDOM(node: VNode) throws {
         let dom = try node.dom.unwrap("dom")
-        guard dom.parent == nil else {
+        guard dom.parentNode == nil else {
             throw MessageError("dom already attached")
         }
-        let location = try self.domLocation(node: node)
-        self.attachDOM(dom, at: location)
+        let location = try self.domNodeLocation(node: node)
+        dom.insert(at: location)
     }
 
-    private func attachDOM(_ dom: DOMNode, at location: DOMLocation) {
-        location.parent.insertChild(dom, at: location.index)
-    }
-
-    private func domLocation(node: VNode) throws -> DOMLocation {
+    private func domNodeLocation(node: VNode) throws -> JSNodeLocation {
         let parent = try parentDOM(node: node)
-        let index = if let prev = try prevSiblingDOM(node: node) {
-            try parent.index(of: prev).unwrap("prev dom index") + 1
-        } else { 0 }
-        return DOMLocation(parent: parent, index: index)
+        let prev = try prevSiblingDOM(node: node)
+        return JSNodeLocation(parent: parent, next: prev?.nextSibling)
     }
 
-    private func parentDOM(node: VNode) throws -> DOMTagNode {
+    private func parentDOM(node: VNode) throws -> JSNode {
         guard let parent = node.parentTagNode else {
             return dom
         }
         return try parent.domTag.unwrap("domTag")
     }
 
-    private func prevSiblingDOM(node: VNode) throws -> DOMNode? {
+    private func prevSiblingDOM(node: VNode) throws -> JSNode? {
         guard let prev = try node.prevSiblingTagNode else {
             return nil
         }
@@ -157,19 +158,19 @@ public final class ReactRoot {
 
     private func destroyInstance(node: VNode) throws {
         try update(newTree: [], oldTree: node.children)
-        node.dom?.removeFromParent()
+        node.dom?.remove()
     }
 
     private func createInstance(node: VNode) throws {
         if let tag = node.tagElement {
-//            print("create \(tag.tagName)")
-            let dom = DOMTagNode(tagName: tag.tagName)
-            dom.strings = tag.strings
-            dom.eventHandlers = tag.eventHandlers
+            let dom = document.createElement(tag.tagName)
+            // TODO
+//            dom.strings = tag.strings
+//            dom.eventHandlers = tag.eventHandlers
             node.dom = dom
             try attachDOM(node: node)
         } else if let text = node.textElement {
-            let dom = DOMTextNode(text: text.value)
+            let dom = document.createTextNode(text.value)
             node.dom = dom
             try attachDOM(node: node)
         }
@@ -180,20 +181,21 @@ public final class ReactRoot {
     private func updateInstance(newNode: VNode, oldNode: VNode) throws {
         if let tag = newNode.tagElement {
             let dom = try oldNode.domTag.unwrap("oldNode.domTag")
-            dom.strings = tag.strings
-            dom.eventHandlers = tag.eventHandlers
+            // TODO
+//            dom.strings = tag.strings
+//            dom.eventHandlers = tag.eventHandlers
             newNode.dom = dom
         } else if let text = newNode.textElement {
             let dom = try oldNode.domText.unwrap("oldNode.domText")
-            dom.text = text.value
+            dom.data = text.value
             newNode.dom = dom
         }
 
         if let dom = newNode.dom {
-            let loc = try domLocation(node: newNode)
-            if loc != dom.location {
-                dom.removeFromParent()
-                attachDOM(dom, at: loc)
+            let location = try domNodeLocation(node: newNode)
+            if location != dom.location {
+                dom.remove()
+                dom.insert(at: location)
             }
         }
 

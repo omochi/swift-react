@@ -45,6 +45,7 @@ let package = Package(
         .library(name: "React", targets: ["React"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/apple/swift-algorithms", from: "1.2.0"),
         .package(url: "https://github.com/swiftwasm/JavaScriptKit", from: "0.19.1"),
     ],
     targets: [
@@ -68,8 +69,9 @@ let package = Package(
         ),
         javaScriptKitShimTarget,
         .target(
-            name: "DOMModule",
+            name: "SRTDOM",
             dependencies: [
+                .product(name: "Algorithms", package: "swift-algorithms"),
                 .target(name: "SRTCore"),
                 .target(name: "JavaScriptKitShim")
             ],
@@ -79,14 +81,14 @@ let package = Package(
             name: "ReactInterface",
             dependencies: [
                 .target(name: "SRTCore"),
-                .target(name: "DOMModule")
+                .target(name: "SRTDOM")
             ],
             swiftSettings: swiftSettings()
         ),
         .target(
             name: "VDOMModule",
             dependencies: [
-                .target(name: "DOMModule"),
+                .target(name: "SRTDOM"),
                 .target(name: "ReactInterface")
             ],
             swiftSettings: swiftSettings()
@@ -94,7 +96,7 @@ let package = Package(
         .target(
             name: "React",
             dependencies: [
-                .target(name: "DOMModule"),
+                .target(name: "SRTDOM"),
                 .target(name: "VDOMModule")
             ],
             swiftSettings: swiftSettings()
@@ -113,10 +115,11 @@ let package = Package(
             swiftSettings: swiftSettings()
         ),
         .testTarget(
-            name: "DOMModuleTests",
+            name: "SRTDOMTests",
             dependencies: [
                 .target(name: "SRTTestSupport"),
-                .target(name: "DOMModule")
+                .target(name: "SRTDOM"),
+                .target(name: "WebMock")
             ],
             swiftSettings: swiftSettings()
         ),
@@ -132,6 +135,7 @@ let package = Package(
             name: "ReactTests",
             dependencies: [
                 .target(name: "SRTTestSupport"),
+                .target(name: "WebMock"),
                 .target(name: "React")
             ],
             swiftSettings: swiftSettings()

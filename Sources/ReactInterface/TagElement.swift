@@ -1,21 +1,21 @@
-import DOMModule
+import SRTDOM
 
 public struct TagElement: Component {
     public init(
         tagName: String,
-        strings: DOMStringAttributes = [:],
-        eventHandlers: DOMEventHandlerAttributes = [:],
+        attributes: DOMAttributes = [:],
+        eventHandlers: DOMEventHandlerDictionary = [:],
         children: [Node] = []
     ) {
         self.tagName = tagName
-        self.strings = strings
+        self.attributes = attributes
         self.eventHandlers = eventHandlers
         self.children = children
     }
 
     public var tagName: String
-    public var strings: DOMStringAttributes
-    public var eventHandlers: DOMEventHandlerAttributes
+    public var attributes: DOMAttributes
+    public var eventHandlers: DOMEventHandlerDictionary
     public var children: [Node]
 
     public func render() -> Node {

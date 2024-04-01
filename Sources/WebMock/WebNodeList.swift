@@ -20,6 +20,10 @@ public class WebNodeList: JSNativeObject {
         default: .undefined
         }
     }
+
+    public func _get_index(_ index: Int) -> JSValue {
+        self.item(index).jsValue
+    }
 }
 
 extension WebNodeList: RandomAccessCollection {

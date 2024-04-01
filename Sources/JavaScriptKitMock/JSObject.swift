@@ -1,10 +1,14 @@
+public typealias JavaScriptObjectRef = ObjectIdentifier
+
 @dynamicMemberLookup
-public class JSObject: Equatable & ConvertibleToJSValue & ConstructibleFromJSValue {
+public class JSObject: Equatable & Hashable & ConvertibleToJSValue & ConstructibleFromJSValue {
     public init(native: any JSNativeObject) {
         self.native = native
     }
     
     public let native: any JSNativeObject
+
+    public var id: JavaScriptObjectRef { ObjectIdentifier(native) }
 
     public subscript(_ name: String) -> JSValue {
         get { native._get_property(name).jsValue }
@@ -21,8 +25,14 @@ public class JSObject: Equatable & ConvertibleToJSValue & ConstructibleFromJSVal
         set { self[name] = newValue }
     }
 
+    public static var global: JSObject = JSObject(native: JSNativePlainObject())
+
     public static func ==(a: JSObject, b: JSObject) -> Bool {
         a.native === b.native
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 
     public var jsValue: JSValue { .object(self) }

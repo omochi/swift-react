@@ -1,4 +1,4 @@
-import DOMModule
+import SRTDOM
 import ReactInterface
 
 extension VNode {
@@ -10,12 +10,12 @@ extension VNode {
         ghost.component as? TextElement
     }
 
-    public var domTag: DOMTagNode? {
-        dom as? DOMTagNode
+    public var domTag: JSHTMLElement? {
+        dom as? JSHTMLElement
     }
 
-    public var domText: DOMTextNode? {
-        dom as? DOMTextNode
+    public var domText: JSText? {
+        dom as? JSText
     }
 
     public var parentTagNode: VNode? {

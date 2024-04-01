@@ -17,15 +17,11 @@ public final class WebHTMLElement: WebNode {
     }
 
     public func getAttributeNames() -> [String] {
-        Array(_attributes.keys)
+        _attributes.keys.sorted()
     }
 
     public func setAttribute(_ name: String, _ value: String) {
         _attributes[name] = value
-    }
-
-    public func remove() {
-        parentNode?.removeChild(self)
     }
 
     public func removeAttribute(_ name: String) {
@@ -35,8 +31,8 @@ public final class WebHTMLElement: WebNode {
     private func printAttributes(to p: PrettyPrinter) {
         let q = "\""
 
-        for k in _attributes.keys {
-            let v = _attributes[k]!
+        for k in getAttributeNames() {
+            let v = getAttribute(k)!
             p.write(space: " ", "\(k)=\(q)\(v)\(q)")
         }
     }
@@ -67,7 +63,6 @@ public final class WebHTMLElement: WebNode {
         case "getAttribute": JSFunction(Self.getAttribute).jsValue
         case "getAttributeNames": JSFunction(Self.getAttributeNames).jsValue
         case "setAttribute": JSFunction(Self.setAttribute).jsValue
-        case "remove": JSFunction(Self.remove).jsValue
         case "removeAttribute": JSFunction(Self.remove).jsValue
         default: super._get_property(name)
         }

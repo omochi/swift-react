@@ -13,6 +13,11 @@ public class WebNode: JSNativeObject & CustomStringConvertible {
 
     public var firstChild: WebNode? { _childNodes._items.first }
 
+    public var nextSibling: WebNode? { 
+        guard let index = _childNodes.index(of: self) else { return nil }
+        return _childNodes.item(index + 1)
+    }
+
     public var parentNode: WebNode? { _parentNode }
 
     public func appendChild(_ node: WebNode) {
@@ -27,6 +32,10 @@ public class WebNode: JSNativeObject & CustomStringConvertible {
         } else {
             appendChild(node)
         }
+    }
+
+    public func remove() {
+        parentNode?.removeChild(self)
     }
 
     public func removeChild(_ node: WebNode) {
@@ -48,10 +57,12 @@ public class WebNode: JSNativeObject & CustomStringConvertible {
         switch name {
         case "childNodes": childNodes.jsValue
         case "firstChild": firstChild.jsValue
+        case "nextSibling": nextSibling.jsValue
         case "parentNode": parentNode.jsValue
         case "description": description.jsValue
         case "appendChild": JSFunction(Self.appendChild).jsValue
         case "insertBefore": JSFunction(Self.insertBefore).jsValue
+        case "remove": JSFunction(Self.remove).jsValue
         case "removeChild": JSFunction(Self.removeChild).jsValue
         default: .undefined
         }

@@ -1,6 +1,6 @@
 import SRTCore
+import SRTDOM
 import ReactInterface
-import DOMModule
 
 public final class VNode: Hashable {
     public struct Equality: Hashable {
@@ -47,7 +47,7 @@ public final class VNode: Hashable {
 
     public let ghost: Ghost
     public let equality: Equality
-    public var dom: DOMNode?
+    public var dom: JSNode?
 
     public static func ==(a: VNode, b: VNode) -> Bool {
         a.equality == b.equality
@@ -103,12 +103,12 @@ public final class VNode: Hashable {
 
     public static func tag(
         _ name: String,
-        _ strings: DOMStringAttributes = [:],
+        _ attributes: DOMAttributes = [:],
         _ children: [Node] = []
     ) -> VNode {
         let tag = TagElement(
             tagName: name,
-            strings: strings,
+            attributes: attributes,
             children: children
         )
         return component(tag)

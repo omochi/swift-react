@@ -36,3 +36,16 @@ extension Optional: ConstructibleFromJSValue where Wrapped: ConstructibleFromJSV
         }
     }
 }
+
+extension Array: ConstructibleFromJSValue where Element: ConstructibleFromJSValue {
+    public static func construct(from value: JSValue) -> [Element.Constructed]? {
+        guard let object = value.object else { return nil }
+        guard let count = Int.construct(from: object.length) else { return nil }
+        var result: [Element.Constructed] = []
+        for i in 0..<count {
+            guard let element = Element.construct(from: object[i]) else { return nil }
+            result.append(element)
+        }
+        return result
+    }
+}
