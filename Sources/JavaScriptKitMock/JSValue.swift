@@ -65,8 +65,9 @@ public enum JSValue: Equatable & ConvertibleToJSValue & ConstructibleFromJSValue
 
 extension JSValue {
     @_disfavoredOverload
-    public subscript(dynamicMember name: String) -> ((any ConvertibleToJSValue...) -> JSValue) {
-        object![dynamicMember: name]!
+    public subscript(dynamicMember name: String) -> JSFunction {
+        let o: JSFunction? = object![dynamicMember: name]
+        return o!
     }
 
     public subscript(dynamicMember name: String) -> JSValue {

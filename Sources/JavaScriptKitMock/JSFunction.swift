@@ -3,12 +3,13 @@ public class JSFunction: JSObject {
         super.init(native: native)
     }
 
-    public func callAsFunction(this: JSObject? = nil, arguments: [any ConvertibleToJSValue]) -> JSValue {
-        native._call(this: this, arguments: arguments.map { $0.jsValue }).jsValue
+    public func callAsFunction(arguments: [any ConvertibleToJSValue]) -> JSValue {
+        native._call(arguments: arguments.map { $0.jsValue }).jsValue
     }
 
-    public func callAsFunction(this: JSObject? = nil, _ arguments: (any ConvertibleToJSValue)...) -> JSValue {
-        self(this: this, arguments: arguments)
+    @discardableResult
+    public func callAsFunction(_ arguments: (any ConvertibleToJSValue)...) -> JSValue {
+        self(arguments: arguments)
     }
 
     public func new(arguments: [any ConvertibleToJSValue]) -> JSObject {

@@ -34,15 +34,13 @@ public class JSObject: Equatable & ConvertibleToJSValue & ConstructibleFromJSVal
 
 extension JSObject {
     @_disfavoredOverload
-    public subscript(_ name: String) -> ((any ConvertibleToJSValue...) -> JSValue)? {
-        guard let function = self[name].function else { return nil }
-        return { (arguments: (any ConvertibleToJSValue)...) in
-            function(this: self, arguments: arguments)
-        }
+    public subscript(_ name: String) -> JSFunction? {
+        guard let function = self[name].function?.native as? JSNativeFunction else { return nil }
+        return function.bind(self).jsFunction
     }
 
     @_disfavoredOverload
-    public subscript(dynamicMember name: String) -> ((any ConvertibleToJSValue...) -> JSValue)? {
+    public subscript(dynamicMember name: String) -> JSFunction? {
         self[name]
     }
 }
