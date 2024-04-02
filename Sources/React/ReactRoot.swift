@@ -98,7 +98,7 @@ public final class ReactRoot {
                 if let _ = dest {
                     // process on insert
                 } else {
-                    try destroyInstance(node: oldNode)
+                    try updateInstance(newNode: nil, oldNode: oldNode)
                 }
             case .insert(offset: let offset, element: let newNode, associatedWith: let source):
                 for index in nextIndex..<offset {
@@ -110,12 +110,8 @@ public final class ReactRoot {
 
                 patchedOldTree.insert(nil, at: offset)
 
-                if let source {
-                    let oldNode = oldTree[source]
-                    try updateInstance(newNode: newNode, oldNode: oldNode)
-                } else {
-                    try createInstance(node: newNode)
-                }
+                let oldNode = source.map { oldTree[$0] }
+                try updateInstance(newNode: newNode, oldNode: oldNode)
             }
         }
 
@@ -166,59 +162,54 @@ public final class ReactRoot {
         return try prev.dom.unwrap("dom")
     }
 
-    private func destroyInstance(node: VNode) throws {
-        try update(newTree: [], oldTree: node.children)
-        node.dom?.remove()
-    }
+    private func updateInstance(newNode: VNode?, oldNode: VNode?) throws {
+        if let newNode {
+            if let newTag = newNode.tagElement {
+                let dom: JSHTMLElement = if let oldNode {
+                    try oldNode.domTag.unwrap("oldNode.domTag")
+                } else {
+                    document.createElement(newTag.tagName)
+                }
 
-    private func createInstance(node: VNode) throws {
-        if let tag = node.tagElement {
-            let dom = document.createElement(tag.tagName)
-            renderDOMAttributes(
-                dom: dom,
-                newAttributes: tag.attributes,
-                oldAttributes: [:]
-            )
-            // TODO
-//            dom.eventHandlers = tag.eventHandlers
-            node.dom = dom.asNode()
-            try attachDOM(node: node)
-        } else if let text = node.textElement {
-            let dom = document.createTextNode(text.value)
-            node.dom = dom.asNode()
-            try attachDOM(node: node)
-        }
+                let oldTag = try oldNode?.tagElement.unwrap("oldNode.tagElement")
+                renderDOMAttributes(
+                    dom: dom,
+                    newAttributes: newTag.attributes,
+                    oldAttributes: oldTag?.attributes ?? [:]
+                )
+                // TODO
+                //            dom.eventHandlers = tag.eventHandlers
+                newNode.dom = dom.asNode()
+            } else if let text = newNode.textElement {
+                let dom: JSText = try {
+                    if let oldNode {
+                        let dom = try oldNode.domText.unwrap("oldNode.domText")
+                        dom.data = text.value
+                        return dom
+                    } else {
+                        return document.createTextNode(text.value)
+                    }
+                }()
 
-        try update(newTree: node.children, oldTree: [])
-    }
+                newNode.dom = dom.asNode()
+            }
 
-    private func updateInstance(newNode: VNode, oldNode: VNode) throws {
-        if let newTag = newNode.tagElement {
-            let dom = try oldNode.domTag.unwrap("oldNode.domTag")
-            let oldTag = try oldNode.tagElement.unwrap("oldNode.tagElement")
-            renderDOMAttributes(
-                dom: dom,
-                newAttributes: newTag.attributes,
-                oldAttributes: oldTag.attributes
-            )
-            // TODO
-//            dom.eventHandlers = tag.eventHandlers
-            newNode.dom = dom.asNode()
-        } else if let text = newNode.textElement {
-            let dom = try oldNode.domText.unwrap("oldNode.domText")
-            dom.data = text.value
-            newNode.dom = dom.asNode()
-        }
-
-        if let dom = newNode.dom {
-            let location = try domNodeLocation(node: newNode)
-            if location != dom.location {
-                dom.remove()
-                dom.insert(at: location)
+            if let dom = newNode.dom {
+                let location = try domNodeLocation(node: newNode)
+                if location != dom.location {
+                    dom.remove()
+                    dom.insert(at: location)
+                }
             }
         }
 
-        try update(newTree: newNode.children, oldTree: oldNode.children)
+        try update(newTree: newNode?.children ?? [], oldTree: oldNode?.children ?? [])
+
+        if newNode == nil {
+            if let oldNode {
+                oldNode.dom?.remove()
+            }
+        }
     }
 
     private func renderDOMAttributes(
