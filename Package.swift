@@ -16,6 +16,7 @@ func swiftSettings() -> [SwiftSetting] {
     ]
 }
 
+// for development
 let usesJavaScriptKitOnMac = false
 
 let javaScriptKitShimTarget: PackageDescription.Target = {
@@ -28,7 +29,7 @@ let javaScriptKitShimTarget: PackageDescription.Target = {
     } else {
         deps += [
             .product(name: "JavaScriptKit", package: "JavaScriptKit", condition: .when(platforms: [.wasi])),
-            .target(name: "JavaScriptKitMock", condition: .when(platforms: [.macOS]))
+            .target(name: "JavaScriptKitMock", condition: .when(platforms: [.macOS, .linux]))
         ]
     }
 

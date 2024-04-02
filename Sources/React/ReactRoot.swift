@@ -174,8 +174,12 @@ public final class ReactRoot {
     private func createInstance(node: VNode) throws {
         if let tag = node.tagElement {
             let dom = document.createElement(tag.tagName)
+            renderDOMAttributes(
+                dom: dom,
+                newAttributes: tag.attributes,
+                oldAttributes: [:]
+            )
             // TODO
-//            dom.strings = tag.strings
 //            dom.eventHandlers = tag.eventHandlers
             node.dom = dom.asNode()
             try attachDOM(node: node)
@@ -189,10 +193,15 @@ public final class ReactRoot {
     }
 
     private func updateInstance(newNode: VNode, oldNode: VNode) throws {
-        if let tag = newNode.tagElement {
+        if let newTag = newNode.tagElement {
             let dom = try oldNode.domTag.unwrap("oldNode.domTag")
+            let oldTag = try oldNode.tagElement.unwrap("oldNode.tagElement")
+            renderDOMAttributes(
+                dom: dom,
+                newAttributes: newTag.attributes,
+                oldAttributes: oldTag.attributes
+            )
             // TODO
-//            dom.strings = tag.strings
 //            dom.eventHandlers = tag.eventHandlers
             newNode.dom = dom.asNode()
         } else if let text = newNode.textElement {
@@ -210,5 +219,25 @@ public final class ReactRoot {
         }
 
         try update(newTree: newNode.children, oldTree: oldNode.children)
+    }
+
+    private func renderDOMAttributes(
+        dom: JSHTMLElement,
+        newAttributes: DOMAttributes,
+        oldAttributes: DOMAttributes
+    ) {
+        for name in oldAttributes.keys {
+            if newAttributes[name] == nil {
+                dom.removeAttribute(name)
+            }
+        }
+
+        for (name, newValue) in newAttributes {
+            let oldValue = oldAttributes[name]
+
+            if newValue != oldValue {
+                dom.setAttribute(name, newValue)
+            }
+        }
     }
 }

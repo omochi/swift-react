@@ -200,27 +200,26 @@ final class RenderTests: XCTestCase {
         root.render(node: div(["class": "box"]))
         XCTAssertPrint(dom, """
         <body>
-            <div class="box"/>
+            <div class="box" />
         </body>
         """)
     }
 
-    //    func testRenderUpdateAttribute() {
-    //        let dom = DOMTagNode(tagName: "body")
-    //        let root = ReactRoot(element: dom)
-    //        root.render(node: div())
-    //        XCTAssertPrint(dom, """
-    //        <body>
-    //            <div />
-    //        </body>
-    //        """)
-    //
-    //        root.render(node: div(["class": "box"]))
-    //        XCTAssertPrint(dom, """
-    //        <body>
-    //            <div class="box" />
-    //        </body>
-    //        """)
-    //    }
-    //
+    func testRenderUpdateAttribute() {
+        let dom = document.createElement("body")
+        let root = ReactRoot(element: dom)
+        root.render(node: div())
+        XCTAssertPrint(dom, """
+        <body>
+            <div />
+        </body>
+        """)
+
+        root.render(node: div(["class": "box"]))
+        XCTAssertPrint(dom, """
+        <body>
+            <div class="box" />
+        </body>
+        """)
+    }
 }
