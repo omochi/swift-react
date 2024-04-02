@@ -36,7 +36,7 @@ final class RenderTests: XCTestCase {
 //            }
 //        }
 //
-//        let dom = DOMTagNode(tagName: "body")
+//        let dom = document.createElement(tagName: "body")
 //        XCTAssertPrint(dom, """
 //        <body />
 //        """)

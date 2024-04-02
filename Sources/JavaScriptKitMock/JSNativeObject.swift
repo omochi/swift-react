@@ -25,8 +25,8 @@ extension JSNativeObject {
 }
 
 extension JSNativeObject {
-    public static func construct(from value: JSValue) -> Constructed? {
+    public static func construct(from value: JSValue) -> Self? {
         guard let object = value.object else { return nil }
-        return object.native as? Constructed
+        return object.native as? Self
     }
 }

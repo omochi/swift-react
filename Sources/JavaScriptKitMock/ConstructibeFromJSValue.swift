@@ -1,6 +1,5 @@
 public protocol ConstructibleFromJSValue {
-    associatedtype Constructed = Self
-    static func construct(from value: JSValue) -> Constructed?
+    static func construct(from value: JSValue) -> Self?
 }
 
 extension Bool: ConstructibleFromJSValue {
@@ -29,19 +28,21 @@ extension Int: ConstructibleFromJSValue {
 }
 
 extension Optional: ConstructibleFromJSValue where Wrapped: ConstructibleFromJSValue {
-    public static func construct(from value: JSValue) -> Wrapped.Constructed? {
+    public static func construct(from value: JSValue) -> Optional<Wrapped>? {
         switch value {
-        case .null, .undefined: return nil
-        default: return Wrapped.construct(from: value)
+        case .null, .undefined: return .some(nil)
+        default:
+            guard let wrapped = Wrapped.construct(from: value) else { return nil }
+            return .some(wrapped)
         }
     }
 }
 
 extension Array: ConstructibleFromJSValue where Element: ConstructibleFromJSValue {
-    public static func construct(from value: JSValue) -> [Element.Constructed]? {
+    public static func construct(from value: JSValue) -> Array<Element>? {
         guard let object = value.object else { return nil }
         guard let count = Int.construct(from: object.length) else { return nil }
-        var result: [Element.Constructed] = []
+        var result: [Element] = []
         for i in 0..<count {
             guard let element = Element.construct(from: object[i]) else { return nil }
             result.append(element)

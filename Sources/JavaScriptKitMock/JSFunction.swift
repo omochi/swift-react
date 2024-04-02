@@ -60,7 +60,7 @@ extension JSFunction {
         A0: ConstructibleFromJSValue
     >(
         _ selector: @escaping (S) -> (A0) -> Void
-    ) where A0.Constructed == A0 {
+    ) {
         let impl = { (this: JSObject?, arguments: [JSValue]) -> JSValue in
             selector(this!.native as! S)(
                 A0.construct(from: arguments[0])!
@@ -76,7 +76,7 @@ extension JSFunction {
         R: ConvertibleToJSValue
     >(
         _ selector: @escaping (S) -> (A0) -> R
-    ) where A0.Constructed == A0 {
+    ) {
         let impl = { (this: JSObject?, arguments: [JSValue]) -> JSValue in
             selector(this!.native as! S)(
                 A0.construct(from: arguments[0])!
@@ -91,10 +91,7 @@ extension JSFunction {
         A1: ConstructibleFromJSValue
     >(
         _ selector: @escaping (S) -> (A0, A1) -> Void
-    ) where
-        A0.Constructed == A0,
-        A1.Constructed == A1
-    {
+    ) {
         let impl = { (this: JSObject?, arguments: [JSValue]) -> JSValue in
             selector(this!.native as! S)(
                 A0.construct(from: arguments[0])!,
@@ -112,10 +109,7 @@ extension JSFunction {
         R: ConvertibleToJSValue
     >(
         _ selector: @escaping (S) -> (A0, A1) -> R
-    ) where
-        A0.Constructed == A0,
-        A1.Constructed == A1
-    {
+    ) {
         let impl = { (this: JSObject?, arguments: [JSValue]) -> JSValue in
             selector(this!.native as! S)(
                 A0.construct(from: arguments[0])!,

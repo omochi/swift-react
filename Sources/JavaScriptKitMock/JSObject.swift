@@ -41,8 +41,12 @@ public class JSObject: Equatable & Hashable & ConvertibleToJSValue & Constructib
 
     public var jsValue: JSValue { .object(self) }
 
-    public static func construct(from value: JSValue) -> JSObject? {
-        value.object
+    public static func construct(from value: JSValue) -> Self? {
+        switch value {
+        case .object(let x): return x as? Self
+        case .function(let x): return x as? Self
+        default: return nil
+        }
     }
 }
 
