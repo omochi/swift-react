@@ -2,10 +2,15 @@ import Algorithms
 import SRTCore
 import JavaScriptKitShim
 
-public final class JSHTMLElement: JSNode {
-    public override init(jsObject: JSObject) {
-        super.init(jsObject: jsObject)
+public struct JSHTMLElement: CustomStringConvertible {
+    public init(jsObject: JSObject) {
+        self.jsObject = jsObject
     }
+
+    public let jsObject: JSObject
+    public var jsValue: JSValue { .object(jsObject) }
+
+    public func asNode() -> JSNode { JSNode(jsObject: jsObject) }
 
     public var tagName: String {
         .construct(from: jsValue.tagName)!
@@ -27,6 +32,10 @@ public final class JSHTMLElement: JSNode {
         jsValue.removeAttribute(name)
     }
 
+    public var description: String {
+        asNode().description
+    }
+
     private func printAttributes(to p: PrettyPrinter) {
         let q = "\""
 
@@ -36,8 +45,8 @@ public final class JSHTMLElement: JSNode {
         }
     }
 
-    package override func print(to p: PrettyPrinter) {
-        let children = childNodes.compacted()
+    package func print(to p: PrettyPrinter) {
+        let children = asNode().childNodes.compacted()
         if children.isEmpty {
             p.write("<" + tagName)
             printAttributes(to: p)

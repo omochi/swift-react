@@ -13,6 +13,8 @@ public class WebNodeList: JSNativeObject {
         return items[index]
     }
 
+    public var jsValue: JSValue { .object(JSObject(native: self)) }
+
     public func _get_property(_ name: String) -> JSValue {
         switch name {
         case "length": length.jsValue

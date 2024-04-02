@@ -25,6 +25,10 @@ public class JSObject: Equatable & Hashable & ConvertibleToJSValue & Constructib
         set { self[name] = newValue }
     }
 
+    public func isInstanceOf(_ constructor: JSFunction) -> Bool {
+        native._isInstanceOf(constructor)
+    }
+
     public static var global: JSObject = JSObject(native: JSNativePlainObject())
 
     public static func ==(a: JSObject, b: JSObject) -> Bool {

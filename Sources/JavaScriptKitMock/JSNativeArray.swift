@@ -23,6 +23,8 @@ public final class JSNativeArray: JSNativeObject {
         _elements.append(element)
     }
 
+    public var jsValue: JSValue { .object(JSObject(native: self)) }
+
     public func _get_index(_ index: Int) -> JSValue {
         self[index]
     }

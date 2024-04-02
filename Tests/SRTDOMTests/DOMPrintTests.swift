@@ -24,7 +24,7 @@ final class DOMPrintTests: XCTestCase {
         do {
             let html = document.createElement("html")
             let body = document.createElement("body")
-            html.appendChild(body)
+            html.asNode().appendChild(body.asNode())
 
             XCTAssertPrint(html,
             """
@@ -45,27 +45,34 @@ final class DOMPrintTests: XCTestCase {
             """
             )
         }
-//
-//        XCTAssertPrint(
-//            DOMTagNode(tagName: "div", strings: ["class": "box"], children: [
-//                DOMTagNode(tagName: "p")
-//            ]),
-//            """
-//            <div class="box">
-//                <p />
-//            </div>
-//            """
-//        )
-//
-//        XCTAssertPrint(
-//            DOMTagNode(tagName: "p", children: [
-//                DOMTextNode(text: "hello")
-//            ]),
-//            """
-//            <p>
-//                hello
-//            </p>
-//            """
-//        )
+
+        do {
+            let div = document.createElement("div")
+            div.setAttribute("class", "box")
+            let p = document.createElement("p")
+            div.asNode().appendChild(p.asNode())
+
+            XCTAssertPrint(div,
+            """
+            <div class="box">
+                <p />
+            </div>
+            """
+            )
+        }
+
+        do {
+            let p = document.createElement("p")
+            let t = document.createTextNode("hello")
+            p.asNode().appendChild(t.asNode())
+
+            XCTAssertPrint(p,
+            """
+            <p>
+                hello
+            </p>
+            """
+            )
+        }
     }
 }

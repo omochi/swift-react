@@ -1,7 +1,7 @@
 import SRTCore
 import JavaScriptKitShim
 
-public class JSNodeList {
+public struct JSNodeList {
     public init(jsObject: JSObject) {
         self.jsObject = jsObject
     }

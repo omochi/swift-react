@@ -1,6 +1,6 @@
 import JavaScriptKitShim
 
-public class JSDocument {
+public struct JSDocument {
     public init(jsObject: JSObject) {
         self.jsObject = jsObject
     }

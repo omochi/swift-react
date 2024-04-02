@@ -3,6 +3,8 @@ public final class JSNativePlainObject: JSNativeObject {
 
     private var properties: [String: JSValue] = [:]
 
+    public var jsValue: JSValue { .object(JSObject(native: self)) }
+
     public func _get_property(_ name: String) -> JSValue {
         properties[name] ?? .undefined
     }

@@ -14,6 +14,8 @@ public final class JSNativeFunction: JSNativeObject {
         JSNativeFunction(impl: impl, this: this)
     }
 
+    public var jsValue: JSValue { .function(JSFunction(native: self)) }
+
     public func _call(arguments: [JSValue]) -> JSValue {
         impl(this, arguments)
     }

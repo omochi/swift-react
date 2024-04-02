@@ -139,10 +139,10 @@ public final class ReactRoot {
     private func domNodeLocation(node: VNode) throws -> JSNodeLocation {
         let parent = try parentDOM(node: node)
         let prev = try prevSiblingDOM(node: node)
-        return JSNodeLocation(parent: parent, next: prev?.nextSibling)
+        return JSNodeLocation(parent: parent.asNode(), next: prev?.nextSibling)
     }
 
-    private func parentDOM(node: VNode) throws -> JSNode {
+    private func parentDOM(node: VNode) throws -> JSHTMLElement {
         guard let parent = node.parentTagNode else {
             return dom
         }
@@ -167,11 +167,11 @@ public final class ReactRoot {
             // TODO
 //            dom.strings = tag.strings
 //            dom.eventHandlers = tag.eventHandlers
-            node.dom = dom
+            node.dom = dom.asNode()
             try attachDOM(node: node)
         } else if let text = node.textElement {
             let dom = document.createTextNode(text.value)
-            node.dom = dom
+            node.dom = dom.asNode()
             try attachDOM(node: node)
         }
 
@@ -184,11 +184,11 @@ public final class ReactRoot {
             // TODO
 //            dom.strings = tag.strings
 //            dom.eventHandlers = tag.eventHandlers
-            newNode.dom = dom
+            newNode.dom = dom.asNode()
         } else if let text = newNode.textElement {
             let dom = try oldNode.domText.unwrap("oldNode.domText")
             dom.data = text.value
-            newNode.dom = dom
+            newNode.dom = dom.asNode()
         }
 
         if let dom = newNode.dom {

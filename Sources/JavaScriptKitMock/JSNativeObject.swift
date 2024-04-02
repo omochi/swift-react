@@ -7,6 +7,8 @@ public protocol JSNativeObject: ConvertibleToJSValue & ConstructibleFromJSValue 
 
     func _call(arguments: [JSValue]) -> JSValue
     func _new(arguments: [JSValue]) -> JSValue
+
+    func _isInstanceOf(_ constructor: JSFunction) -> Bool
 }
 
 extension JSNativeObject {
@@ -18,11 +20,11 @@ extension JSNativeObject {
 
     public func _call(arguments: [JSValue]) -> JSValue { .undefined }
     public func _new(arguments: [JSValue]) -> JSValue { .undefined }
+
+    public func _isInstanceOf(_ constructor: JSFunction) -> Bool { false }
 }
 
 extension JSNativeObject {
-    public var jsValue: JSValue { .object(JSObject(native: self)) }
-
     public static func construct(from value: JSValue) -> Constructed? {
         guard let object = value.object else { return nil }
         return object.native as? Constructed

@@ -53,6 +53,8 @@ public class WebNode: JSNativeObject & CustomStringConvertible {
         fatalError()
     }
 
+    public var jsValue: JSValue { .object(JSObject(native: self)) }
+
     public func _get_property(_ name: String) -> JSValue {
         switch name {
         case "childNodes": childNodes.jsValue
@@ -66,5 +68,9 @@ public class WebNode: JSNativeObject & CustomStringConvertible {
         case "removeChild": JSFunction(Self.removeChild).jsValue
         default: .undefined
         }
+    }
+
+    public func _isInstanceOf(_ constructor: JSFunction) -> Bool {
+        return false
     }
 }

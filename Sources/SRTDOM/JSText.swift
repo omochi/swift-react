@@ -1,21 +1,26 @@
 import SRTCore
 import JavaScriptKitShim
 
-public final class JSText: JSNode {
-    public override init(jsObject: JSObject) {
-        super.init(jsObject: jsObject)
+public struct JSText {
+    public init(jsObject: JSObject) {
+        self.jsObject = jsObject
     }
+
+    public let jsObject: JSObject
+    public var jsValue: JSValue { .object(jsObject) }
+
+    public func asNode() -> JSNode { JSNode(jsObject: jsObject) }
 
     public var data: String {
         get {
             .construct(from: jsValue.data)!
         }
-        set {
+        nonmutating set {
             jsObject.data = newValue.jsValue
         }
     }
 
-    package override func print(to p: PrettyPrinter) {
+    package func print(to p: PrettyPrinter) {
         p.write(data)
     }
 }

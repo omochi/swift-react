@@ -1,7 +1,7 @@
 import SRTCore
 import JavaScriptKitShim
 
-public class JSNode: Equatable & Hashable & CustomStringConvertible {
+public struct JSNode: Equatable & Hashable & CustomStringConvertible {
     public init(jsObject: JSObject) {
         self.jsObject = jsObject
     }
@@ -9,10 +9,20 @@ public class JSNode: Equatable & Hashable & CustomStringConvertible {
     public let jsObject: JSObject
     public var jsValue: JSValue { .object(jsObject) }
 
-    public static func ==(a: JSNode, b: JSNode) -> Bool { a.jsObject == b.jsObject }
+    public func asHTMLElement() -> JSHTMLElement? {
+        if jsObject.isInstanceOf(JSWindow.global.HTMLElement) {
+           return JSHTMLElement(jsObject: jsObject)
+        } else {
+           return nil
+        }
+    }
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(jsObject)
+    public func asText() -> JSText? {
+        if jsObject.isInstanceOf(JSWindow.global.Text) {
+           return JSText(jsObject: jsObject)
+        } else {
+           return nil
+        }
     }
 
     public var childNodes: JSNodeList {
@@ -58,7 +68,14 @@ public class JSNode: Equatable & Hashable & CustomStringConvertible {
     }
 
     package func print(to p: PrettyPrinter) {
-        fatalError()
+        // 😔
+        if let x = asHTMLElement() {
+            x.print(to: p)
+        } else if let x = asText() {
+            x.print(to: p)
+        } else {
+            fatalError("JSNode.print is unimplemented")
+        }
     }
 
     public var location: JSNodeLocation? {

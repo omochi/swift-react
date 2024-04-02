@@ -11,11 +11,11 @@ extension VNode {
     }
 
     public var domTag: JSHTMLElement? {
-        dom as? JSHTMLElement
+        dom?.asHTMLElement()
     }
 
     public var domText: JSText? {
-        dom as? JSText
+        dom?.asText()
     }
 
     public var parentTagNode: VNode? {
