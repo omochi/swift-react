@@ -16,7 +16,7 @@ public final class WebText: WebNode {
     
     public var data: String
 
-    internal override func print(to p: PrettyPrinter) {
+    internal override func write(to p: PrettyPrinter) {
         p.write(data)
     }
 

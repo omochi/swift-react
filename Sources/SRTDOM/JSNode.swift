@@ -29,6 +29,10 @@ public struct JSNode: Equatable & Hashable & CustomStringConvertible {
         JSNodeList(jsObject: jsValue.childNodes.object!)
     }
 
+    public var firstChild: JSNode? {
+        jsValue.firstChild.object.map(JSNode.init)
+    }
+
     public var nextSibling: JSNode? {
         jsValue.nextSibling.object.map(JSNode.init)
     }
@@ -55,7 +59,7 @@ public struct JSNode: Equatable & Hashable & CustomStringConvertible {
 
     public var description: String {
         let p = PrettyPrinter()
-        print(to: p)
+        write(to: p)
         return p.output
     }
 
@@ -67,12 +71,12 @@ public struct JSNode: Equatable & Hashable & CustomStringConvertible {
         location.parent.insertBefore(self, location.next)
     }
 
-    package func print(to p: PrettyPrinter) {
+    package func write(to p: PrettyPrinter) {
         // 😔
         if let x = asHTMLElement() {
-            x.print(to: p)
+            x.write(to: p)
         } else if let x = asText() {
-            x.print(to: p)
+            x.write(to: p)
         } else {
             fatalError("JSNode.print is unimplemented")
         }

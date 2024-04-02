@@ -20,7 +20,7 @@ public struct JSText {
         }
     }
 
-    package func print(to p: PrettyPrinter) {
+    package func write(to p: PrettyPrinter) {
         p.write(data)
     }
 }

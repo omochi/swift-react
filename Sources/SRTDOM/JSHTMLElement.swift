@@ -36,7 +36,7 @@ public struct JSHTMLElement: CustomStringConvertible {
         asNode().description
     }
 
-    private func printAttributes(to p: PrettyPrinter) {
+    private func writeAttributes(to p: PrettyPrinter) {
         let q = "\""
 
         for k in getAttributeNames() {
@@ -45,21 +45,21 @@ public struct JSHTMLElement: CustomStringConvertible {
         }
     }
 
-    package func print(to p: PrettyPrinter) {
+    package func write(to p: PrettyPrinter) {
         let children = asNode().childNodes.compacted()
         if children.isEmpty {
             p.write("<" + tagName)
-            printAttributes(to: p)
+            writeAttributes(to: p)
             p.write(" />")
             return
         }
 
         p.write("<" + tagName)
-        printAttributes(to: p)
+        writeAttributes(to: p)
         p.write(">")
         p.nest {
             for x in children {
-                x.print(to: p)
+                x.write(to: p)
                 p.writeNewline()
             }
         }

@@ -14,14 +14,16 @@ public class WebNode: JSNativeObject & CustomStringConvertible {
     public var firstChild: WebNode? { _childNodes._items.first }
 
     public var nextSibling: WebNode? { 
-        guard let index = _childNodes.index(of: self) else { return nil }
-        return _childNodes.item(index + 1)
+        guard let parent = _parentNode else { return nil }
+        guard let index = parent._childNodes.index(of: self) else { return nil }
+        return parent._childNodes.item(index + 1)
     }
 
     public var parentNode: WebNode? { _parentNode }
 
     public func appendChild(_ node: WebNode) {
         _childNodes._items.append(node)
+        node._parentNode = self
     }
 
     public func insertBefore(_ node: WebNode, _ ref: WebNode?) {
@@ -29,6 +31,7 @@ public class WebNode: JSNativeObject & CustomStringConvertible {
            let index = _childNodes.index(of: ref)
         {
             _childNodes._items.insert(node, at: index)
+            node._parentNode = self
         } else {
             appendChild(node)
         }
@@ -41,15 +44,16 @@ public class WebNode: JSNativeObject & CustomStringConvertible {
     public func removeChild(_ node: WebNode) {
         guard let index = _childNodes.index(of: node) else { return }
         _childNodes._items.remove(at: index)
+        node._parentNode = nil
     }
 
     public var description: String {
         let p = PrettyPrinter()
-        print(to: p)
+        write(to: p)
         return p.output
     }
 
-    internal func print(to p: PrettyPrinter) {
+    internal func write(to p: PrettyPrinter) {
         fatalError()
     }
 

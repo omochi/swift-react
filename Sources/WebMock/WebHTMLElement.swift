@@ -36,7 +36,7 @@ public final class WebHTMLElement: WebNode {
         _attributes[name] = nil
     }
 
-    private func printAttributes(to p: PrettyPrinter) {
+    private func writeAttributes(to p: PrettyPrinter) {
         let q = "\""
 
         for k in getAttributeNames() {
@@ -45,20 +45,20 @@ public final class WebHTMLElement: WebNode {
         }
     }
 
-    internal override func print(to p: PrettyPrinter) {
+    internal override func write(to p: PrettyPrinter) {
         if childNodes.isEmpty {
             p.write("<" + tagName)
-            printAttributes(to: p)
+            writeAttributes(to: p)
             p.write(" />")
             return
         }
 
         p.write("<" + tagName)
-        printAttributes(to: p)
+        writeAttributes(to: p)
         p.write(">")
         p.nest {
             for x in childNodes {
-                x.print(to: p)
+                x.write(to: p)
                 p.writeNewline()
             }
         }

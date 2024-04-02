@@ -139,7 +139,17 @@ public final class ReactRoot {
     private func domNodeLocation(node: VNode) throws -> JSNodeLocation {
         let parent = try parentDOM(node: node)
         let prev = try prevSiblingDOM(node: node)
-        return JSNodeLocation(parent: parent.asNode(), next: prev?.nextSibling)
+
+        let next = if let prev {
+            prev.nextSibling
+        } else {
+            parent.asNode().firstChild
+        }
+
+        return JSNodeLocation(
+            parent: parent.asNode(),
+            next: next
+        )
     }
 
     private func parentDOM(node: VNode) throws -> JSHTMLElement {
