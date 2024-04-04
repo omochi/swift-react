@@ -2,12 +2,16 @@ import XCTest
 import SRTTestSupport
 import SRTDOM
 import JavaScriptKitShim
-import WebMock
 import React
+#if USES_JAVASCRIPT_KIT_MOCK
+import WebMock
+#endif
 
 final class RenderTests: XCTestCase {
     override func setUp() {
-        JSObject.global = JSObject(native: WebWindow())
+#if USES_JAVASCRIPT_KIT_MOCK
+        WebWindow.initializeJavaScriptKit()
+#endif
 
         document = JSWindow.global.document
     }

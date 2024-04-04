@@ -2,42 +2,35 @@
 
 import PackageDescription
 
-func swiftSettings() -> [SwiftSetting] {
-    return [
-        .enableUpcomingFeature("ForwardTrailingClosures"),
-        .enableUpcomingFeature("ConciseMagicFile"),
-        .enableUpcomingFeature("BareSlashRegexLiterals"),
-        .enableUpcomingFeature("ExistentialAny"),
-        .enableUpcomingFeature("IsolatedDefaultValues"),
-        .enableUpcomingFeature("DeprecateApplicationMain"),
-        .enableUpcomingFeature("DisableOutwardActorInference"),
-        .enableUpcomingFeature("ImportObjcForwardDeclarations"),
-        .enableExperimentalFeature("AccessLevelOnImport")
-    ]
-}
-
 // for development
-let usesJavaScriptKitOnMac = false
+let usesJavaScriptKitMockOnMac = true
 
-let javaScriptKitShimTarget: PackageDescription.Target = {
-    var deps: [PackageDescription.Target.Dependency] = []
+let javaScriptKitMockPlatforms: [Platform] = [
+    usesJavaScriptKitMockOnMac ? .macOS : nil
+].compacted()
 
-    if usesJavaScriptKitOnMac {
-        deps += [
-            .product(name: "JavaScriptKit", package: "JavaScriptKit")
-        ]
-    } else {
-        deps += [
-            .product(name: "JavaScriptKit", package: "JavaScriptKit", condition: .when(platforms: [.wasi])),
-            .target(name: "JavaScriptKitMock", condition: .when(platforms: [.macOS, .linux]))
-        ]
-    }
+let javaScriptKitRealPlatforms: [Platform] = javaScriptKitMockPlatforms.inverted()
 
-    return .target(
-        name: "JavaScriptKitShim",
-        dependencies: deps
+let javaScriptKitMockFlag: SwiftSetting? = javaScriptKitMockPlatforms.isEmpty ? nil :
+    .define("USES_JAVASCRIPT_KIT_MOCK", .when(platforms: javaScriptKitMockPlatforms))
+
+let dependencyToJavaScriptKitReal: Target.Dependency? = javaScriptKitRealPlatforms.isEmpty ? nil :
+    .product(
+        name: "JavaScriptKit", package: "JavaScriptKit",
+        condition: .when(platforms: javaScriptKitRealPlatforms)
     )
-}()
+
+let dependencyToJavaScriptKitMock: Target.Dependency? = javaScriptKitMockPlatforms.isEmpty ? nil :
+    .target(
+        name: "JavaScriptKitMock",
+        condition: .when(platforms: javaScriptKitMockPlatforms)
+    )
+
+let dependencyToWebMock: Target.Dependency? = javaScriptKitMockPlatforms.isEmpty ? nil :
+    .target(
+        name: "WebMock",
+        condition: .when(platforms: javaScriptKitMockPlatforms)
+    )
 
 let package = Package(
     name: "swift-react",
@@ -68,7 +61,14 @@ let package = Package(
             ],
             swiftSettings: swiftSettings()
         ),
-        javaScriptKitShimTarget,
+        .target(
+            name: "JavaScriptKitShim",
+            dependencies: [
+                dependencyToJavaScriptKitReal,
+                dependencyToJavaScriptKitMock
+            ].compacted(),
+            swiftSettings: javaScriptKitMockFlag.asArray()
+        ),
         .target(
             name: "SRTDOM",
             dependencies: [
@@ -120,9 +120,9 @@ let package = Package(
             dependencies: [
                 .target(name: "SRTTestSupport"),
                 .target(name: "SRTDOM"),
-                .target(name: "WebMock")
-            ],
-            swiftSettings: swiftSettings()
+                dependencyToWebMock
+            ].compacted(),
+            swiftSettings: swiftSettings() + javaScriptKitMockFlag.asArray()
         ),
         .testTarget(
             name: "VDOMModuleTests",
@@ -136,10 +136,49 @@ let package = Package(
             name: "ReactTests",
             dependencies: [
                 .target(name: "SRTTestSupport"),
-                .target(name: "WebMock"),
-                .target(name: "React")
-            ],
-            swiftSettings: swiftSettings()
+                .target(name: "React"),
+                dependencyToWebMock
+            ].compacted(),
+            swiftSettings: swiftSettings() + javaScriptKitMockFlag.asArray()
         )
     ]
 )
+
+func swiftSettings() -> [SwiftSetting] {
+    return [
+        .enableUpcomingFeature("ForwardTrailingClosures"),
+        .enableUpcomingFeature("ConciseMagicFile"),
+        .enableUpcomingFeature("BareSlashRegexLiterals"),
+        .enableUpcomingFeature("ExistentialAny"),
+        .enableUpcomingFeature("IsolatedDefaultValues"),
+        .enableUpcomingFeature("DeprecateApplicationMain"),
+        .enableUpcomingFeature("DisableOutwardActorInference"),
+        .enableUpcomingFeature("ImportObjcForwardDeclarations"),
+        .enableExperimentalFeature("AccessLevelOnImport")
+    ]
+}
+
+extension Platform {
+    static let allCases: [Platform] = [
+        .macOS, .macCatalyst, .iOS, .tvOS, .watchOS, .visionOS, .driverKit,
+        .linux, .android, .windows, .wasi, .openbsd
+    ]
+}
+
+extension [Platform] {
+    func inverted() -> [Platform] {
+        Platform.allCases.filter { !contains($0) }
+    }
+}
+
+extension Sequence {
+    func compacted<T>() -> [T] where Element == T? {
+        compactMap { $0 }
+    }
+}
+
+extension Optional {
+    func asArray() -> [Wrapped] {
+        map { [$0] } ?? []
+    }
+}

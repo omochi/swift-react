@@ -1,6 +1,10 @@
 import JavaScriptKitMock
 
 public final class WebWindow: JSNativeObject {
+    public static func initializeJavaScriptKit() {
+        JSObject.global = JSObject(native: WebWindow())
+    }
+
     public init() {
         document = WebDocument()
     }

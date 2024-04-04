@@ -1,11 +1,5 @@
-#if canImport(JavaScriptKitMock)
+#if USES_JAVASCRIPT_KIT_MOCK
 @_exported import JavaScriptKitMock
-#elseif canImport(JavaScriptKit)
-@_exported @_spi(JSObject_id) import JavaScriptKit
-
-extension JSObject: Hashable {
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-}
+#else
+@_exported import JavaScriptKit
 #endif
