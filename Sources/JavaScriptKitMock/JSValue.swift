@@ -14,7 +14,7 @@ public enum JSValue: Equatable & ConvertibleToJSValue & ConstructibleFromJSValue
         default: return nil
         }
     }
-    
+
     public var jsString: JSString? {
         switch self {
         case let .string(x): return x
@@ -62,20 +62,10 @@ public enum JSValue: Equatable & ConvertibleToJSValue & ConstructibleFromJSValue
     }
 }
 
-
 extension JSValue {
-    public subscript(dynamicMember name: String) -> (((any ConvertibleToJSValue)...) -> JSValue) {
-        let obj: JSObject = self.object!
-        let value: JSValue = obj[name]
-        let fn: JSFunction = value.function!
-        return { (arguments: (any ConvertibleToJSValue)...) in
-            fn(this: obj, arguments: arguments)
-        }
-    }
-
     public subscript(dynamicMember name: String) -> JSValue {
-        get { self.object![name] }
-        set { self.object![name] = newValue }
+        get { object![name] }
+        set { object![name] = newValue }
     }
 
     public subscript(_ index: Int) -> JSValue {
