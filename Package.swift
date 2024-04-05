@@ -4,6 +4,11 @@ import PackageDescription
 
 // for development
 let usesJavaScriptKitMockOnMac = true
+let usesLocalJavaScriptKit = false
+
+let javaScriptKitDependency: Package.Dependency = usesLocalJavaScriptKit ?
+    .package(path: "../../swiftwasm/JavaScriptKit") :
+    .package(url: "https://github.com/swiftwasm/JavaScriptKit", from: "0.19.1")
 
 let javaScriptKitMockPlatforms: [Platform] = [
     usesJavaScriptKitMockOnMac ? .macOS : nil
@@ -40,8 +45,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-algorithms", from: "1.2.0"),
-        .package(url: "https://github.com/swiftwasm/JavaScriptKit", from: "0.19.1"),
-        .package(url: "https://github.com/swiftwasm/carton", from: "1.0.0"),
+        javaScriptKitDependency
     ],
     targets: [
         .target(
