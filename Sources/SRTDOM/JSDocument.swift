@@ -1,19 +1,23 @@
 import JavaScriptKitShim
 
-public struct JSDocument {
+public struct JSDocument: ConstructibleFromJSValue {
     public init(jsObject: JSObject) {
         self.jsObject = jsObject
+    }
+
+    public static func construct(from value: JSValue) -> Self? {
+        value.object.map(Self.init(jsObject:))
     }
 
     public let jsObject: JSObject
     public var jsValue: JSValue { .object(jsObject) }
  
-    public func createElement(_ tagName: String) -> JSHTMLElement {
-        JSHTMLElement(jsObject: jsValue.createElement(tagName).object!)
+    public func createElement(_ tagName: String) throws -> JSHTMLElement {
+        .construct(from: try jsValue.throws.createElement(tagName))!
     }
 
-    public func createTextNode(_ data: String) -> JSText {
-        JSText(jsObject: jsValue.createTextNode(data).object!)
+    public func createTextNode(_ data: String) throws -> JSText {
+        .construct(from: try jsValue.throws.createTextNode(data))!
     }
 }
 

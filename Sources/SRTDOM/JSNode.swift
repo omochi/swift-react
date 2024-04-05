@@ -1,9 +1,13 @@
 import SRTCore
 import JavaScriptKitShim
 
-public struct JSNode: Equatable & Hashable & CustomStringConvertible {
+public struct JSNode: Equatable & Hashable & CustomStringConvertible & ConstructibleFromJSValue {
     public init(jsObject: JSObject) {
         self.jsObject = jsObject
+    }
+
+    public static func construct(from value: JSValue) -> Self? {
+        value.object.map(Self.init(jsObject:))
     }
 
     public let jsObject: JSObject
@@ -26,35 +30,35 @@ public struct JSNode: Equatable & Hashable & CustomStringConvertible {
     }
 
     public var childNodes: JSNodeList {
-        JSNodeList(jsObject: jsValue.childNodes.object!)
+        .construct(from: jsValue.childNodes)!
     }
 
     public var firstChild: JSNode? {
-        jsValue.firstChild.object.map(JSNode.init)
+        JSNode?.construct(from: jsValue.firstChild)!
     }
 
     public var nextSibling: JSNode? {
-        jsValue.nextSibling.object.map(JSNode.init)
+        JSNode?.construct(from: jsValue.nextSibling)!
     }
 
     public var parentNode: JSNode? {
-        jsValue.parentNode.object.map(JSNode.init)
+        JSNode?.construct(from: jsValue.parentNode)!
     }
 
-    public func appendChild(_ node: JSNode) {
-        jsValue.appendChild(node.jsObject)
+    public func appendChild(_ node: JSNode) throws {
+        _ = try jsValue.throws.appendChild(node.jsObject)
     }
 
-    public func insertBefore(_ node: JSNode, _ ref: JSNode?) {
-        jsValue.insertBefore(node.jsObject, ref?.jsObject)
+    public func insertBefore(_ node: JSNode, _ ref: JSNode?) throws {
+        _ = try jsValue.throws.insertBefore(node.jsObject, ref?.jsObject)
     }
 
-    public func remove() {
-        jsValue.remove()
+    public func remove() throws {
+        _ = try jsValue.throws.remove()
     }
 
-    public func removeChild(_ node: JSNode) {
-        jsValue.removeChild(node.jsObject)
+    public func removeChild(_ node: JSNode) throws {
+        _ = try jsValue.throws.removeChild(node.jsObject)
     }
 
     public var description: String {
@@ -67,18 +71,22 @@ public struct JSNode: Equatable & Hashable & CustomStringConvertible {
         childNodes.firstIndex { $0 == node }
     }
 
-    package func insert(at location: JSNodeLocation) {
-        location.parent.insertBefore(self, location.next)
+    package func insert(at location: JSNodeLocation) throws {
+        try location.parent.insertBefore(self, location.next)
     }
 
     package func write(to p: PrettyPrinter) {
-        // 😔
-        if let x = asHTMLElement() {
-            x.write(to: p)
-        } else if let x = asText() {
-            x.write(to: p)
-        } else {
-            fatalError("JSNode.print is unimplemented")
+        do {
+            // 😔
+            if let x = asHTMLElement() {
+                try x.write(to: p)
+            } else if let x = asText() {
+                x.write(to: p)
+            } else {
+                fatalError("JSNode.print is unimplemented")
+            }
+        } catch {
+            p.write("(\(error))")
         }
     }
 

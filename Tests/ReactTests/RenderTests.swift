@@ -18,8 +18,8 @@ final class RenderTests: XCTestCase {
 
     var document: JSDocument!
 
-    func testRenderCreate() {
-        let dom = document.createElement("body")
+    func testRenderCreate() throws {
+        let dom = try document.createElement("body")
         XCTAssertPrint(dom, """
         <body />
         """)
@@ -33,14 +33,14 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderSingleTagComponent() {
+    func testRenderSingleTagComponent() throws {
         struct Content: Component {
             func render() -> Node {
                 div()
             }
         }
 
-        let dom = document.createElement("body")
+        let dom = try document.createElement("body")
         XCTAssertPrint(dom, """
         <body />
         """)
@@ -54,8 +54,8 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderGroup1() {
-        let dom = document.createElement("body")
+    func testRenderGroup1() throws {
+        let dom = try document.createElement("body")
         let root = ReactRoot(element: dom)
         root.render(
             node: NodeCollection(
@@ -71,8 +71,8 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderGroup2() {
-        let dom = document.createElement("body")
+    func testRenderGroup2() throws {
+        let dom = try document.createElement("body")
         let root = ReactRoot(element: dom)
         root.render(
             node: NodeCollection(
@@ -105,8 +105,8 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderTree1() {
-        let dom = document.createElement("body")
+    func testRenderTree1() throws {
+        let dom = try document.createElement("body")
         let root = ReactRoot(element: dom)
         root.render(
             node: div {
@@ -153,8 +153,8 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderRootText() {
-        let dom = document.createElement("body")
+    func testRenderRootText() throws {
+        let dom = try document.createElement("body")
         let root = ReactRoot(element: dom)
         root.render(
             node: "hello"
@@ -167,7 +167,7 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderComplexComponent() {
+    func testRenderComplexComponent() throws {
         struct Content: Component {
             func render() -> Node {
                 div {
@@ -177,7 +177,7 @@ final class RenderTests: XCTestCase {
             }
         }
 
-        let dom = document.createElement("body")
+        let dom = try document.createElement("body")
         XCTAssertPrint(dom, """
         <body />
         """)
@@ -198,8 +198,8 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderAttribute() {
-        let dom = document.createElement("body")
+    func testRenderAttribute() throws {
+        let dom = try document.createElement("body")
         let root = ReactRoot(element: dom)
         root.render(node: div(["class": "box"]))
         XCTAssertPrint(dom, """
@@ -209,8 +209,8 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderUpdateAttribute() {
-        let dom = document.createElement("body")
+    func testRenderUpdateAttribute() throws {
+        let dom = try document.createElement("body")
         let root = ReactRoot(element: dom)
         root.render(node: div())
         XCTAssertPrint(dom, """

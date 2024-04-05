@@ -3,12 +3,12 @@ public class JSFunction: JSObject {
         super.init(native: native)
     }
 
-    public func callAsFunction(arguments: [any ConvertibleToJSValue]) -> JSValue {
-        native._call(arguments: arguments.map { $0.jsValue }).jsValue
+    public func callAsFunction(this: JSObject? = nil, arguments: [any ConvertibleToJSValue]) -> JSValue {
+        native._call(this: this, arguments: arguments.map { $0.jsValue }).jsValue
     }
 
     @discardableResult
-    public func callAsFunction(_ arguments: (any ConvertibleToJSValue)...) -> JSValue {
+    public func callAsFunction(this: JSObject? = nil, _ arguments: (any ConvertibleToJSValue)...) -> JSValue {
         self(arguments: arguments)
     }
 
@@ -21,6 +21,10 @@ public class JSFunction: JSObject {
     }
 
     public override var jsValue: JSValue { .function(self) }
+
+    public var `throws`: JSThrowingFunction {
+        JSThrowingFunction(self)
+    }
 }
 
 extension JSFunction {

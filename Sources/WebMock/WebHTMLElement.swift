@@ -13,7 +13,7 @@ public final class WebHTMLElement: WebNode {
     public init(
         _ tagName: String
     ) {
-        self.tagName = tagName
+        self.tagName = tagName.uppercased()
     }
 
     public let tagName: String
@@ -46,6 +46,8 @@ public final class WebHTMLElement: WebNode {
     }
 
     internal override func write(to p: PrettyPrinter) {
+        let tagName = self.tagName.lowercased()
+
         if childNodes.isEmpty {
             p.write("<" + tagName)
             writeAttributes(to: p)

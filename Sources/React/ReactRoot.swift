@@ -129,7 +129,7 @@ public final class ReactRoot {
             throw MessageError("dom already attached")
         }
         let location = try self.domNodeLocation(node: node)
-        dom.insert(at: location)
+        try dom.insert(at: location)
     }
 
     private func domNodeLocation(node: VNode) throws -> JSNodeLocation {
@@ -168,11 +168,11 @@ public final class ReactRoot {
                 let dom: JSHTMLElement = if let oldNode {
                     try oldNode.domTag.unwrap("oldNode.domTag")
                 } else {
-                    document.createElement(newTag.tagName)
+                    try document.createElement(newTag.tagName)
                 }
 
                 let oldTag = try oldNode?.tagElement.unwrap("oldNode.tagElement")
-                renderDOMAttributes(
+                try renderDOMAttributes(
                     dom: dom,
                     newAttributes: newTag.attributes,
                     oldAttributes: oldTag?.attributes ?? [:]
@@ -187,7 +187,7 @@ public final class ReactRoot {
                         dom.data = text.value
                         return dom
                     } else {
-                        return document.createTextNode(text.value)
+                        return try document.createTextNode(text.value)
                     }
                 }()
 
@@ -197,8 +197,8 @@ public final class ReactRoot {
             if let dom = newNode.dom {
                 let location = try domNodeLocation(node: newNode)
                 if location != dom.location {
-                    dom.remove()
-                    dom.insert(at: location)
+                    try dom.remove()
+                    try dom.insert(at: location)
                 }
             }
         }
@@ -207,7 +207,7 @@ public final class ReactRoot {
 
         if newNode == nil {
             if let oldNode {
-                oldNode.dom?.remove()
+                try oldNode.dom?.remove()
             }
         }
     }
@@ -216,10 +216,10 @@ public final class ReactRoot {
         dom: JSHTMLElement,
         newAttributes: DOMAttributes,
         oldAttributes: DOMAttributes
-    ) {
+    ) throws {
         for name in oldAttributes.keys {
             if newAttributes[name] == nil {
-                dom.removeAttribute(name)
+                try dom.removeAttribute(name)
             }
         }
 
@@ -227,7 +227,7 @@ public final class ReactRoot {
             let oldValue = oldAttributes[name]
 
             if newValue != oldValue {
-                dom.setAttribute(name, newValue)
+                try dom.setAttribute(name, newValue)
             }
         }
     }

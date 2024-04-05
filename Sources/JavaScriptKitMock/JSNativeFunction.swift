@@ -1,22 +1,15 @@
 public final class JSNativeFunction: JSNativeObject {
     public init(
-        impl: @escaping (JSObject?, [JSValue]) -> JSValue,
-        this: JSObject? = nil
+        impl: @escaping (JSObject?, [JSValue]) -> JSValue
     ) {
         self.impl = impl
-        self.this = this
     }
 
     private let impl: (JSObject?, [JSValue]) -> JSValue
-    private let this: JSObject?
-
-    public func bind(_ this: JSObject) -> JSNativeFunction {
-        JSNativeFunction(impl: impl, this: this)
-    }
 
     public var jsValue: JSValue { .function(JSFunction(native: self)) }
 
-    public func _call(arguments: [JSValue]) -> JSValue {
+    public func _call(this: JSObject?, arguments: [JSValue]) -> JSValue {
         impl(this, arguments)
     }
 

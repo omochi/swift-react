@@ -41,24 +41,13 @@ public class JSObject: Equatable & Hashable & ConvertibleToJSValue & Constructib
 
     public var jsValue: JSValue { .object(self) }
 
+    public var throwing: JSThrowingObject { .init(self) }
+
     public static func construct(from value: JSValue) -> Self? {
         switch value {
         case .object(let x): return x as? Self
         case .function(let x): return x as? Self
         default: return nil
         }
-    }
-}
-
-extension JSObject {
-    @_disfavoredOverload
-    public subscript(_ name: String) -> JSFunction? {
-        guard let function = self[name].function?.native as? JSNativeFunction else { return nil }
-        return function.bind(self).jsFunction
-    }
-
-    @_disfavoredOverload
-    public subscript(dynamicMember name: String) -> JSFunction? {
-        self[name]
     }
 }

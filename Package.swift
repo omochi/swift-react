@@ -1,4 +1,4 @@
-// swift-tools-version: 5.10
+// swift-tools-version: 5.9
 
 import PackageDescription
 
@@ -41,6 +41,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-algorithms", from: "1.2.0"),
         .package(url: "https://github.com/swiftwasm/JavaScriptKit", from: "0.19.1"),
+        .package(url: "https://github.com/swiftwasm/carton", from: "1.0.0"),
     ],
     targets: [
         .target(

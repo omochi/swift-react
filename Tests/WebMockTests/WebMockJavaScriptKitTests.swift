@@ -8,15 +8,15 @@ final class WebMockJavaScriptKitTests: XCTestCase {
         let window = JSObject(native: WebWindow())
         let document = window.document
         let div = document.createElement("div")
-        div.setAttribute("class", "box")
+        _ = div.setAttribute("class", "box")
         let h1 = document.createElement("h1")
-        div.appendChild(h1)
+        _ = div.appendChild(h1)
         let title = document.createTextNode("hello world")
-        h1.appendChild(title)
+        _ = h1.appendChild(title)
         let button = document.createElement("button")
-        div.appendChild(button)
+        _ = div.appendChild(button)
         let label = document.createTextNode("login")
-        button.appendChild(label)
+        _ = button.appendChild(label)
         XCTAssertEqual(div.description.string!,
         """
         <div class="box">

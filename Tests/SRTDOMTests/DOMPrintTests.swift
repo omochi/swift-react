@@ -17,18 +17,18 @@ final class DOMPrintTests: XCTestCase {
 
     var document: JSDocument!
 
-    func testPrints() {
+    func testPrints() throws {
         do {
-            let html = document.createElement("html")
+            let html = try document.createElement("html")
             XCTAssertPrint(html,
             "<html />"
             )
         }
 
         do {
-            let html = document.createElement("html")
-            let body = document.createElement("body")
-            html.asNode().appendChild(body.asNode())
+            let html = try document.createElement("html")
+            let body = try document.createElement("body")
+            try html.asNode().appendChild(body.asNode())
 
             XCTAssertPrint(html,
             """
@@ -40,8 +40,8 @@ final class DOMPrintTests: XCTestCase {
         }
 
         do {
-            let div = document.createElement("div")
-            div.setAttribute("class", "box")
+            let div = try document.createElement("div")
+            try div.setAttribute("class", "box")
 
             XCTAssertPrint(div,
             """
@@ -51,10 +51,10 @@ final class DOMPrintTests: XCTestCase {
         }
 
         do {
-            let div = document.createElement("div")
-            div.setAttribute("class", "box")
-            let p = document.createElement("p")
-            div.asNode().appendChild(p.asNode())
+            let div = try document.createElement("div")
+            try div.setAttribute("class", "box")
+            let p = try document.createElement("p")
+            try div.asNode().appendChild(p.asNode())
 
             XCTAssertPrint(div,
             """
@@ -66,9 +66,9 @@ final class DOMPrintTests: XCTestCase {
         }
 
         do {
-            let p = document.createElement("p")
-            let t = document.createTextNode("hello")
-            p.asNode().appendChild(t.asNode())
+            let p = try document.createElement("p")
+            let t = try document.createTextNode("hello")
+            try p.asNode().appendChild(t.asNode())
 
             XCTAssertPrint(p,
             """
