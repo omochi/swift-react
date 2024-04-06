@@ -1,9 +1,10 @@
 import SRTCore
 import JavaScriptKitMock
 
-public class WebNode: JSNativeObject & CustomStringConvertible {
-    public init() {
+public class WebNode: WebEventTarget & CustomStringConvertible {
+    public override init() {
         self._childNodes = WebMutableNodeList()
+        super.init()
     }
 
     private let _childNodes: WebMutableNodeList
@@ -56,9 +57,7 @@ public class WebNode: JSNativeObject & CustomStringConvertible {
         fatalError()
     }
 
-    public var jsValue: JSValue { .object(JSObject(native: self)) }
-
-    public func _get_property(_ name: String) -> JSValue {
+    public override func _get_property(_ name: String) -> JSValue {
         switch name {
         case "childNodes": childNodes.jsValue
         case "firstChild": firstChild.jsValue
@@ -69,11 +68,7 @@ public class WebNode: JSNativeObject & CustomStringConvertible {
         case "insertBefore": JSFunction(Self.insertBefore).jsValue
         case "remove": JSFunction(Self.remove).jsValue
         case "removeChild": JSFunction(Self.removeChild).jsValue
-        default: .undefined
+        default: super._get_property(name)
         }
-    }
-
-    public func _isInstanceOf(_ constructor: JSFunction) -> Bool {
-        return false
     }
 }

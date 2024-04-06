@@ -1,1 +1,1 @@
-public typealias DOMEventHandlerDictionary = [String: DOMEventHandler]
+public typealias DOMEventHandlerDictionary = [String: DOMEventListener]
