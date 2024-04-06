@@ -1,5 +1,16 @@
+import SRTCore
+
 public protocol ConstructibleFromJSValue {
     static func construct(from value: JSValue) -> Self?
+}
+
+extension ConstructibleFromJSValue {
+    internal static func _mustConstruct(from jsValue: JSValue) throws -> Self {
+        guard let value = construct(from: jsValue) else {
+            throw MessageError("failed to construct \(Self.self), value was \(jsValue)")
+        }
+        return value
+    }
 }
 
 extension Bool: ConstructibleFromJSValue {

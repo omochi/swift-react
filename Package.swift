@@ -8,7 +8,7 @@ let usesLocalJavaScriptKit = false
 
 let javaScriptKitDependency: Package.Dependency = usesLocalJavaScriptKit ?
     .package(path: "../../swiftwasm/JavaScriptKit") :
-    .package(url: "https://github.com/swiftwasm/JavaScriptKit", from: "0.19.1")
+    .package(url: "https://github.com/swiftwasm/JavaScriptKit", branch: "main")
 
 let javaScriptKitMockPlatforms: [Platform] = [
     usesJavaScriptKitMockOnMac ? .macOS : nil
@@ -72,14 +72,21 @@ let package = Package(
                 dependencyToJavaScriptKitReal,
                 dependencyToJavaScriptKitMock
             ].compacted(),
-            swiftSettings: javaScriptKitMockFlag.asArray()
+            swiftSettings: swiftSettings() + javaScriptKitMockFlag.asArray()
+        ),
+        .target(
+            name: "SRTJavaScriptKitEx",
+            dependencies: [
+                .target(name: "JavaScriptKitShim")
+            ],
+            swiftSettings: swiftSettings()
         ),
         .target(
             name: "SRTDOM",
             dependencies: [
                 .product(name: "Algorithms", package: "swift-algorithms"),
                 .target(name: "SRTCore"),
-                .target(name: "JavaScriptKitShim")
+                .target(name: "SRTJavaScriptKitEx")
             ],
             swiftSettings: swiftSettings()
         ),

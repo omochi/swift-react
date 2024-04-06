@@ -1,5 +1,5 @@
 import SRTCore
-import JavaScriptKitShim
+import SRTJavaScriptKitEx
 
 public struct JSNode: Equatable & Hashable & CustomStringConvertible & ConstructibleFromJSValue {
     public init(jsObject: JSObject) {
@@ -30,19 +30,19 @@ public struct JSNode: Equatable & Hashable & CustomStringConvertible & Construct
     }
 
     public var childNodes: JSNodeList {
-        .construct(from: jsValue.childNodes)!
+        .constructProperty(from: jsValue.childNodes)
     }
 
     public var firstChild: JSNode? {
-        JSNode?.construct(from: jsValue.firstChild)!
+        .constructProperty(from: jsValue.firstChild)
     }
 
     public var nextSibling: JSNode? {
-        JSNode?.construct(from: jsValue.nextSibling)!
+        .constructProperty(from: jsValue.nextSibling)
     }
 
     public var parentNode: JSNode? {
-        JSNode?.construct(from: jsValue.parentNode)!
+        .constructProperty(from: jsValue.parentNode)
     }
 
     public func appendChild(_ node: JSNode) throws {

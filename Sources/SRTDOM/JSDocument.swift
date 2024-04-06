@@ -1,4 +1,4 @@
-import JavaScriptKitShim
+import SRTJavaScriptKitEx
 
 public struct JSDocument: ConstructibleFromJSValue {
     public init(jsObject: JSObject) {
@@ -13,11 +13,11 @@ public struct JSDocument: ConstructibleFromJSValue {
     public var jsValue: JSValue { .object(jsObject) }
  
     public func createElement(_ tagName: String) throws -> JSHTMLElement {
-        .construct(from: try jsValue.throws.createElement(tagName))!
+        try .mustConstruct(from: try jsValue.throws.createElement(tagName))
     }
 
     public func createTextNode(_ data: String) throws -> JSText {
-        .construct(from: try jsValue.throws.createTextNode(data))!
+        try .mustConstruct(from: try jsValue.throws.createTextNode(data))
     }
 }
 

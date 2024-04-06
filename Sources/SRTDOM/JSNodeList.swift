@@ -1,5 +1,5 @@
 import SRTCore
-import JavaScriptKitShim
+import SRTJavaScriptKitEx
 
 public struct JSNodeList: ConstructibleFromJSValue {
     public init(jsObject: JSObject) {
@@ -14,15 +14,15 @@ public struct JSNodeList: ConstructibleFromJSValue {
     public var jsValue: JSValue { .object(jsObject) }
 
     public var length: Int {
-        .construct(from: jsValue.length)!
+        .constructProperty(from: jsValue.length)
     }
 
     public func item(_ index: Int) throws -> JSNode? {
-        JSNode?.construct(from: try jsValue.throws.item(index))!
+        try .mustConstruct(from: try jsValue.throws.item(index))
     }
 
     public subscript(index: Int) -> JSNode? {
-        JSNode?.construct(from: jsValue[index])!
+        .constructProperty(from: jsValue[index])
     }
 }
 

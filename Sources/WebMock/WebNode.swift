@@ -26,10 +26,9 @@ public class WebNode: JSNativeObject & CustomStringConvertible {
         node._parentNode = self
     }
 
-    public func insertBefore(_ node: WebNode, _ ref: WebNode?) {
-        if let ref,
-           let index = _childNodes.index(of: ref)
-        {
+    public func insertBefore(_ node: WebNode, _ ref: WebNode?) throws {
+        if let ref {
+            let index = try _childNodes.index(of: ref).unwrap("ref")
             _childNodes._items.insert(node, at: index)
             node._parentNode = self
         } else {

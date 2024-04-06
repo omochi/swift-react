@@ -6,7 +6,7 @@ public class JSThrowingFunction {
     }
 
     public func callAsFunction(this: JSObject? = nil, arguments: [any ConvertibleToJSValue]) throws -> JSValue {
-        base(this: this, arguments: arguments)
+        try base.callNative(this: this, arguments: arguments)
     }
 
     @discardableResult
@@ -15,7 +15,7 @@ public class JSThrowingFunction {
     }
 
     public func new(arguments: [any ConvertibleToJSValue]) throws -> JSObject {
-        base.new(arguments: arguments)
+        try base.newNative(arguments: arguments)
     }
 
     public func new(_ arguments: (any ConvertibleToJSValue)...) throws -> JSObject {

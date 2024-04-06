@@ -1,6 +1,6 @@
 import Algorithms
 import SRTCore
-import JavaScriptKitShim
+import SRTJavaScriptKitEx
 
 public struct JSHTMLElement: ConstructibleFromJSValue & CustomStringConvertible {
     public init(jsObject: JSObject) {
@@ -17,15 +17,15 @@ public struct JSHTMLElement: ConstructibleFromJSValue & CustomStringConvertible 
     public func asNode() -> JSNode { JSNode(jsObject: jsObject) }
 
     public var tagName: String {
-        .construct(from: jsValue.tagName)!
+        .constructProperty(from: jsValue.tagName)
     }
 
     public func getAttribute(_ name: String) throws -> String? {
-        String?.construct(from: try jsValue.throws.getAttribute(name))!
+        try .mustConstruct(from: try jsValue.throws.getAttribute(name))
     }
 
     public func getAttributeNames() throws -> [String] {
-        [String].construct(from: try jsValue.throws.getAttributeNames())!
+        try .mustConstruct(from: try jsValue.throws.getAttributeNames())
     }
 
     public func setAttribute(_ name: String, _ value: String) throws {
@@ -44,14 +44,14 @@ public struct JSHTMLElement: ConstructibleFromJSValue & CustomStringConvertible 
         let q = "\""
 
         for k in try getAttributeNames() {
-            let v = try getAttribute(k)!
+            let v = try getAttribute(k).unwrap("attribute \(k)")
             p.write(space: " ", "\(k)=\(q)\(v)\(q)")
         }
     }
 
     package func write(to p: PrettyPrinter) throws {
         let tagName = self.tagName.lowercased()
-        
+
         let children = asNode().childNodes.compacted()
         if children.isEmpty {
             p.write("<" + tagName)

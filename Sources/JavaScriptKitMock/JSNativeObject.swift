@@ -5,8 +5,8 @@ public protocol JSNativeObject: ConvertibleToJSValue & ConstructibleFromJSValue 
     func _get_index(_ index: Int) -> JSValue
     func _set_index(_ index: Int, _ value: JSValue)
 
-    func _call(this: JSObject?, arguments: [JSValue]) -> JSValue
-    func _new(arguments: [JSValue]) -> JSValue
+    func _call(this: JSObject?, arguments: [JSValue]) throws -> JSValue
+    func _new(arguments: [JSValue]) throws -> JSObject
 
     func _isInstanceOf(_ constructor: JSFunction) -> Bool
 }
@@ -18,8 +18,10 @@ extension JSNativeObject {
     public func _get_index(_ index: Int) -> JSValue { .undefined }
     public func _set_index(_ index: Int, _ value: JSValue) { }
 
-    public func _call(this: JSObject?, arguments: [JSValue]) -> JSValue { .undefined }
-    public func _new(arguments: [JSValue]) -> JSValue { .undefined }
+    public func _call(this: JSObject?, arguments: [JSValue]) throws -> JSValue { .undefined }
+    public func _new(arguments: [JSValue]) throws -> JSObject {
+        JSObject(native: JSNativePlainObject())
+    }
 
     public func _isInstanceOf(_ constructor: JSFunction) -> Bool { false }
 }

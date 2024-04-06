@@ -17,7 +17,7 @@ public struct JSText: ConstructibleFromJSValue {
 
     public var data: String {
         get {
-            .construct(from: jsValue.data)!
+            .constructProperty(from: jsValue.data)
         }
         nonmutating set {
             jsObject.data = newValue.jsValue

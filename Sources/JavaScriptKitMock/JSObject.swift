@@ -1,3 +1,5 @@
+import SRTCore
+
 public typealias JavaScriptObjectRef = ObjectIdentifier
 
 @dynamicMemberLookup
@@ -49,5 +51,13 @@ public class JSObject: Equatable & Hashable & ConvertibleToJSValue & Constructib
         case .function(let x): return x as? Self
         default: return nil
         }
+    }
+
+    internal func castNative<S>(to toType: S.Type) throws -> S {
+        guard let value = native as? S else {
+            let fromType = type(of: native)
+            throw MessageError("failed to cast to \(toType), value was \(fromType)")
+        }
+        return value
     }
 }
