@@ -136,10 +136,14 @@ public final class ReactRoot {
         let parent = try parentDOM(node: node)
         let prev = try prevSiblingDOM(node: node)
 
-        let next = if let prev {
+        var next: JSNode? = if let prev {
             prev.nextSibling
         } else {
             parent.asNode().firstChild
+        }
+
+        if let n = next, n == node.dom {
+            next = n.nextSibling
         }
 
         return JSNodeLocation(
