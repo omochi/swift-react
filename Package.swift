@@ -77,9 +77,10 @@ let package = Package(
         .target(
             name: "SRTJavaScriptKitEx",
             dependencies: [
+                .target(name: "SRTCore"),
                 .target(name: "JavaScriptKitShim")
             ],
-            swiftSettings: swiftSettings()
+            swiftSettings: swiftSettings() + javaScriptKitMockFlag.asArray()
         ),
         .target(
             name: "SRTDOM",
@@ -118,6 +119,14 @@ let package = Package(
             name: "SRTTestSupport",
             dependencies: [
             ]
+        ),
+        .testTarget(
+            name: "JavaScriptKitTests",
+            dependencies: [
+                .target(name: "SRTTestSupport"),
+                .target(name: "SRTJavaScriptKitEx")
+            ],
+            swiftSettings: swiftSettings()
         ),
         .testTarget(
             name: "WebMockTests",

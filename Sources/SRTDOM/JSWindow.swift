@@ -12,10 +12,10 @@ public struct JSWindow: ConstructibleFromJSValue {
     public let jsObject: JSObject
     public var jsValue: JSValue { .object(jsObject) }
 
-    public var HTMLElement: JSFunction { .constructProperty(from: jsValue.HTMLElement) }
-    public var Text: JSFunction { .constructProperty(from: jsValue.Text) }
+    public var HTMLElement: JSFunction { .unsafeConstruct(from: jsValue.HTMLElement) }
+    public var Text: JSFunction { .unsafeConstruct(from: jsValue.Text) }
 
-    public var document: JSDocument { .constructProperty(from: jsValue.document) }
+    public var document: JSDocument { .unsafeConstruct(from: jsValue.document) }
 
     public static var global: JSWindow {
         JSWindow(jsObject: JSObject.global)

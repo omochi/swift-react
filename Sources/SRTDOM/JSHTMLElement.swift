@@ -17,7 +17,7 @@ public struct JSHTMLElement: ConstructibleFromJSValue & CustomStringConvertible 
     public func asNode() -> JSNode { JSNode(jsObject: jsObject) }
 
     public var tagName: String {
-        .constructProperty(from: jsValue.tagName)
+        .unsafeConstruct(from: jsValue.tagName)
     }
 
     public func getAttribute(_ name: String) throws -> String? {

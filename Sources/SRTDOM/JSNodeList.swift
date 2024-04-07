@@ -14,7 +14,7 @@ public struct JSNodeList: ConstructibleFromJSValue {
     public var jsValue: JSValue { .object(jsObject) }
 
     public var length: Int {
-        .constructProperty(from: jsValue.length)
+        .unsafeConstruct(from: jsValue.length)
     }
 
     public func item(_ index: Int) throws -> JSNode? {
@@ -22,7 +22,7 @@ public struct JSNodeList: ConstructibleFromJSValue {
     }
 
     public subscript(index: Int) -> JSNode? {
-        .constructProperty(from: jsValue[index])
+        .unsafeConstruct(from: jsValue[index])
     }
 }
 

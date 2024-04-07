@@ -30,19 +30,19 @@ public struct JSNode: Equatable & Hashable & CustomStringConvertible & Construct
     }
 
     public var childNodes: JSNodeList {
-        .constructProperty(from: jsValue.childNodes)
+        .unsafeConstruct(from: jsValue.childNodes)
     }
 
     public var firstChild: JSNode? {
-        .constructProperty(from: jsValue.firstChild)
+        .unsafeConstruct(from: jsValue.firstChild)
     }
 
     public var nextSibling: JSNode? {
-        .constructProperty(from: jsValue.nextSibling)
+        .unsafeConstruct(from: jsValue.nextSibling)
     }
 
     public var parentNode: JSNode? {
-        .constructProperty(from: jsValue.parentNode)
+        .unsafeConstruct(from: jsValue.parentNode)
     }
 
     public func appendChild(_ node: JSNode) throws {

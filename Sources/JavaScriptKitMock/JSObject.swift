@@ -60,4 +60,9 @@ public class JSObject: Equatable & Hashable & ConvertibleToJSValue & Constructib
         }
         return value
     }
+
+    // 本家にこれが無いけど
+    public func _call(this: JSObject? = nil, arguments: [any ConvertibleToJSValue]) throws -> JSValue {
+        try native._call(this: this, arguments: arguments.map { $0.jsValue })
+    }
 }
