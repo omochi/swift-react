@@ -220,4 +220,10 @@ final class RenderTests: XCTestCase {
         </body>
         """)
     }
+
+    func testRenderEventListener() throws {
+        
+
+
+    }
 }

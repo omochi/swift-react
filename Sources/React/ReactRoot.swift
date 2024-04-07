@@ -181,8 +181,11 @@ public final class ReactRoot {
                     newAttributes: newTag.attributes,
                     oldAttributes: oldTag?.attributes ?? [:]
                 )
-                // TODO
-                //            dom.eventHandlers = tag.eventHandlers
+                try renderDOMEventListeners(
+                    dom: dom,
+                    newListeners: newTag.listeners,
+                    oldListeners: oldTag?.listeners ?? [:]
+                )
                 newNode.dom = dom.asNode()
             } else if let text = newNode.textElement {
                 let dom: JSText = try {
@@ -228,10 +231,26 @@ public final class ReactRoot {
         }
 
         for (name, newValue) in newAttributes {
-            let oldValue = oldAttributes[name]
-
-            if newValue != oldValue {
+            if newValue != oldAttributes[name] {
                 try dom.setAttribute(name, newValue)
+            }
+        }
+    }
+
+    private func renderDOMEventListeners(
+        dom: JSHTMLElement,
+        newListeners: DOMEventListeners,
+        oldListeners: DOMEventListeners
+    ) throws {
+        for (type, oldListener) in oldListeners {
+            if oldListener != newListeners[type] {
+                try dom.removeEventListener(type, oldListener)
+            }
+        }
+
+        for (type, newListener) in newListeners {
+            if newListener != oldListeners[type] {
+                try dom.addEventListener(type, newListener)
             }
         }
     }

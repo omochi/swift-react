@@ -21,4 +21,4 @@ public struct DOMEventListener: Hashable & ConvertibleToJSFunction & Constructib
     }
 }
 
-public typealias DOMEventListeners = [String: JSFunction]
+public typealias DOMEventListeners = [String: DOMEventListener]
