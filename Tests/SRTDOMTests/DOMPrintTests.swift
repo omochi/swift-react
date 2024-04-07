@@ -28,7 +28,7 @@ final class DOMPrintTests: XCTestCase {
         do {
             let html = try document.createElement("html")
             let body = try document.createElement("body")
-            try html.asNode().appendChild(body.asNode())
+            try html.appendChild(body)
 
             XCTAssertPrint(html,
             """
@@ -54,7 +54,7 @@ final class DOMPrintTests: XCTestCase {
             let div = try document.createElement("div")
             try div.setAttribute("class", "box")
             let p = try document.createElement("p")
-            try div.asNode().appendChild(p.asNode())
+            try div.appendChild(p)
 
             XCTAssertPrint(div,
             """
@@ -68,7 +68,7 @@ final class DOMPrintTests: XCTestCase {
         do {
             let p = try document.createElement("p")
             let t = try document.createTextNode("hello")
-            try p.asNode().appendChild(t.asNode())
+            try p.appendChild(t)
 
             XCTAssertPrint(p,
             """

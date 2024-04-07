@@ -8,4 +8,11 @@ public class WebEvent: JSNativeObject {
     }
 
     public let type: String
+
+    public func _get_property(_ name: String) -> JSValue {
+        switch name {
+        case "type": type.jsValue
+        default: .undefined
+        }
+    }
 }

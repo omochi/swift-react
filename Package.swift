@@ -50,6 +50,9 @@ let package = Package(
     targets: [
         .target(
             name: "SRTCore",
+            dependencies: [
+                .product(name: "Algorithms", package: "swift-algorithms")
+            ],
             swiftSettings: swiftSettings()
         ),
         .target(
@@ -85,7 +88,6 @@ let package = Package(
         .target(
             name: "SRTDOM",
             dependencies: [
-                .product(name: "Algorithms", package: "swift-algorithms"),
                 .target(name: "SRTCore"),
                 .target(name: "SRTJavaScriptKitEx")
             ],
@@ -118,6 +120,7 @@ let package = Package(
         .target(
             name: "SRTTestSupport",
             dependencies: [
+                .target(name: "SRTCore")
             ]
         ),
         .testTarget(

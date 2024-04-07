@@ -1,7 +1,22 @@
 import SRTCore
-import JavaScriptKitShim
+import SRTJavaScriptKitEx
 
-public struct JSText: ConstructibleFromJSValue {
+public protocol JSTextProtocol: JSNodeProtocol {
+    var data: String { get set }
+}
+
+extension JSTextProtocol {
+    public var data: String {
+        get {
+            .unsafeConstruct(from: jsValue.data)
+        }
+        nonmutating set {
+            jsValue.data = newValue.jsValue
+        }
+    }
+}
+
+public struct JSText: JSTextProtocol & ConstructibleFromJSValue {
     public init(jsObject: JSObject) {
         self.jsObject = jsObject
     }
@@ -12,17 +27,6 @@ public struct JSText: ConstructibleFromJSValue {
 
     public let jsObject: JSObject
     public var jsValue: JSValue { .object(jsObject) }
-
-    public func asNode() -> JSNode { JSNode(jsObject: jsObject) }
-
-    public var data: String {
-        get {
-            .unsafeConstruct(from: jsValue.data)
-        }
-        nonmutating set {
-            jsObject.data = newValue.jsValue
-        }
-    }
 
     package func write(to p: PrettyPrinter) {
         p.write(data)

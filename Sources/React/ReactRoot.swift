@@ -139,7 +139,7 @@ public final class ReactRoot {
         var next: JSNode? = if let prev {
             prev.nextSibling
         } else {
-            parent.asNode().firstChild
+            parent.firstChild
         }
 
         if let n = next, n == node.dom {

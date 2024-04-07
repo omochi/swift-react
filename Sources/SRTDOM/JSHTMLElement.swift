@@ -2,20 +2,15 @@ import Algorithms
 import SRTCore
 import SRTJavaScriptKitEx
 
-public struct JSHTMLElement: ConstructibleFromJSValue & CustomStringConvertible {
-    public init(jsObject: JSObject) {
-        self.jsObject = jsObject
-    }
+public protocol JSHTMLElementProtocol: JSNodeProtocol {
+    var tagName: String { get }
+    func getAttribute(_ name: String) throws -> String?
+    func getAttributeNames() throws -> [String]
+    func setAttribute(_ name: String, _ value: String) throws
+    func removeAttribute(_ name: String) throws
+}
 
-    public static func construct(from value: JSValue) -> Self? {
-        value.object.map(Self.init(jsObject:))
-    }
-
-    public let jsObject: JSObject
-    public var jsValue: JSValue { .object(jsObject) }
-
-    public func asNode() -> JSNode { JSNode(jsObject: jsObject) }
-
+extension JSHTMLElementProtocol {
     public var tagName: String {
         .unsafeConstruct(from: jsValue.tagName)
     }
@@ -35,10 +30,21 @@ public struct JSHTMLElement: ConstructibleFromJSValue & CustomStringConvertible 
     public func removeAttribute(_ name: String) throws {
         _ = try jsValue.throws.removeAttribute(name)
     }
+}
 
-    public var description: String {
-        asNode().description
+public struct JSHTMLElement: JSHTMLElementProtocol & ConstructibleFromJSValue {
+    public init(jsObject: JSObject) {
+        self.jsObject = jsObject
     }
+
+    public static func construct(from value: JSValue) -> Self? {
+        value.object.map(Self.init(jsObject:))
+    }
+
+    public let jsObject: JSObject
+    public var jsValue: JSValue { .object(jsObject) }
+
+    public func asNode() -> JSNode { JSNode(jsObject: jsObject) }
 
     private func writeAttributes(to p: PrettyPrinter) throws {
         let q = "\""

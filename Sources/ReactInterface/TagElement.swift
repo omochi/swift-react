@@ -4,18 +4,18 @@ public struct TagElement: Component {
     public init(
         tagName: String,
         attributes: DOMAttributes = [:],
-        eventHandlers: DOMEventHandlerDictionary = [:],
+        listeners: DOMListeners = [:],
         children: [Node] = []
     ) {
         self.tagName = tagName
         self.attributes = attributes
-        self.eventHandlers = eventHandlers
+        self.listeners = listeners
         self.children = children
     }
 
     public var tagName: String
     public var attributes: DOMAttributes
-    public var eventHandlers: DOMEventHandlerDictionary
+    public var listeners: DOMListeners
     public var children: [Node]
 
     public func render() -> Node {
