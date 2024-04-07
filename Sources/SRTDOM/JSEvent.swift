@@ -15,7 +15,7 @@ extension JSEventProtocol {
     }
 }
 
-public struct JSEvent: JSEventProtocol & ConstructibleFromJSValue {
+public struct JSEvent: Hashable & JSEventProtocol & ConstructibleFromJSValue {
     public init(jsObject: JSObject) {
         self.jsObject = jsObject
     }

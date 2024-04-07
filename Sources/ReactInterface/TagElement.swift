@@ -4,7 +4,7 @@ public struct TagElement: Component {
     public init(
         tagName: String,
         attributes: DOMAttributes = [:],
-        listeners: DOMListeners = [:],
+        listeners: DOMEventListeners = [:],
         children: [Node] = []
     ) {
         self.tagName = tagName
@@ -15,7 +15,7 @@ public struct TagElement: Component {
 
     public var tagName: String
     public var attributes: DOMAttributes
-    public var listeners: DOMListeners
+    public var listeners: DOMEventListeners
     public var children: [Node]
 
     public func render() -> Node {

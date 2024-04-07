@@ -1,17 +1,17 @@
 import SRTJavaScriptKitEx
 
 public protocol JSEventTargetProtocol: ConvertibleToJSObject {
-    func addEventListener(_ type: String, _ listener: JSFunction) throws
-    func removeEventListener(_ type: String, _ listener: JSFunction) throws
+    func addEventListener(_ type: String, _ listener: DOMEventListener) throws
+    func removeEventListener(_ type: String, _ listener: DOMEventListener) throws
     func dispatchEvent(_ event: any JSEventProtocol) throws
 }
 
 extension JSEventTargetProtocol {
-    public func addEventListener(_ type: String, _ listener: JSFunction) throws {
+    public func addEventListener(_ type: String, _ listener: DOMEventListener) throws {
         _ = try jsValue.throws.addEventListener(type, listener)
     }
 
-    public func removeEventListener(_ type: String, _ listener: JSFunction) throws {
+    public func removeEventListener(_ type: String, _ listener: DOMEventListener) throws {
         _ = try jsValue.throws.removeEventListener(type, listener)
     }
 
