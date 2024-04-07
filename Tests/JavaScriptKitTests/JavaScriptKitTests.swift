@@ -7,7 +7,7 @@ final class JavaScriptKitTests: XCTestCase {
         let clo = JSClosure { (_) in
             return 7.jsValue
         }
-        let obj = try XCTUnwrap(JSObject.construct(from: clo.jsValue))
+        let obj = try JSObject.mustConstruct(from: clo.jsValue)
         XCTAssertFalse(obj is JSFunction)
 
         let fn = clo.asFunction()
