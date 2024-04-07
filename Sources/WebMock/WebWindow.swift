@@ -17,6 +17,7 @@ public final class WebWindow: JSNativeObject {
         switch name {
         case "HTMLElement": WebHTMLElement.Constructor.shared.jsValue
         case "Text": WebText.Constructor.shared.jsValue
+        case "MouseEvent": WebMouseEvent.Constructor.shared.jsValue
         case "document": document.jsValue
         default: .undefined
         }

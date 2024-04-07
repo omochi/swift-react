@@ -1,7 +1,7 @@
 public class JSClosure: JSFunction {
-    public init(_ body: @escaping ([JSValue]) throws -> JSValue) {
+    public init(_ body: @escaping ([JSValue]) -> JSValue) {
         let native = JSNativeFunction { (this, args) in
-            try body(args)
+            body(args)
         }
         super.init(native: native)
     }

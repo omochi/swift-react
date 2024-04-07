@@ -3,7 +3,7 @@ import SRTJavaScriptKitEx
 public protocol JSEventTargetProtocol: ConvertibleToJSObject {
     func addEventListener(_ type: String, _ listener: JSFunction) throws
     func removeEventListener(_ type: String, _ listener: JSFunction) throws
-    func dispatchEvent(_ event: JSEvent) throws
+    func dispatchEvent(_ event: any JSEventProtocol) throws
 }
 
 extension JSEventTargetProtocol {
@@ -15,7 +15,7 @@ extension JSEventTargetProtocol {
         _ = try jsValue.throws.removeEventListener(type, listener)
     }
 
-    public func dispatchEvent(_ event: JSEvent) throws {
+    public func dispatchEvent(_ event: any JSEventProtocol) throws {
         _ = try jsValue.throws.dispatchEvent(event.jsValue)
     }
 }
@@ -26,9 +26,8 @@ public struct JSEventTarget: JSEventTargetProtocol {
     }
 
     public static func construct(from value: JSValue) -> Self? {
-        value.object.map(Self.init(jsObject:))
+        value.object.map(Self.init)
     }
 
-    public let jsObject: JSObject
-    public var jsValue: JSValue { .object(jsObject) }
+    public var jsObject: JSObject
 }

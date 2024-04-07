@@ -1,17 +1,11 @@
 import XCTest
+import SRTJavaScriptKitEx
 import SRTTestSupport
-import JavaScriptKitShim
 import SRTDOM
-#if USES_JAVASCRIPT_KIT_MOCK
-import WebMock
-#endif
 
 final class DOMPrintTests: XCTestCase {
     override func setUp() {
-#if USES_JAVASCRIPT_KIT_MOCK
         WebWindow.initializeJavaScriptKit()
-#endif
-
         document = JSWindow.global.document
     }
 

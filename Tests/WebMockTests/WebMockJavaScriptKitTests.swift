@@ -1,7 +1,7 @@
 import XCTest
-import SRTTestSupport
 import JavaScriptKitMock
 import WebMock
+import SRTTestSupport
 
 final class WebMockJavaScriptKitTests: XCTestCase {
     func testBuildTree() {

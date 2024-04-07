@@ -22,11 +22,10 @@ public struct JSText: JSTextProtocol & ConstructibleFromJSValue {
     }
 
     public static func construct(from value: JSValue) -> Self? {
-        value.object.map(Self.init(jsObject:))
+        value.object.map(Self.init)
     }
 
-    public let jsObject: JSObject
-    public var jsValue: JSValue { .object(jsObject) }
+    public var jsObject: JSObject
 
     package func write(to p: PrettyPrinter) {
         p.write(data)

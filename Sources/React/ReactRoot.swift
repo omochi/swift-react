@@ -1,6 +1,6 @@
 import SRTCore
 import SRTDOM
-import JavaScriptKitShim
+import SRTJavaScriptKitEx
 package import VDOMModule
 
 public final class ReactRoot {

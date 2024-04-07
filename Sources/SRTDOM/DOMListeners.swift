@@ -1,3 +1,3 @@
-import JavaScriptKitShim
+import SRTJavaScriptKitEx
 
 public typealias DOMListeners = [String: JSFunction]

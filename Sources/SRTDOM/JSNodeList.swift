@@ -1,17 +1,16 @@
 import SRTCore
 import SRTJavaScriptKitEx
 
-public struct JSNodeList: ConstructibleFromJSValue {
+public struct JSNodeList: ConvertibleToJSObject & ConstructibleFromJSValue {
     public init(jsObject: JSObject) {
         self.jsObject = jsObject
     }
 
     public static func construct(from value: JSValue) -> Self? {
-        value.object.map(Self.init(jsObject:))
+        value.object.map(Self.init)
     }
 
-    public let jsObject: JSObject
-    public var jsValue: JSValue { .object(jsObject) }
+    public var jsObject: JSObject
 
     public var length: Int {
         .unsafeConstruct(from: jsValue.length)

@@ -5,11 +5,16 @@ public protocol ConstructibleFromJSValue {
 }
 
 extension ConstructibleFromJSValue {
-    internal static func _mustConstruct(from jsValue: JSValue) throws -> Self {
+    package static func _mustConstruct(from jsValue: JSValue) throws -> Self {
         guard let value = construct(from: jsValue) else {
             throw MessageError("failed to construct \(Self.self), value was \(jsValue)")
         }
         return value
+    }
+
+    package static func _mustConstruct(from arguments: [JSValue], at index: Int) throws -> Self {
+        let value = try arguments[safe: index].unwrap("arguments[\(index)]")
+        return try Self._mustConstruct(from: value)
     }
 }
 

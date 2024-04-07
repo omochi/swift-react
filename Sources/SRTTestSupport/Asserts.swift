@@ -4,7 +4,7 @@ public func XCTAssertArrayIdentical(
     _ actual: [AnyObject?],
     _ expect: [AnyObject?],
     _ message: @autoclosure () -> String = "",
-    file: StaticString = #file,
+    file: StaticString = #filePath,
     line: UInt = #line
 ) {
     XCTAssertEqual(actual.count, expect.count, file: file, line: line)
@@ -15,7 +15,7 @@ public func XCTAssertArrayIdentical(
 
 public func XCTAssertPrint(
     _ value: some CustomStringConvertible, _ expected: String,
-    file: StaticString = #file, line: UInt = #line
+    file: StaticString = #filePath, line: UInt = #line
 ) {
     let actual = value.description
     XCTAssertEqual(actual, expected, file: file, line: line)

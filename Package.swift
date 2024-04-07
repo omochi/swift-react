@@ -37,6 +37,145 @@ let dependencyToWebMock: Target.Dependency? = javaScriptKitMockPlatforms.isEmpty
         condition: .when(platforms: javaScriptKitMockPlatforms)
     )
 
+var targets: [Target] = []
+
+targets += [
+    .target(
+        name: "SRTCore",
+        dependencies: [
+            .product(name: "Algorithms", package: "swift-algorithms")
+        ],
+        swiftSettings: swiftSettings()
+    )
+]
+
+targets += [
+    .target(
+        name: "JavaScriptKitMock",
+        dependencies: [
+            .target(name: "SRTCore")
+        ],
+        swiftSettings: swiftSettings()
+    ),
+    .target(
+        name: "WebMock",
+        dependencies: [
+            .target(name: "JavaScriptKitMock")
+        ],
+        swiftSettings: swiftSettings()
+    ),
+    .target(
+        name: "JavaScriptKitShim",
+        dependencies: [
+            dependencyToJavaScriptKitReal,
+            dependencyToJavaScriptKitMock
+        ].compacted(),
+        swiftSettings: swiftSettings()
+    ),
+    .target(
+        name: "SRTJavaScriptKitEx",
+        dependencies: [
+            .target(name: "SRTCore"),
+            .target(name: "JavaScriptKitShim")
+        ],
+        swiftSettings: swiftSettings()
+    )
+]
+
+targets += [
+    .target(
+        name: "SRTDOM",
+        dependencies: [
+            .target(name: "SRTCore"),
+            .target(name: "SRTJavaScriptKitEx")
+        ],
+        swiftSettings: swiftSettings()
+    )
+]
+
+targets += [
+    .target(
+        name: "ReactInterface",
+        dependencies: [
+            .target(name: "SRTCore"),
+            .target(name: "SRTDOM")
+        ],
+        swiftSettings: swiftSettings()
+    ),
+    .target(
+        name: "VDOMModule",
+        dependencies: [
+            .target(name: "SRTDOM"),
+            .target(name: "ReactInterface")
+        ],
+        swiftSettings: swiftSettings()
+    ),
+    .target(
+        name: "React",
+        dependencies: [
+            .target(name: "SRTDOM"),
+            .target(name: "VDOMModule")
+        ],
+        swiftSettings: swiftSettings()
+    )
+]
+
+targets += [
+    .target(
+        name: "SRTTestSupport",
+        dependencies: [
+            .target(name: "SRTCore"),
+            .target(name: "SRTJavaScriptKitEx"),
+            dependencyToWebMock
+        ].compacted(),
+        swiftSettings: swiftSettings()
+    )
+]
+
+targets += [
+    .testTarget(
+        name: "JavaScriptKitTests",
+        dependencies: [
+            .target(name: "SRTTestSupport")
+        ],
+        swiftSettings: swiftSettings()
+    ),
+    .testTarget(
+        name: "WebMockTests",
+        dependencies: [
+            .target(name: "SRTTestSupport"),
+            .target(name: "WebMock")
+        ],
+        swiftSettings: swiftSettings()
+    ),
+    .testTarget(
+        name: "SRTDOMTests",
+        dependencies: [
+            .target(name: "SRTTestSupport"),
+            .target(name: "SRTDOM"),
+            dependencyToWebMock
+        ].compacted(),
+        swiftSettings: swiftSettings()
+    ),
+    .testTarget(
+        name: "VDOMModuleTests",
+        dependencies: [
+            .target(name: "SRTTestSupport"),
+            .target(name: "VDOMModule")
+        ],
+        swiftSettings: swiftSettings()
+    ),
+    .testTarget(
+        name: "ReactTests",
+        dependencies: [
+            .target(name: "SRTTestSupport"),
+            .target(name: "React"),
+            dependencyToWebMock
+        ].compacted(),
+        swiftSettings: swiftSettings()
+    )
+]
+
 let package = Package(
     name: "swift-react",
     platforms: [.macOS(.v14)],
@@ -47,125 +186,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-algorithms", from: "1.2.0"),
         javaScriptKitDependency
     ],
-    targets: [
-        .target(
-            name: "SRTCore",
-            dependencies: [
-                .product(name: "Algorithms", package: "swift-algorithms")
-            ],
-            swiftSettings: swiftSettings()
-        ),
-        .target(
-            name: "JavaScriptKitMock",
-            dependencies: [
-                .target(name: "SRTCore")
-            ],
-            swiftSettings: swiftSettings()
-        ),
-        .target(
-            name: "WebMock",
-            dependencies: [
-                .target(name: "JavaScriptKitMock")
-            ],
-            swiftSettings: swiftSettings()
-        ),
-        .target(
-            name: "JavaScriptKitShim",
-            dependencies: [
-                dependencyToJavaScriptKitReal,
-                dependencyToJavaScriptKitMock
-            ].compacted(),
-            swiftSettings: swiftSettings() + javaScriptKitMockFlag.asArray()
-        ),
-        .target(
-            name: "SRTJavaScriptKitEx",
-            dependencies: [
-                .target(name: "SRTCore"),
-                .target(name: "JavaScriptKitShim")
-            ],
-            swiftSettings: swiftSettings() + javaScriptKitMockFlag.asArray()
-        ),
-        .target(
-            name: "SRTDOM",
-            dependencies: [
-                .target(name: "SRTCore"),
-                .target(name: "SRTJavaScriptKitEx")
-            ],
-            swiftSettings: swiftSettings()
-        ),
-        .target(
-            name: "ReactInterface",
-            dependencies: [
-                .target(name: "SRTCore"),
-                .target(name: "SRTDOM")
-            ],
-            swiftSettings: swiftSettings()
-        ),
-        .target(
-            name: "VDOMModule",
-            dependencies: [
-                .target(name: "SRTDOM"),
-                .target(name: "ReactInterface")
-            ],
-            swiftSettings: swiftSettings()
-        ),
-        .target(
-            name: "React",
-            dependencies: [
-                .target(name: "SRTDOM"),
-                .target(name: "VDOMModule")
-            ],
-            swiftSettings: swiftSettings()
-        ),
-        .target(
-            name: "SRTTestSupport",
-            dependencies: [
-                .target(name: "SRTCore")
-            ]
-        ),
-        .testTarget(
-            name: "JavaScriptKitTests",
-            dependencies: [
-                .target(name: "SRTTestSupport"),
-                .target(name: "SRTJavaScriptKitEx")
-            ],
-            swiftSettings: swiftSettings()
-        ),
-        .testTarget(
-            name: "WebMockTests",
-            dependencies: [
-                .target(name: "SRTTestSupport"),
-                .target(name: "WebMock")
-            ],
-            swiftSettings: swiftSettings()
-        ),
-        .testTarget(
-            name: "SRTDOMTests",
-            dependencies: [
-                .target(name: "SRTTestSupport"),
-                .target(name: "SRTDOM"),
-                dependencyToWebMock
-            ].compacted(),
-            swiftSettings: swiftSettings() + javaScriptKitMockFlag.asArray()
-        ),
-        .testTarget(
-            name: "VDOMModuleTests",
-            dependencies: [
-                .target(name: "SRTTestSupport"),
-                .target(name: "VDOMModule")
-            ],
-            swiftSettings: swiftSettings()
-        ),
-        .testTarget(
-            name: "ReactTests",
-            dependencies: [
-                .target(name: "SRTTestSupport"),
-                .target(name: "React"),
-                dependencyToWebMock
-            ].compacted(),
-            swiftSettings: swiftSettings() + javaScriptKitMockFlag.asArray()
-        )
-    ]
+    targets: targets
 )
 
 func swiftSettings() -> [SwiftSetting] {
@@ -178,8 +199,9 @@ func swiftSettings() -> [SwiftSetting] {
         .enableUpcomingFeature("DeprecateApplicationMain"),
         .enableUpcomingFeature("DisableOutwardActorInference"),
         .enableUpcomingFeature("ImportObjcForwardDeclarations"),
-        .enableExperimentalFeature("AccessLevelOnImport")
-    ]
+        .enableExperimentalFeature("AccessLevelOnImport"),
+        javaScriptKitMockFlag
+    ].compacted()
 }
 
 extension Platform {
