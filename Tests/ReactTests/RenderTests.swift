@@ -222,8 +222,89 @@ final class RenderTests: XCTestCase {
     }
 
     func testRenderEventListener() throws {
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+
+        var evs0: [JSEvent] = []
+        let ln0 = DOMEventListener { (ev) in
+            evs0.append(ev)
+        }
+
+        root.render(
+            node: div(
+                listeners: [
+                    "click": ln0
+                ]
+            )
+        )
+
+        let divDom0: JSHTMLElement = try XCTUnwrap(
+            root.root
+                .find { $0.tagElement?.tagName == "div" }?
+                .dom?.asHTMLElement()
+        )
         
+        let MouseEvent = JSWindow.global.MouseEvent
+        let ev0 = try MouseEvent.new("click")
+        try divDom0.dispatchEvent(ev0)
 
+        XCTAssertEqual(evs0.count, 1)
+        XCTAssertEqual(evs0[safe: 0], ev0.asEvent())
 
+        var evs1: [JSEvent] = []
+        let ln1 = DOMEventListener { (ev) in
+            evs1.append(ev)
+        }
+
+        root.render(
+            node: div(
+                listeners: [
+                    "click": ln1
+                ]
+            )
+        )
+
+        // update check
+        let divDom1: JSHTMLElement = try XCTUnwrap(
+            root.root
+                .find { $0.tagElement?.tagName == "div" }?
+                .dom?.asHTMLElement()
+        )
+        XCTAssertEqual(divDom0, divDom1)
+        _ = consume divDom1
+
+        let ev1 = try MouseEvent.new("click")
+        try divDom0.dispatchEvent(ev1)
+
+        // dont change
+        XCTAssertEqual(evs0.count, 1)
+        XCTAssertEqual(evs0[safe: 0], ev0.asEvent())
+
+        // added
+        XCTAssertEqual(evs1.count, 1)
+        XCTAssertEqual(evs1[safe: 0], ev1.asEvent())
+
+        root.render(
+            node: div()
+        )
+        // update check
+        let divDom2: JSHTMLElement = try XCTUnwrap(
+            root.root
+                .find { $0.tagElement?.tagName == "div" }?
+                .dom?.asHTMLElement()
+        )
+        XCTAssertEqual(divDom0, divDom2)
+        _ = consume divDom2
+
+        let ev2 = try MouseEvent.new("click")
+        try divDom0.dispatchEvent(ev2)
+
+        // dont change
+        XCTAssertEqual(evs0.count, 1)
+        XCTAssertEqual(evs0[safe: 0], ev0.asEvent())
+
+        // dont change
+        XCTAssertEqual(evs1.count, 1)
+        XCTAssertEqual(evs1[safe: 0], ev1.asEvent())
     }
 }
