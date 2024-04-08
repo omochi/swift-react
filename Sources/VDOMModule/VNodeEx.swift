@@ -48,7 +48,7 @@ extension VNode {
 
                 var found: VNode? = nil
 
-                node.walk { (node) in
+                node.walk(direction: .left) { (node) in
                     if node.tagElement != nil ||
                         node.textElement != nil
                     {
@@ -78,8 +78,16 @@ extension VNode {
         case `break`
     }
 
+    public enum WalkDirection {
+        case right
+        case left
+    }
+
     @discardableResult
-    public func walk(step: (VNode) -> WalkControl) -> WalkControl {
+    public func walk(
+        direction: WalkDirection = .right,
+        step: (VNode) -> WalkControl
+    ) -> WalkControl {
         let doesWalkChildren: Bool
         switch step(self) {
         case .continue:
@@ -90,6 +98,11 @@ extension VNode {
         }
 
         if doesWalkChildren {
+            var children: [VNode] = switch direction {
+            case .right: self.children
+            case .left: self.children.reversed()
+            }
+
             for x in children {
                 switch x.walk(step: step) {
                 case .continue,
@@ -100,5 +113,17 @@ extension VNode {
         }
 
         return .continue
+    }
+
+    public func find(predicate: (VNode) -> Bool) -> VNode? {
+        var result: VNode? = nil
+        walk { (node) in
+            if predicate(node) {
+                result = node
+                return .break
+            }
+            return .continue
+        }
+        return result
     }
 }
