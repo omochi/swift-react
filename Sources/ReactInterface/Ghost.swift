@@ -1,13 +1,14 @@
 public struct GhostInput<C: Component> {
-    package init(
+    public init(
         component: C
     ) {
         self.component = component
     }
     
-    package var component: C
+    public var component: C
 }
 
 public struct Ghost {
-    package var component: any Component
+    public var component: any Component
+    package var refs: [String: any _AnyRefObject]
 }

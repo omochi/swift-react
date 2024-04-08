@@ -1,12 +1,16 @@
 import SRTDOM
 
 public func div(
-    _ attributes: DOMAttributes = [:],
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: DOMAttributes = [:],
     listeners: DOMEventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
     TagElement(
         tagName: "div",
+        key: key,
+        ref: ref,
         attributes: attributes,
         listeners: listeners,
         children: children()
@@ -14,12 +18,16 @@ public func div(
 }
 
 public func p(
-    _ attributes: DOMAttributes = [:],
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: DOMAttributes = [:],
     listeners: DOMEventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
     TagElement(
         tagName: "p",
+        key: key,
+        ref: ref,
         attributes: attributes,
         listeners: listeners,
         children: children()
@@ -27,12 +35,16 @@ public func p(
 }
 
 public func h1(
-    _ attributes: DOMAttributes = [:],
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: DOMAttributes = [:],
     listeners: DOMEventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
     TagElement(
         tagName: "h1",
+        key: key,
+        ref: ref,
         attributes: attributes,
         listeners: listeners,
         children: children()
@@ -40,12 +52,16 @@ public func h1(
 }
 
 public func h2(
-    _ attributes: DOMAttributes = [:],
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: DOMAttributes = [:],
     listeners: DOMEventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
     TagElement(
         tagName: "h2",
+        key: key,
+        ref: ref,
         attributes: attributes,
         listeners: listeners,
         children: children()
@@ -53,12 +69,16 @@ public func h2(
 }
 
 public func h3(
-    _ attributes: DOMAttributes = [:],
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: DOMAttributes = [:],
     listeners: DOMEventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
     TagElement(
         tagName: "h3",
+        key: key,
+        ref: ref,
         attributes: attributes,
         listeners: listeners,
         children: children()
@@ -66,12 +86,16 @@ public func h3(
 }
 
 public func h4(
-    _ attributes: DOMAttributes = [:],
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: DOMAttributes = [:],
     listeners: DOMEventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
     TagElement(
         tagName: "h4",
+        key: key,
+        ref: ref,
         attributes: attributes,
         listeners: listeners,
         children: children()
@@ -79,12 +103,16 @@ public func h4(
 }
 
 public func button(
-    _ attributes: DOMAttributes = [:],
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: DOMAttributes = [:],
     listeners: DOMEventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
     TagElement(
         tagName: "button",
+        key: key,
+        ref: ref,
         attributes: attributes,
         listeners: listeners,
         children: children()
