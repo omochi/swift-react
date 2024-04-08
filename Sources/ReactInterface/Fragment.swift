@@ -1,9 +1,9 @@
 public struct Fragment: Component {
     public init(children: [Node] = []) {
-        self.children = children
+        self.children = children.asAnyNodeArray()
     }
 
-    public var children: [Node]
+    public var children: [AnyNode]
 
     public func render() -> Node {
         NodeCollection(children)

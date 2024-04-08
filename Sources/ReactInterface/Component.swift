@@ -1,6 +1,6 @@
 import SRTCore
 
-public protocol Component: Element {
+public protocol Component: Equatable & Element {
     var key: AnyHashable? { get }
 
     func render() -> Node
