@@ -46,20 +46,13 @@ extension VNode {
             for index in stride(from: selfIndex - 1, through: 0, by: -1) {
                 let node = parent.children[index]
 
-                var found: VNode? = nil
-
-                node.walk(direction: .left) { (node) in
-                    if node.tagElement != nil ||
+                if let found = node.find(
+                    direction: .left, 
+                    predicate: { (node) in
+                        node.tagElement != nil ||
                         node.textElement != nil
-                    {
-                        found = node
-                        return .break
                     }
-
-                    return .continue
-                }
-
-                if let found {
+                ) {
                     return found
                 }
             }
@@ -98,7 +91,7 @@ extension VNode {
         }
 
         if doesWalkChildren {
-            var children: [VNode] = switch direction {
+            let children: [VNode] = switch direction {
             case .right: self.children
             case .left: self.children.reversed()
             }
@@ -115,9 +108,12 @@ extension VNode {
         return .continue
     }
 
-    public func find(predicate: (VNode) -> Bool) -> VNode? {
+    public func find(
+        direction: WalkDirection = .right,
+        predicate: (VNode) -> Bool
+    ) -> VNode? {
         var result: VNode? = nil
-        walk { (node) in
+        walk(direction: direction) { (node) in
             if predicate(node) {
                 result = node
                 return .break
