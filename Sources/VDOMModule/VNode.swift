@@ -6,35 +6,20 @@ public final class VNode: Hashable {
     public struct Equality: Hashable {
         var componentType: ObjectIdentifier
         var tagName: String?
-        var idType: ObjectIdentifier?
-        var idValue: AnyHashable?
+        var key: AnyHashable?
 
         init(ghost: Ghost) {
-            self.init(
-                component: ghost.component,
-                id: ghost.id
-            )
-        }
+            let component = ghost.component
 
-        init(
-            component: any Component,
-            id: (any Hashable)?
-        ) {
             self.componentType = ObjectIdentifier(type(of: component))
 
-            if let tag = component as? TagElement {
+            if let tag = ghost.component as? TagElement {
                 self.tagName = tag.tagName
             } else {
                 self.tagName = nil
             }
 
-            if let id {
-                self.idType = ObjectIdentifier(type(of: id))
-                self.idValue = AnyHashable(id)
-            } else {
-                self.idType = nil
-                self.idValue = nil
-            }
+            self.key = component.key
         }
     }
 

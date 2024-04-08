@@ -10,5 +10,4 @@ public struct GhostInput<C: Component> {
 
 public struct Ghost {
     package var component: any Component
-    package var id: (any Hashable)?
 }
