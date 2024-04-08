@@ -10,13 +10,13 @@ public struct TagElement: Component {
         self.tagName = tagName
         self.attributes = attributes
         self.listeners = listeners
-        self.children = children.asAnyNodeArray()
+        self.children = children
     }
 
     public var tagName: String
     public var attributes: DOMAttributes
     public var listeners: DOMEventListeners
-    public var children: [AnyNode]
+    @ChildrenProperty public var children: [Node]
 
     public func render() -> Node {
         NodeCollection(children)

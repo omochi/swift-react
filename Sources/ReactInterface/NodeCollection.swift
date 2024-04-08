@@ -1,11 +1,11 @@
 package struct NodeCollection: Element {
     public init(_ children: [Node]) {
-        self.children = children.asAnyNodeArray()
+        self.children = children
     }
 
     public init(_ children: Node...) {
         self.init(children)
     }
 
-    public var children: [AnyNode]
+    @ChildrenProperty public var children: [Node]
 }
