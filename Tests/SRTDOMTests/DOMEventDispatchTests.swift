@@ -16,12 +16,12 @@ final class DOMEventDispatchTests: XCTestCase {
         let div = try document.createElement("div")
 
         var ls0Events: [JSEvent] = []
-        let ls0 = DOMEventListener { (ev) in
+        let ls0 = JSEventListener { (ev) in
             ls0Events.append(ev)
         }
 
         var ls1Events: [JSEvent] = []
-        let ls1 = DOMEventListener { (ev) in
+        let ls1 = JSEventListener { (ev) in
             ls1Events.append(ev)
         }
 

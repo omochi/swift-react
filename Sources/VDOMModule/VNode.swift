@@ -23,6 +23,13 @@ public final class VNode: Hashable {
         }
     }
 
+    public final class ListenerBridge {
+        public init() {}
+
+        public var js: JSEventListener?
+        public var swift: EventListener?
+    }
+
     public init(
         ghost: Ghost
     ) {
@@ -33,6 +40,7 @@ public final class VNode: Hashable {
     public let ghost: Ghost
     public let equality: Equality
     public var dom: JSNode?
+    public var listeners: [String: ListenerBridge] = [:]
 
     public static func ==(a: VNode, b: VNode) -> Bool {
         a.equality == b.equality
@@ -86,9 +94,9 @@ public final class VNode: Hashable {
         MessageError("unknown VNode: \(type(of: node))")
     }
 
-    public static func tag(
+    package static func tag(
         _ name: String,
-        _ attributes: DOMAttributes = [:],
+        _ attributes: Attributes = [:],
         _ children: [Node] = []
     ) -> VNode {
         let tag = TagElement(
@@ -99,7 +107,7 @@ public final class VNode: Hashable {
         return component(tag)
     }
 
-    public static func component<C: Component>(_ component: C) -> VNode {
+    package static func component<C: Component>(_ component: C) -> VNode {
         let input = GhostInput(component: component)
         let ghost = C._extractGhost(input)
         return VNode(ghost: ghost)

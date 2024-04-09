@@ -1,4 +1,4 @@
-public final class Function<R, each A>: Equatable {
+public final class Function<R, each A>: Hashable {
     public init(
         _ body: @escaping (repeat each A) -> R
     ) {
@@ -13,5 +13,9 @@ public final class Function<R, each A>: Equatable {
 
     public static func ==(a: Function<R, repeat each A>, b: Function<R, repeat each A>) -> Bool {
         a === b
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(ObjectIdentifier(self))
     }
 }

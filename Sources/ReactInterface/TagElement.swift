@@ -5,8 +5,8 @@ public struct TagElement: Component {
         tagName: String,
         key: AnyHashable? = nil,
         ref: RefObject<JSHTMLElement>? = nil,
-        attributes: DOMAttributes = [:],
-        listeners: DOMEventListeners = [:],
+        attributes: Attributes = [:],
+        listeners: EventListeners = [:],
         children: [Node] = []
     ) {
         self.tagName = tagName
@@ -20,8 +20,8 @@ public struct TagElement: Component {
     public var tagName: String
     public var key: AnyHashable?
     public var ref: RefObject<JSHTMLElement>?
-    public var attributes: DOMAttributes
-    public var listeners: DOMEventListeners
+    public var attributes: Attributes
+    public var listeners: EventListeners
     @ChildrenProperty public var children: [Node]
 
     public func render() -> Node {

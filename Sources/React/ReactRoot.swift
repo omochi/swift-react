@@ -57,18 +57,21 @@ public final class ReactRoot {
                 }
 
                 let oldTag = oldTree?.tagElement
+                newTree.dom = dom.asNode()
+                newTree.listeners = oldTree?.listeners ?? [:]
+                newTag.ref?.value = dom
+
                 try renderDOMAttributes(
                     dom: dom,
                     newAttributes: newTag.attributes,
                     oldAttributes: oldTag?.attributes ?? [:]
                 )
                 try renderDOMEventListeners(
+                    node: newTree,
                     dom: dom,
                     newListeners: newTag.listeners,
                     oldListeners: oldTag?.listeners ?? [:]
                 )
-                newTree.dom = dom.asNode()
-                newTag.ref?.value = dom
             } else if let text = newTree.textElement {
                 let dom: JSText = try {
                     if let oldTree {
@@ -230,8 +233,8 @@ public final class ReactRoot {
 
     private func renderDOMAttributes(
         dom: JSHTMLElement,
-        newAttributes: DOMAttributes,
-        oldAttributes: DOMAttributes
+        newAttributes: Attributes,
+        oldAttributes: Attributes
     ) throws {
         for name in oldAttributes.keys {
             if newAttributes[name] == nil {
@@ -247,19 +250,40 @@ public final class ReactRoot {
     }
 
     private func renderDOMEventListeners(
+        node: VNode,
         dom: JSHTMLElement,
-        newListeners: DOMEventListeners,
-        oldListeners: DOMEventListeners
+        newListeners: EventListeners,
+        oldListeners: EventListeners
     ) throws {
         for (type, oldListener) in oldListeners {
             if oldListener != newListeners[type] {
-                try dom.removeEventListener(type, oldListener)
+                if let bridge = node.listeners[type] {
+                    if let js = bridge.js {
+                        try dom.removeEventListener(type, js)
+                    }
+                    node.listeners[type] = nil
+                }
             }
         }
 
         for (type, newListener) in newListeners {
             if newListener != oldListeners[type] {
-                try dom.addEventListener(type, newListener)
+                if let bridge = node.listeners[type] {
+                    bridge.swift = newListener
+                } else {
+                    let bridge = VNode.ListenerBridge()
+                    node.listeners[type] = bridge
+
+                    let js = JSEventListener { [weak bridge] (event) in
+                        guard let bridge, let swift = bridge.swift else { return }
+                        swift(event)
+                    }
+
+                    bridge.js = js
+                    bridge.swift = newListener
+
+                    try dom.addEventListener(type, js)
+                }
             }
         }
     }

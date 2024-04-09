@@ -1,13 +1,13 @@
 import SRTJavaScriptKitEx
 
-public struct DOMEventListener: Hashable & ConvertibleToJSFunction & ConstructibleFromJSValue {
+public struct JSEventListener: Hashable & ConvertibleToJSFunction & ConstructibleFromJSValue {
     public init(jsFunction: JSFunction) {
         self.jsFunction = jsFunction
     }
 
     public var jsFunction: JSFunction
 
-    public static func construct(from value: JSValue) -> DOMEventListener? {
+    public static func construct(from value: JSValue) -> JSEventListener? {
         value.function.map(Self.init)
     }
 
@@ -21,4 +21,4 @@ public struct DOMEventListener: Hashable & ConvertibleToJSFunction & Constructib
     }
 }
 
-public typealias DOMEventListeners = [String: DOMEventListener]
+public typealias JSEventListeners = [String: JSEventListener]

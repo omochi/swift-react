@@ -3,8 +3,8 @@ import SRTDOM
 public func div(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
-    attributes: DOMAttributes = [:],
-    listeners: DOMEventListeners = [:],
+    attributes: Attributes = [:],
+    listeners: EventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
     TagElement(
@@ -20,8 +20,8 @@ public func div(
 public func p(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
-    attributes: DOMAttributes = [:],
-    listeners: DOMEventListeners = [:],
+    attributes: Attributes = [:],
+    listeners: EventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
     TagElement(
@@ -37,8 +37,8 @@ public func p(
 public func h1(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
-    attributes: DOMAttributes = [:],
-    listeners: DOMEventListeners = [:],
+    attributes: Attributes = [:],
+    listeners: EventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
     TagElement(
@@ -54,8 +54,8 @@ public func h1(
 public func h2(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
-    attributes: DOMAttributes = [:],
-    listeners: DOMEventListeners = [:],
+    attributes: Attributes = [:],
+    listeners: EventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
     TagElement(
@@ -71,8 +71,8 @@ public func h2(
 public func h3(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
-    attributes: DOMAttributes = [:],
-    listeners: DOMEventListeners = [:],
+    attributes: Attributes = [:],
+    listeners: EventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
     TagElement(
@@ -88,8 +88,8 @@ public func h3(
 public func h4(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
-    attributes: DOMAttributes = [:],
-    listeners: DOMEventListeners = [:],
+    attributes: Attributes = [:],
+    listeners: EventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
     TagElement(
@@ -105,8 +105,8 @@ public func h4(
 public func button(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
-    attributes: DOMAttributes = [:],
-    listeners: DOMEventListeners = [:],
+    attributes: Attributes = [:],
+    listeners: EventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> TagElement {
     TagElement(

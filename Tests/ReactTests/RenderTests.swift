@@ -226,7 +226,7 @@ final class RenderTests: XCTestCase {
         let root = ReactRoot(element: body)
 
         var evs0: [JSEvent] = []
-        let ln0 = DOMEventListener { (ev) in
+        let ln0 = EventListener { (ev) in
             evs0.append(ev)
         }
 
@@ -252,7 +252,7 @@ final class RenderTests: XCTestCase {
         XCTAssertEqual(evs0[safe: 0], ev0.asEvent())
 
         var evs1: [JSEvent] = []
-        let ln1 = DOMEventListener { (ev) in
+        let ln1 = EventListener { (ev) in
             evs1.append(ev)
         }
 
