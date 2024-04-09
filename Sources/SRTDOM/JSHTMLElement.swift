@@ -4,6 +4,7 @@ import SRTJavaScriptKitEx
 
 public protocol JSHTMLElementProtocol: JSNodeProtocol {
     var tagName: String { get }
+    func click() throws
     func getAttribute(_ name: String) throws -> String?
     func getAttributeNames() throws -> [String]
     func setAttribute(_ name: String, _ value: String) throws
@@ -13,6 +14,10 @@ public protocol JSHTMLElementProtocol: JSNodeProtocol {
 extension JSHTMLElementProtocol {
     public var tagName: String {
         .unsafeConstruct(from: jsValue.tagName)
+    }
+
+    public func click() throws {
+        _ = try jsValue.throws.click()
     }
 
     public func getAttribute(_ name: String) throws -> String? {

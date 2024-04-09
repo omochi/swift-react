@@ -27,6 +27,13 @@ public final class WebText: WebNode {
         }
     }
 
+    public override func _set_property(_ name: String, _ value: JSValue) {
+        switch name {
+        case "data": data = ._unsafeConstruct(from: value)
+        default: super._set_property(name, value)
+        }
+    }
+
     public override func _isInstanceOf(_ constructor: JSFunction) -> Bool {
         if constructor.native === Constructor.shared {
             return true

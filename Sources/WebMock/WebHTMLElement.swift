@@ -20,6 +20,11 @@ public final class WebHTMLElement: WebNode {
 
     private var _attributes: [String: String] = [:]
 
+    public func click() {
+        let event = WebMouseEvent.Constructor.shared.new("click")
+        _ = dispatchEvent(event)
+    }
+
     public func getAttribute(_ name: String) -> String? {
         _attributes[name]
     }
@@ -70,6 +75,7 @@ public final class WebHTMLElement: WebNode {
     public override func _get_property(_ name: String) -> JSValue {
         switch name {
         case "tagName": tagName.jsValue
+        case "click": JSFunction(Self.click).jsValue
         case "getAttribute": JSFunction(Self.getAttribute).jsValue
         case "getAttributeNames": JSFunction(Self.getAttributeNames).jsValue
         case "setAttribute": JSFunction(Self.setAttribute).jsValue

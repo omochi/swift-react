@@ -36,6 +36,9 @@ public class WebEventTarget: JSNativeObject {
         }
     }
 
+    public func _set_property(_ name: String, _ value: JSValue) {
+    }
+
     public func _isInstanceOf(_ constructor: JSFunction) -> Bool {
         return false
     }

@@ -50,6 +50,15 @@ public final class VNode: Hashable {
         hasher.combine(equality)
     }
 
+//    public func clone() -> VNode {
+//        let node = VNode(ghost: ghost)
+//        for c in _children {
+//            let nc = c.clone()
+//            node.appendChild(nc)
+//        }
+//        return node
+//    }
+
     public var parent: VNode? { _parent }
 
     public func removeFromParent() {

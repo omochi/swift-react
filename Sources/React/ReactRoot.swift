@@ -40,7 +40,12 @@ public final class ReactRoot {
     private func updateRender() {
         // ?
         do {
-            try render(newChildren: root?.children ?? [], oldChildren: root?.children ?? [])
+            let newTree = makeVNode(component: Fragment())
+            let newChildren = (root?.children ?? []).map { (node) in
+                VNode(ghost: node.ghost)
+            }
+            newTree.appendChildren(newChildren)
+            try render(newChildren: newChildren, oldChildren: root?.children ?? [])
         } catch {
             print(error)
         }

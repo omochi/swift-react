@@ -16,6 +16,10 @@ extension ConstructibleFromJSValue {
         let value = try arguments[safe: index].unwrap("arguments[\(index)]")
         return try Self._mustConstruct(from: value)
     }
+
+    package static func _unsafeConstruct(from jsValue: JSValue) -> Self {
+        try! _mustConstruct(from: jsValue)
+    }
 }
 
 extension Bool: ConstructibleFromJSValue {

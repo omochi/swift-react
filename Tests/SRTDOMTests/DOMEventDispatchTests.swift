@@ -48,4 +48,18 @@ final class DOMEventDispatchTests: XCTestCase {
         XCTAssertEqual(ls1Events.count, 1)
     }
 
+    func testClick() throws {
+        let div = try document.createElement("div")
+
+        var evs: [JSEvent] = []
+        let ln = JSEventListener { (ev) in
+            evs.append(ev)
+        }
+
+        try div.addEventListener("click", ln)
+
+        try div.click()
+        XCTAssertEqual(evs.count, 1)
+        XCTAssertEqual(evs[safe: 0]?.type, "click")
+    }
 }

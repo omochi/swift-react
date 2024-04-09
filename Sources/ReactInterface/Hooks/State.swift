@@ -12,7 +12,7 @@ public struct State<Value>: _AnyState {
 
     public var wrappedValue: Value {
         get { storage.getValue() }
-        set { storage.setValue(newValue) }
+        nonmutating set { storage.setValue(newValue) }
     }
 
     package var storage: Storage

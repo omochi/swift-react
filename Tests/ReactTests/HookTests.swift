@@ -108,4 +108,54 @@ final class HookTests: XCTestCase {
         XCTAssertEqual(refs.count, 2)
         XCTAssertEqual(refs[safe: 1], btn)
     }
+
+    func testState() throws {
+        struct Content: Component {
+            @State var count = 0
+
+            func render() -> Node {
+                return div {
+                    "\(count)"
+                    button(
+                        listeners: [
+                            "click": Function { (ev) in
+                                count += 1
+                            }
+                        ]
+                    )
+                }
+            }
+        }
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+        root.render(
+            node: Content()
+        )
+
+        XCTAssertPrint(body, """
+        <body>
+            <div>
+                0
+                <button />
+            </div>
+        </body>
+        """)
+
+        let btn: JSHTMLElement = try XCTUnwrap(
+            root.root?
+                .find { $0.tagElement?.tagName == "button" }?
+                .dom?.asHTMLElement()
+        )
+        try btn.click()
+
+        XCTAssertPrint(body, """
+        <body>
+            <div>
+                1
+                <button />
+            </div>
+        </body>
+        """)
+    }
 }
