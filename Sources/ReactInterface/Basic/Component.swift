@@ -17,6 +17,7 @@ extension Component {
 
     public static func _extractGhost(_ input: GhostInput<Self>) -> Ghost {
         var refs: [String: any _AnyRefObject] = [:]
+        var states: [String: any _AnyStateStorage] = [:]
 
         let mirror = Mirror(reflecting: input.component)
         for mc in mirror.children {
@@ -26,13 +27,17 @@ extension Component {
             case let ref as any _AnyRef:
                 let obj = ref._anyRefObject
                 refs[label] = obj
+            case let state as any _AnyState:
+                let storage = state._anyStateStorage
+                states[label] = storage
             default: break
             }
         }
 
         return Ghost(
             component: input.component,
-            refs: refs
+            refs: refs,
+            states: states
         )
     }
 }

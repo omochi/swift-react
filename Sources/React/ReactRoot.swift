@@ -37,6 +37,15 @@ public final class ReactRoot {
         }
     }
 
+    private func updateRender() {
+        // ?
+        do {
+            try render(newChildren: root?.children ?? [], oldChildren: root?.children ?? [])
+        } catch {
+            print(error)
+        }
+    }
+
     private func makeVNode<C: Component>(component: C) -> VNode {
         let ghost = C._extractGhost(
             .init(component: component)
@@ -104,9 +113,19 @@ public final class ReactRoot {
                 true
             } else { false }
 
-            // TODO: check dirty flag
+            var isDirty = false
+            for (_, state) in newTree.ghost.states {
+                isDirty = isDirty || state._consumeDirty()
 
-            if isSameDeps {
+                if oldTree == nil {
+                    state._setDidUpdate { [weak self] () in
+                        // TODO: precise update
+                        self?.updateRender()
+                    }
+                }
+            }
+
+            if isSameDeps, !isDirty {
                 doesRenderChildren = false
             }
 
@@ -139,6 +158,12 @@ public final class ReactRoot {
         for (name, oldRef) in oldTree?.ghost.refs ?? [:] {
             if let newRef = newTree.ghost.refs[name] {
                 newRef._anyValue = oldRef._anyValue
+            }
+        }
+
+        for (name, oldState) in oldTree?.ghost.states ?? [:] {
+            if let newState = newTree.ghost.states[name] {
+                newState._takeAny(oldState)
             }
         }
     }
