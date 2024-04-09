@@ -108,7 +108,6 @@ public final class ReactRoot {
 
             if isSameDeps {
                 doesRenderChildren = false
-
             }
 
             if doesRenderChildren {
