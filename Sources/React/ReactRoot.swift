@@ -48,6 +48,8 @@ public final class ReactRoot {
         newTree: VNode?,
         oldTree: VNode?
     ) throws {
+        var doesRenderChildren = true
+
         if let newTree {
             if let newTag = newTree.tagElement {
                 let dom: JSHTMLElement = if let oldTree {
@@ -96,17 +98,36 @@ public final class ReactRoot {
 
             renderGhost(newTree: newTree, oldTree: oldTree)
 
-            let newChildrenNode: Node = newTree.ghost.component.render()
-            let newChildren = try normalize(node: newChildrenNode).map {
-                makeVNode(component: $0)
+            let isSameDeps: Bool = if let newDeps = newTree.ghost.component.deps,
+                newDeps == oldTree?.ghost.component.deps
+            {
+                true
+            } else { false }
+
+            // TODO: check dirty flag
+
+            if isSameDeps {
+                doesRenderChildren = false
+
             }
-            newTree.appendChildren(newChildren)
+
+            if doesRenderChildren {
+                let newChildrenNode: Node = newTree.ghost.component.render()
+                let newChildren = try normalize(node: newChildrenNode).map {
+                    makeVNode(component: $0)
+                }
+                newTree.appendChildren(newChildren)
+            } else {
+                newTree.appendChildren(oldTree?.children ?? [])
+            }
         }
 
-        try render(
-            newChildren: newTree?.children ?? [],
-            oldChildren: oldTree?.children ?? []
-        )
+        if doesRenderChildren {
+            try render(
+                newChildren: newTree?.children ?? [],
+                oldChildren: oldTree?.children ?? []
+            )
+        }
 
         if newTree == nil {
             if let oldTree {

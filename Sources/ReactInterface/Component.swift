@@ -3,6 +3,8 @@ import SRTCore
 public protocol Component: Equatable & Element {
     var key: AnyHashable? { get }
 
+    var deps: AnyHashable? { get }
+
     func render() -> Node
 
     static func _extractGhost(_ input: GhostInput<Self>) -> Ghost
@@ -10,6 +12,8 @@ public protocol Component: Equatable & Element {
 
 extension Component {
     public var key: AnyHashable? { nil }
+
+    public var deps: AnyHashable? { nil }
 
     public static func _extractGhost(_ input: GhostInput<Self>) -> Ghost {
         var refs: [String: any _AnyRefObject] = [:]
