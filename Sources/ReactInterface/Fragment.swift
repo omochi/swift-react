@@ -3,7 +3,7 @@ public struct Fragment: Component {
         self.children = children
     }
 
-    @ChildrenProperty public var children: [Node]
+    public var children: [Node]
 
     public func render() -> Node {
         NodeCollection(children)

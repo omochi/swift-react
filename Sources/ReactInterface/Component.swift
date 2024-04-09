@@ -1,6 +1,6 @@
 import SRTCore
 
-public protocol Component: Equatable & Element {
+public protocol Component: Element {
     var key: AnyHashable? { get }
 
     var deps: AnyHashable? { get }

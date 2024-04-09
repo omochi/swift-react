@@ -1,5 +1,5 @@
 @propertyWrapper
-public struct Ref<Value>: BypassedEquatable & _AnyRef {
+public struct Ref<Value>: _AnyRef {
     public init(
         wrappedValue: Value? = nil
     ) {
@@ -28,7 +28,7 @@ package protocol _AnyRef {
     var _anyRefObject: any _AnyRefObject { get }
 }
 
-public final class RefObject<Value>: BypassedEquatable & _AnyRefObject {
+public final class RefObject<Value>: _AnyRefObject {
     public init(_ value: Value?) {
         self.value = value
     }

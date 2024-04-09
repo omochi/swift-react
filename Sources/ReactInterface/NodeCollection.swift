@@ -7,5 +7,5 @@ package struct NodeCollection: Element {
         self.init(children)
     }
 
-    @ChildrenProperty public var children: [Node]
+    public var children: [Node]
 }
