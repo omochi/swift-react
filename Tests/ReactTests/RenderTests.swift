@@ -239,7 +239,7 @@ final class RenderTests: XCTestCase {
         )
 
         let divDom0: JSHTMLElement = try XCTUnwrap(
-            root.root
+            root.root?
                 .find { $0.tagElement?.tagName == "div" }?
                 .dom?.asHTMLElement()
         )
@@ -266,7 +266,7 @@ final class RenderTests: XCTestCase {
 
         // update check
         let divDom1: JSHTMLElement = try XCTUnwrap(
-            root.root
+            root.root?
                 .find { $0.tagElement?.tagName == "div" }?
                 .dom?.asHTMLElement()
         )
@@ -289,7 +289,7 @@ final class RenderTests: XCTestCase {
         )
         // update check
         let divDom2: JSHTMLElement = try XCTUnwrap(
-            root.root
+            root.root?
                 .find { $0.tagElement?.tagName == "div" }?
                 .dom?.asHTMLElement()
         )
@@ -306,5 +306,51 @@ final class RenderTests: XCTestCase {
         // dont change
         XCTAssertEqual(evs1.count, 1)
         XCTAssertEqual(evs1[safe: 0], ev1.asEvent())
+    }
+
+    func testRenderRef() throws {
+        struct Content: Component {
+            @Ref var buttonRef: JSHTMLElement?
+            var renderHook: Function<Void, Content>
+
+            func render() -> Node {
+                renderHook(self)
+                return div {
+                    button(ref: $buttonRef) { "hi" }
+                }
+            }
+        }
+
+        var refs: [JSHTMLElement?] = []
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+        root.render(
+            node: Content(
+                renderHook: Function { (content) in
+                    refs.append(content.buttonRef)
+                }
+            )
+        )
+
+        XCTAssertEqual(refs.count, 1)
+        XCTAssertEqual(refs[safe: 0], .some(nil))
+
+        root.render(
+            node: Content(
+                renderHook: Function { (content) in
+                    refs.append(content.buttonRef)
+                }
+            )
+        )
+
+        let btn: JSHTMLElement = try XCTUnwrap(
+            root.root?
+                .find { $0.tagElement?.tagName == "button" }?
+                .dom?.asHTMLElement()
+        )
+
+        XCTAssertEqual(refs.count, 2)
+        XCTAssertEqual(refs[safe: 1], btn)
     }
 }

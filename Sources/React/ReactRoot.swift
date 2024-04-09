@@ -8,14 +8,14 @@ public final class ReactRoot {
         element: JSHTMLElement
     ) {
         self.dom = element
-        self.root = VNode.component(Fragment())
+        self.root = nil
 
         self.window = JSWindow.global
         self.document = window.document
     }
 
     public let dom: JSHTMLElement
-    package var root: VNode
+    package var root: VNode?
 
     private let window: JSWindow
     private let document: JSDocument
@@ -30,7 +30,7 @@ public final class ReactRoot {
             let newChildren = try normalize(node: node)
                 .map { makeVNode(component: $0) }
             newTree.appendChildren(newChildren)
-            try render(newChildren: newChildren, oldChildren: root.children)
+            try render(newChildren: newChildren, oldChildren: root?.children ?? [])
             self.root = newTree
         } catch {
             print(error)
@@ -68,6 +68,7 @@ public final class ReactRoot {
                     oldListeners: oldTag?.listeners ?? [:]
                 )
                 newTree.dom = dom.asNode()
+                newTag.ref?.value = dom
             } else if let text = newTree.textElement {
                 let dom: JSText = try {
                     if let oldTree {
@@ -90,7 +91,7 @@ public final class ReactRoot {
                 }
             }
 
-            // project ghost
+            renderGhost(newTree: newTree, oldTree: oldTree)
 
             let newChildrenNode: Node = newTree.ghost.component.render()
             let newChildren = try normalize(node: newChildrenNode).map {
@@ -107,6 +108,14 @@ public final class ReactRoot {
         if newTree == nil {
             if let oldTree {
                 try oldTree.dom?.remove()
+            }
+        }
+    }
+
+    private func renderGhost(newTree: VNode, oldTree: VNode?) {
+        for (name, oldRef) in oldTree?.ghost.refs ?? [:] {
+            if let newRef = newTree.ghost.refs[name] {
+                newRef._anyValue = oldRef._anyValue
             }
         }
     }
