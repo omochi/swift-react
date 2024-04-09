@@ -26,13 +26,88 @@ public final class ReactRoot {
          */
 
         do {
-            let newRoot = VNode.component(Fragment())
-            let newTree = try renderVTree(node: node)
-            newRoot.appendChildren(newTree)
-            try update(newTree: newTree, oldTree: root.children)
-            self.root = newRoot
+            let newTree = makeVNode(component: Fragment())
+            let newChildren = try normalize(node: node)
+                .map { makeVNode(component: $0) }
+            newTree.appendChildren(newChildren)
+            try render(newChildren: newChildren, oldChildren: root.children)
+            self.root = newTree
         } catch {
             print(error)
+        }
+    }
+
+    private func makeVNode<C: Component>(component: C) -> VNode {
+        let ghost = C._extractGhost(
+            .init(component: component)
+        )
+        return VNode(ghost: ghost)
+    }
+
+    private func render(
+        newTree: VNode?,
+        oldTree: VNode?
+    ) throws {
+        if let newTree {
+            if let newTag = newTree.tagElement {
+                let dom: JSHTMLElement = if let oldTree {
+                    try oldTree.domTag.unwrap("oldTree.domTag")
+                } else {
+                    try document.createElement(newTag.tagName)
+                }
+
+                let oldTag = oldTree?.tagElement
+                try renderDOMAttributes(
+                    dom: dom,
+                    newAttributes: newTag.attributes,
+                    oldAttributes: oldTag?.attributes ?? [:]
+                )
+                try renderDOMEventListeners(
+                    dom: dom,
+                    newListeners: newTag.listeners,
+                    oldListeners: oldTag?.listeners ?? [:]
+                )
+                newTree.dom = dom.asNode()
+            } else if let text = newTree.textElement {
+                let dom: JSText = try {
+                    if let oldTree {
+                        let dom = try oldTree.domText.unwrap("oldTree.domText")
+                        dom.data = text.value
+                        return dom
+                    } else {
+                        return try document.createTextNode(text.value)
+                    }
+                }()
+
+                newTree.dom = dom.asNode()
+            }
+
+            if let dom = newTree.dom {
+                let location = try domNodeLocation(node: newTree)
+                if location != dom.location {
+                    try dom.remove()
+                    try dom.insert(at: location)
+                }
+            }
+
+            // project ghost
+
+            let newChildrenNode: Node = newTree.ghost.component.render()
+            let newChildren = try normalize(node: newChildrenNode).map {
+                makeVNode(component: $0)
+            }
+            newTree.appendChildren(newChildren)
+        }
+
+        try render(
+            newChildren: newTree?.children ?? [],
+            oldChildren: oldTree?.children ?? []
+        )
+
+        if newTree == nil {
+            if let oldTree {
+                try oldTree.dom?.remove()
+            }
         }
     }
 
@@ -53,39 +128,17 @@ public final class ReactRoot {
         }
     }
 
-    private func renderComponent<C: Component>(_ component: C) throws -> VNode {
-        let ghost = C._extractGhost(
-            .init(component: component)
-        )
-        let v = VNode(ghost: ghost)
-
-        let child = component.render()
-        for vc in try renderVTree(node: child) {
-            v.appendChild(vc)
-        }
-        return v
-    }
-
-    private func renderVTree(
-        node: Node
-    ) throws -> [VNode] {
-        let components = try normalize(node: node)
-        return try components.map { (component) in
-            try renderComponent(component)
-        }
-    }
-
     private func unknownReactNode(_ node: Node) -> any Error {
         MessageError("unknown ReactNode: \(type(of: node))")
     }
 
-    private func update(
-        newTree: [VNode],
-        oldTree: [VNode]
+    private func render(
+        newChildren: [VNode],
+        oldChildren: [VNode]
     ) throws {
-        var patchedOldTree: [VNode?] = oldTree
+        var patchedOldChildren: [VNode?] = oldChildren
 
-        let diff = newTree.difference(from: oldTree)
+        let diff = newChildren.difference(from: oldChildren)
             .inferringMoves()
 
         var nextIndex = 0
@@ -93,34 +146,34 @@ public final class ReactRoot {
         for patch in diff {
             switch patch {
             case .remove(offset: let offset, element: let oldNode, associatedWith: let dest):
-                patchedOldTree.remove(at: offset)
+                patchedOldChildren.remove(at: offset)
 
                 if let _ = dest {
                     // process on insert
                 } else {
-                    try updateInstance(newNode: nil, oldNode: oldNode)
+                    try render(newTree: nil, oldTree: oldNode)
                 }
             case .insert(offset: let offset, element: let newNode, associatedWith: let source):
                 for index in nextIndex..<offset {
-                    let newNode = newTree[index]
-                    let oldNode = try patchedOldTree[index].unwrap("updating oldNode")
-                    try updateInstance(newNode: newNode, oldNode: oldNode)
+                    let newNode = newChildren[index]
+                    let oldNode = try patchedOldChildren[index].unwrap("updating oldNode")
+                    try render(newTree: newNode, oldTree: oldNode)
                 }
                 nextIndex = offset + 1
 
-                patchedOldTree.insert(nil, at: offset)
+                patchedOldChildren.insert(nil, at: offset)
 
-                let oldNode = source.map { oldTree[$0] }
-                try updateInstance(newNode: newNode, oldNode: oldNode)
+                let oldNode = source.map { oldChildren[$0] }
+                try render(newTree: newNode, oldTree: oldNode)
             }
         }
 
-        for index in nextIndex..<newTree.count {
-            let newNode = newTree[index]
-            let oldNode = try patchedOldTree[index].unwrap("updating oldNode")
-            try updateInstance(newNode: newNode, oldNode: oldNode)
+        for index in nextIndex..<newChildren.count {
+            let newNode = newChildren[index]
+            let oldNode = try patchedOldChildren[index].unwrap("updating oldNode")
+            try render(newTree: newNode, oldTree: oldNode)
         }
-        nextIndex = newTree.count
+        nextIndex = newChildren.count
     }
 
     private func attachDOM(node: VNode) throws {
@@ -164,59 +217,6 @@ public final class ReactRoot {
             return nil
         }
         return try prev.dom.unwrap("dom")
-    }
-
-    private func updateInstance(newNode: VNode?, oldNode: VNode?) throws {
-        if let newNode {
-            if let newTag = newNode.tagElement {
-                let dom: JSHTMLElement = if let oldNode {
-                    try oldNode.domTag.unwrap("oldNode.domTag")
-                } else {
-                    try document.createElement(newTag.tagName)
-                }
-
-                let oldTag = try oldNode?.tagElement.unwrap("oldNode.tagElement")
-                try renderDOMAttributes(
-                    dom: dom,
-                    newAttributes: newTag.attributes,
-                    oldAttributes: oldTag?.attributes ?? [:]
-                )
-                try renderDOMEventListeners(
-                    dom: dom,
-                    newListeners: newTag.listeners,
-                    oldListeners: oldTag?.listeners ?? [:]
-                )
-                newNode.dom = dom.asNode()
-            } else if let text = newNode.textElement {
-                let dom: JSText = try {
-                    if let oldNode {
-                        let dom = try oldNode.domText.unwrap("oldNode.domText")
-                        dom.data = text.value
-                        return dom
-                    } else {
-                        return try document.createTextNode(text.value)
-                    }
-                }()
-
-                newNode.dom = dom.asNode()
-            }
-
-            if let dom = newNode.dom {
-                let location = try domNodeLocation(node: newNode)
-                if location != dom.location {
-                    try dom.remove()
-                    try dom.insert(at: location)
-                }
-            }
-        }
-
-        try update(newTree: newNode?.children ?? [], oldTree: oldNode?.children ?? [])
-
-        if newNode == nil {
-            if let oldNode {
-                try oldNode.dom?.remove()
-            }
-        }
     }
 
     private func renderDOMAttributes(

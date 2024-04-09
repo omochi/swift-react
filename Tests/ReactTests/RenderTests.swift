@@ -195,7 +195,7 @@ final class RenderTests: XCTestCase {
     func testRenderAttribute() throws {
         let dom = try document.createElement("body")
         let root = ReactRoot(element: dom)
-        root.render(node: div(["class": "box"]))
+        root.render(node: div(attributes: ["class": "box"]))
         XCTAssertPrint(dom, """
         <body>
             <div class="box" />
@@ -213,7 +213,7 @@ final class RenderTests: XCTestCase {
         </body>
         """)
 
-        root.render(node: div(["class": "box"]))
+        root.render(node: div(attributes: ["class": "box"]))
         XCTAssertPrint(dom, """
         <body>
             <div class="box" />
