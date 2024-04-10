@@ -39,6 +39,7 @@ public final class VNode: Hashable {
 
     public let ghost: Ghost
     public let equality: Equality
+    public var new: VNode??
     public var dom: JSNode?
     public var listeners: [String: ListenerBridge] = [:]
 

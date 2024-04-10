@@ -216,4 +216,48 @@ final class HookTests: XCTestCase {
         XCTAssertEqual(contentRenderCount, 1)
         XCTAssertEqual(sectionRenderCount, 2)
     }
+
+    func testSerializedRender() throws {
+        struct Content: Component {
+            @State var count = 0
+
+            var onRenderEnter: () -> Void
+            var onRenderExit: () -> Void
+
+            func render() -> Node {
+                onRenderEnter()
+                let result = div {
+                    "\(count)"
+                }
+                if count < 2 {
+                    count += 1
+                }
+                onRenderExit()
+                return result
+            }
+        }
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+
+        var evs: [String] = []
+
+        let content = Content(
+            onRenderEnter: { evs.append("e") },
+            onRenderExit: { evs.append("x") }
+        )
+
+        root.render(node: content)
+
+        XCTAssertEqual(evs, ["e", "x", "e", "x", "e", "x"])
+
+        XCTAssertPrint(body, """
+        <body>
+            <div>
+                2
+            </div>
+        </body>
+        """)
+
+    }
 }

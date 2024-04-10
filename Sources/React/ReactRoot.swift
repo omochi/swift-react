@@ -7,54 +7,58 @@ public final class ReactRoot {
     public init(
         element: JSHTMLElement
     ) {
+        self.scheduler = Scheduler()
+
         self.dom = element
         self.root = nil
 
         self.window = JSWindow.global
         self.document = window.document
+
+        scheduler.onAction = { [weak self] (action) in
+            try self?.run(action: action)
+        }
     }
 
+    private let scheduler: Scheduler
     public let dom: JSHTMLElement
     package var root: VNode?
 
     private let window: JSWindow
     private let document: JSDocument
 
-    public func render(node: Node) {
-        /*
-         TODO: implement render cycle
-         */
-
-        do {
-            let newTree = makeVNode(component: Fragment())
-            let newChildren = try normalize(node: node)
-                .map { makeVNode(component: $0) }
-            newTree.appendChildren(newChildren)
-            try render(newChildren: newChildren, oldChildren: root?.children ?? [])
-            self.root = newTree
-        } catch {
-            print(error)
+    private func run(action: Scheduler.Action) throws {
+        switch action {
+        case .renderRoot(let node):
+            try runRenderRoot(node: node)
+        case .update(let node):
+            try runUpdate(node: node)
         }
     }
 
-    private func update(node oldTree: VNode) throws {
-        // ?
-        do {
-            let newTree = VNode(ghost: oldTree.ghost)
-            try render(newTree: newTree, oldTree: oldTree)
-            let parent = try oldTree.parent.unwrap("oldTree.parent")
-            let index = try parent.index(of: oldTree).unwrap("oldTree index")
-            parent.replaceChild(newTree, at: index)
+    public func render(node: Node) {
+        scheduler.schedule(action: .renderRoot(node))
+    }
 
-//            let newTree = makeVNode(component: Fragment())
-//            let newChildren = (root?.children ?? []).map { (node) in
-//                VNode(ghost: node.ghost)
-//            }
-//            newTree.appendChildren(newChildren)
-//            try render(newChildren: newChildren, oldChildren: root?.children ?? [])
-        } catch {
-            print(error)
-        }
+    private func update(node: VNode) {
+        scheduler.schedule(action: .update(node))
+    }
+
+    private func runRenderRoot(node: Node) throws {
+        let newTree = makeVNode(component: Fragment())
+        let newChildren = try normalize(node: node)
+            .map { makeVNode(component: $0) }
+        newTree.appendChildren(newChildren)
+        try render(newChildren: newChildren, oldChildren: root?.children ?? [])
+        self.root = newTree
+    }
+
+    private func runUpdate(node oldTree: VNode) throws {
+        let newTree = VNode(ghost: oldTree.ghost)
+        try render(newTree: newTree, oldTree: oldTree)
+        let parent = try oldTree.parent.unwrap("oldTree.parent")
+        let index = try parent.index(of: oldTree).unwrap("oldTree index")
+        parent.replaceChild(newTree, at: index)
     }
 
     private func makeVNode<C: Component>(component: C) -> VNode {
@@ -69,6 +73,10 @@ public final class ReactRoot {
         oldTree: VNode?
     ) throws {
         var doesRenderChildren = true
+
+        if let oldTree {
+            oldTree.new = .some(newTree)
+        }
 
         if let newTree {
             if let newTag = newTree.tagElement {
@@ -131,12 +139,7 @@ public final class ReactRoot {
                 if oldTree == nil {
                     state._setDidUpdate { [weak self, weak newTree] () in
                         guard let self, let newTree else { return }
-
-                        do {
-                            try self.update(node: newTree)
-                        } catch {
-                            print("\(error)")
-                        }
+                        self.update(node: newTree)
                     }
                 }
             }
