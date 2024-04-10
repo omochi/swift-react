@@ -23,7 +23,8 @@ public final class ReactRoot {
     private let scheduler: Scheduler
     public let dom: JSHTMLElement
     package var root: VNode?
-    package var onComponentRender: ((any Component) -> Void)?
+    package var willComponentRender: ((any Component) -> Void)?
+    package var didComponentRender: ((any Component) -> Void)?
 
     private let window: JSWindow
     private let document: JSDocument
@@ -156,10 +157,12 @@ public final class ReactRoot {
             }
 
             if doesRenderChildren {
-                if let onComponentRender {
-                    onComponentRender(newTree.ghost.component)
-                }
-                let newChildrenNode: Node = newTree.ghost.component.render()
+                let component = newTree.ghost.component
+                
+                willComponentRender?(component)
+                let newChildrenNode: Node = component.render()
+                didComponentRender?(component)
+
                 let newChildren = Nodes.normalize(node: newChildrenNode).map {
                     makeVNode(component: $0)
                 }

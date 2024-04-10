@@ -15,10 +15,8 @@ final class HookTests: XCTestCase {
     func testRef() throws {
         struct Content: Component {
             @Ref var buttonRef: JSHTMLElement?
-            var onRender: (Content) -> Void
 
             func render() -> Node {
-                onRender(self)
                 return div {
                     button(ref: $buttonRef) { "hi" }
                 }
@@ -29,24 +27,20 @@ final class HookTests: XCTestCase {
 
         let body = try document.createElement("body")
         let root = ReactRoot(element: body)
-        root.render(
-            node: Content(
-                onRender: { (content) in
-                    refs.append(content.buttonRef)
-                }
-            )
-        )
+        root.willComponentRender = { (c) in
+            switch c {
+            case let c as Content:
+                refs.append(c.buttonRef)
+            default: break
+            }
+        }
+        let content = Content()
+        root.render(node: content)
 
         XCTAssertEqual(refs.count, 1)
         XCTAssertEqual(refs[safe: 0], .some(nil))
 
-        root.render(
-            node: Content(
-                onRender: { (content) in
-                    refs.append(content.buttonRef)
-                }
-            )
-        )
+        root.render(node: content)
 
         let btn: JSHTMLElement = try XCTUnwrap(
             root.root?
@@ -68,10 +62,8 @@ final class HookTests: XCTestCase {
 
         struct Content: Component {
             @Ref var buttonRef: JSHTMLElement?
-            var onRender: (Content) -> Void
 
             func render() -> Node {
-                onRender(self)
                 return Button(buttonRefObject: $buttonRef)
             }
         }
@@ -80,24 +72,20 @@ final class HookTests: XCTestCase {
 
         let body = try document.createElement("body")
         let root = ReactRoot(element: body)
-        root.render(
-            node: Content(
-                onRender: { (content) in
-                    refs.append(content.buttonRef)
-                }
-            )
-        )
+        root.willComponentRender = { (c) in
+            switch c {
+            case let c as Content:
+                refs.append(c.buttonRef)
+            default: break
+            }
+        }
+        let content = Content()
+        root.render(node: content)
 
         XCTAssertEqual(refs.count, 1)
         XCTAssertEqual(refs[safe: 0], .some(nil))
 
-        root.render(
-            node: Content(
-                onRender: { (content) in
-                    refs.append(content.buttonRef)
-                }
-            )
-        )
+        root.render(node: content)
 
         let btn: JSHTMLElement = try XCTUnwrap(
             root.root?
@@ -129,9 +117,8 @@ final class HookTests: XCTestCase {
 
         let body = try document.createElement("body")
         let root = ReactRoot(element: body)
-        root.render(
-            node: Content()
-        )
+        let content = Content()
+        root.render(node: content)
 
         XCTAssertPrint(body, """
         <body>
@@ -162,10 +149,8 @@ final class HookTests: XCTestCase {
     func testStateMultiple() throws {
         struct Content: Component {
             @State var count = 0
-            var onRender: () -> Void
 
             func render() -> Node {
-                onRender()
                 return div()
             }
         }
@@ -173,17 +158,33 @@ final class HookTests: XCTestCase {
         let body = try document.createElement("body")
         let root = ReactRoot(element: body)
         var renderCount = 0
-        let content = Content(
-            onRender: { renderCount += 1 }
-        )
+        root.willComponentRender = { (c) in
+            switch c {
+            case is Content:
+                renderCount += 1
+            default: break
+            }
+        }
+
+        let content = Content()
         root.render(node: content)
         XCTAssertEqual(renderCount, 1)
+        XCTAssertPrint(body, """
+        <body>
+            <div />
+        </body>
+        """)
         content.count += 1
         XCTAssertEqual(renderCount, 2)
         content.count += 1
         XCTAssertEqual(renderCount, 3)
         content.count += 1
         XCTAssertEqual(renderCount, 4)
+        XCTAssertPrint(body, """
+        <body>
+            <div />
+        </body>
+        """)
     }
 
 }

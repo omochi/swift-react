@@ -14,22 +14,14 @@ final class RenderPlanTests: XCTestCase {
 
     func testPartialRender() throws {
         struct Content: Component {
-            var onRender: (Self) -> Void
-            var onSectionRender: (Section) -> Void
-
             func render() -> Node {
-                onRender(self)
-                return Section(
-                    onRender: onSectionRender
-                )
+                return Section()
             }
         }
 
         struct Section: Component {
             @State var count = 0
-            var onRender: (Self) -> Void
             func render() -> Node {
-                onRender(self)
                 return div {
                     "\(count)"
                     button(
@@ -48,12 +40,17 @@ final class RenderPlanTests: XCTestCase {
 
         let body = try document.createElement("body")
         let root = ReactRoot(element: body)
+        root.willComponentRender = { (c) in
+            switch c {
+            case is Content:
+                contentRenderCount += 1
+            case is Section:
+                sectionRenderCount += 1
+            default: break
+            }
+        }
 
-        let content = Content(
-            onRender: { (_) in contentRenderCount += 1 },
-            onSectionRender: { (_) in sectionRenderCount += 1 }
-        )
-
+        let content = Content()
         root.render(node: content)
 
         XCTAssertEqual(contentRenderCount, 1)
@@ -74,32 +71,37 @@ final class RenderPlanTests: XCTestCase {
         struct Content: Component {
             @State var count = 0
 
-            var onRenderEnter: () -> Void
-            var onRenderExit: () -> Void
-
             func render() -> Node {
-                onRenderEnter()
                 let result = div {
                     "\(count)"
                 }
                 if count < 2 {
                     count += 1
                 }
-                onRenderExit()
                 return result
             }
         }
 
-        let body = try document.createElement("body")
-        let root = ReactRoot(element: body)
-
         var evs: [String] = []
 
-        let content = Content(
-            onRenderEnter: { evs.append("e") },
-            onRenderExit: { evs.append("x") }
-        )
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+        root.willComponentRender = { (c) in
+            switch c {
+            case is Content:
+                evs.append("e")
+            default: break
+            }
+        }
+        root.didComponentRender = { (c) in
+            switch c {
+            case is Content:
+                evs.append("x")
+            default: break
+            }
+        }
 
+        let content = Content()
         root.render(node: content)
 
         XCTAssertEqual(evs, ["e", "x", "e", "x", "e", "x"])
@@ -116,32 +118,33 @@ final class RenderPlanTests: XCTestCase {
     func testReorderingRender() throws {
         struct Content: Component {
             @State var count = 0
-            var onContentRender: () -> Void
-            var onSectionRender: () -> Void
             func render() -> Node {
-                onContentRender()
-                return Section(onRender: onSectionRender)
+                return Section()
             }
         }
 
         struct Section: Component {
             @State var count = 0
-            var onRender: () -> Void
             func render() -> Node {
-                onRender()
                 return div()
             }
         }
 
-        let body = try document.createElement("body")
-        let root = ReactRoot(element: body)
-
         var evs: [String] = []
 
-        let content = Content(
-            onContentRender: { evs.append("c") },
-            onSectionRender: { evs.append("s") }
-        )
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+        root.willComponentRender = { (c) in
+            switch c {
+            case is Content:
+                evs.append("c")
+            case is Section:
+                evs.append("s")
+            default: break
+            }
+        }
+
+        let content = Content()
         root.render(node: content)
 
         let section: Section = try XCTUnwrap(
@@ -165,8 +168,6 @@ final class RenderPlanTests: XCTestCase {
         struct Content: Component {
             @State var count = 0
 
-            var probe: (String) -> Void
-
             func render() -> Node {
                 let section: Int = switch count {
                 case 0: 0
@@ -176,32 +177,33 @@ final class RenderPlanTests: XCTestCase {
                 default: 2
                 }
 
-                return Section(probe: probe, value: section)
+                return Section(value: section)
             }
         }
 
         struct Section: Component {
-            var probe: (String) -> Void
-
             var value: Int
 
             var deps: AnyHashable? { value }
 
             func render() -> Node {
-                probe("s\(value)")
                 return "\(value)"
             }
         }
 
+        var evs: [String] = []
 
         let body = try document.createElement("body")
         let root = ReactRoot(element: body)
+        root.willComponentRender = { (c) in
+            switch c {
+            case let s as Section:
+                evs.append("s\(s.value)")
+            default: break
+            }
+        }
 
-        var evs: [String] = []
-
-        let content = Content(
-            probe: { evs.append($0) }
-        )
+        let content = Content()
         root.render(node: content)
 
         XCTAssertEqual(evs, ["s0"])
@@ -246,7 +248,7 @@ final class RenderPlanTests: XCTestCase {
 
         let body = try document.createElement("body")
         let root = ReactRoot(element: body)
-        root.onComponentRender = { (c) in
+        root.willComponentRender = { (c) in
             switch c {
             case is Fragment:
                 renderCount += 1
