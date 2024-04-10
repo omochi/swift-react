@@ -294,4 +294,36 @@ final class RenderPlanTests: XCTestCase {
         root.render(node: content)
         XCTAssertEqual(renderCount, 1)
     }
+//
+//    func testKey() throws {
+//        struct Section: Component {
+//            var key: AnyHashable?
+//
+//            var id: Int
+//
+//            var deps: AnyHashable? { AnyDeps(key, id) }
+//
+//            func render() -> Node {
+//                return div {
+//                    "\(id)"
+//                }
+//            }
+//        }
+//
+//        struct Content: Component {
+//
+//            var ids: [Int]
+//
+//            func render() -> Node {
+//                return div {
+//                    ids.map { (id) in
+//                        Section(id: id)
+//                    }
+//                }
+//            }
+//
+//        }
+//
+//
+//    }
 }

@@ -52,10 +52,10 @@ final class RenderTests: XCTestCase {
         let dom = try document.createElement("body")
         let root = ReactRoot(element: dom)
         root.render(
-            node: NodeCollection(
+            node: [
                 h1(),
                 h2()
-            )
+            ]
         )
         XCTAssertPrint(dom, """
         <body>
@@ -69,11 +69,11 @@ final class RenderTests: XCTestCase {
         let dom = try document.createElement("body")
         let root = ReactRoot(element: dom)
         root.render(
-            node: NodeCollection(
+            node: [
                 h2(),
                 h4(),
                 h3()
-            )
+            ]
         )
         XCTAssertPrint(dom, """
         <body>
@@ -84,11 +84,11 @@ final class RenderTests: XCTestCase {
         """)
 
         root.render(
-            node: NodeCollection(
+            node: [
                 h1(),
                 h3(),
                 h4()
-            )
+            ]
         )
         XCTAssertPrint(dom, """
         <body>
@@ -306,5 +306,51 @@ final class RenderTests: XCTestCase {
         // dont change
         XCTAssertEqual(evs1.count, 1)
         XCTAssertEqual(evs1[safe: 0], ev1.asEvent())
+    }
+
+    func testElementArray() throws {
+        struct Paragraph: Component {
+            func render() -> Node {
+                div(attributes: ["class": "para"])
+            }
+        }
+
+        struct ArraySection: Component {
+            func render() -> Node {
+                [
+                    Paragraph(),
+                    div(attributes: ["class": "array"])
+                ]
+            }
+        }
+
+        struct FragmentSection: Component {
+            func render() -> Node {
+                Fragment {
+                    Paragraph()
+                    div(attributes: ["class": "frag"])
+                }
+            }
+        }
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+
+        root.render(
+            node: [
+                FragmentSection(),
+                ArraySection()
+            ]
+        )
+
+        XCTAssertPrint(root.dom, """
+        <body>
+            <div class="para" />
+            <div class="frag" />
+            <div class="para" />
+            <div class="array" />
+        </body>
+        """)
+
     }
 }

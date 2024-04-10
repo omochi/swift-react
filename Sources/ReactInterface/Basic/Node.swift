@@ -2,13 +2,22 @@ import SRTCore
 
 public typealias Node = (any Element)?
 
+
+public typealias NodeArray = Array<Node>
+
+extension NodeArray: ReactInterface.Element {}
+
 package enum Nodes {
     public static func normalize(node: Node) -> [any Component] {
         guard let node else { return [] }
 
         switch node {
-        case let nodes as NodeCollection:
-            return nodes.children.flatMap { (node) in
+        case let fe as ForEach:
+            return fe.children.flatMap { (node) in
+                normalize(node: node)
+            }
+        case let array as NodeArray:
+            return array.flatMap { (node) in
                 normalize(node: node)
             }
         case let text as String:

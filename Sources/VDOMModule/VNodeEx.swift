@@ -97,7 +97,10 @@ extension VNode {
             }
 
             for x in children {
-                switch x.walk(step: step) {
+                switch x.walk(
+                    direction: direction,
+                    step: step
+                ) {
                 case .continue,
                         .skipChildren: continue
                 case .break: return .break

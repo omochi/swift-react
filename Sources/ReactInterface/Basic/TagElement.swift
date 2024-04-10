@@ -36,6 +36,6 @@ public struct TagElement: Component {
     }
 
     public func render() -> Node {
-        NodeCollection(children)
+        children
     }
 }

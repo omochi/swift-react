@@ -15,6 +15,6 @@ public struct Fragment: Component {
     public var children: [Node]
 
     public func render() -> Node {
-        return NodeCollection(children)
+        children
     }
 }
