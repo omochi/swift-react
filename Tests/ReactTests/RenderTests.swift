@@ -308,7 +308,7 @@ final class RenderTests: XCTestCase {
         XCTAssertEqual(evs1[safe: 0], ev1.asEvent())
     }
 
-    func testElementArray() throws {
+    func testStaticNodeArray() throws {
         struct Paragraph: Component {
             func render() -> Node {
                 div(attributes: ["class": "para"])
@@ -351,6 +351,47 @@ final class RenderTests: XCTestCase {
             <div class="array" />
         </body>
         """)
+    }
 
+    func testDynamicNodeArray() throws {
+        struct Content: Component {
+            var ids: [Int]
+
+            func render() -> Node {
+                ids.map { (id) in
+                    div {
+                        "\(id)"
+                    }
+                }
+            }
+        }
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+        root.render(node: Content(ids: [1, 2, 3]))
+        XCTAssertPrint(root.dom, """
+        <body>
+            <div>
+                1
+            </div>
+            <div>
+                2
+            </div>
+            <div>
+                3
+            </div>
+        </body>
+        """)
+        root.render(node: Content(ids: [4, 5]))
+        XCTAssertPrint(root.dom, """
+        <body>
+            <div>
+                4
+            </div>
+            <div>
+                5
+            </div>
+        </body>
+        """)
     }
 }

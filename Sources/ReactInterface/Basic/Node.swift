@@ -12,10 +12,6 @@ package enum Nodes {
         guard let node else { return [] }
 
         switch node {
-        case let fe as ForEach:
-            return fe.children.flatMap { (node) in
-                normalize(node: node)
-            }
         case let array as NodeArray:
             return array.flatMap { (node) in
                 normalize(node: node)
