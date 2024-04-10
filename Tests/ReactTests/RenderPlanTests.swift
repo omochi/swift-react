@@ -261,4 +261,37 @@ final class RenderPlanTests: XCTestCase {
         root.render(node: content)
         XCTAssertEqual(renderCount, 1)
     }
+
+    func testSkipTagChildren() throws {
+        struct Section: Component {
+            var text: String
+
+            var deps: AnyHashable? { AnyDeps(text) }
+
+            func render() -> Node {
+                text
+            }
+        }
+
+        var renderCount = 0
+
+        let content = div {
+            Section(text: "hi")
+        }
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+        root.willComponentRender = { (c) in
+            switch c {
+            case let tag as TagElement where tag.tagName == "div":
+                renderCount += 1
+            default: break
+            }
+        }
+        root.render(node: content)
+        XCTAssertEqual(renderCount, 1)
+
+        root.render(node: content)
+        XCTAssertEqual(renderCount, 1)
+    }
 }

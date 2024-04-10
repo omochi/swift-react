@@ -24,6 +24,17 @@ public struct TagElement: Component {
     public var listeners: EventListeners
     public var children: [Node]
 
+    public var deps: AnyHashable? {
+        AnyDeps(
+            tagName,
+            key,
+            ref,
+            attributes,
+            listeners,
+            children.deps
+        )
+    }
+
     public func render() -> Node {
         NodeCollection(children)
     }

@@ -1,6 +1,6 @@
 import SRTCore
 
-public struct ChildrenDeps: Hashable {
+private struct ChildrenDeps: Hashable {
     final class Token: IdentityHashable {}
 
     init(children: [Node]) {
@@ -27,7 +27,7 @@ public struct ChildrenDeps: Hashable {
 }
 
 extension [Node] {
-    public var deps: ChildrenDeps {
+    public var deps: AnyHashable {
         ChildrenDeps(children: self)
     }
 }
