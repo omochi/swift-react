@@ -40,6 +40,14 @@ public final class ReactRoot {
         scheduler.schedule(action: .renderRoot(node))
     }
 
+    package func pause() {
+        scheduler.pause()
+    }
+
+    package func resume() {
+        scheduler.resume()
+    }
+
     private func update(node: VNode) {
         scheduler.schedule(action: .update(node))
     }

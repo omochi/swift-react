@@ -98,6 +98,15 @@ public final class VNode: Hashable {
         _children.firstIndex { $0 === child }
     }
 
+    public func isDescendant(of ancestor: VNode) -> Bool {
+        var nodeO: VNode? = self.parent
+        while true {
+            guard let node = nodeO else { return false }
+            if node === ancestor { return true }
+            nodeO = node.parent
+        }
+    }
+
     public static func unknownNode(_ node: VNode) -> any Error {
         MessageError("unknown VNode: \(type(of: node))")
     }

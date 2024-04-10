@@ -258,6 +258,53 @@ final class HookTests: XCTestCase {
             </div>
         </body>
         """)
+    }
 
+    func testReorderingRender() throws {
+        struct Content: Component {
+            @State var count = 0
+            var onContentRender: () -> Void
+            var onSectionRender: () -> Void
+            func render() -> Node {
+                onContentRender()
+                return Section(onRender: onSectionRender)
+            }
+        }
+
+        struct Section: Component {
+            @State var count = 0
+            var onRender: () -> Void
+            func render() -> Node {
+                onRender()
+                return div()
+            }
+        }
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+
+        var evs: [String] = []
+
+        let content = Content(
+            onContentRender: { evs.append("c") },
+            onSectionRender: { evs.append("s") }
+        )
+        root.render(node: content)
+
+        let section: Section = try XCTUnwrap(
+            root.root?
+                .find { $0.ghost.component is Section }?
+                .ghost.component as? Section
+        )
+        XCTAssertEqual(evs, ["c", "s"])
+
+        root.pause()
+
+        section.count += 1
+        content.count += 1
+        XCTAssertEqual(evs, ["c", "s"])
+
+        root.resume()
+        XCTAssertEqual(evs, ["c", "s", "c", "s", "s"])
     }
 }
