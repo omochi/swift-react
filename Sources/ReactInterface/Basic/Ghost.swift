@@ -10,6 +10,9 @@ public struct GhostInput<C: Component> {
 
 public struct Ghost {
     public var component: any Component
-    package var refs: [String: any _AnyRefObject]
-    package var states: [String: any _AnyStateStorage]
+    package var hooks: [String: any _AnyHookObject]
+
+    package var states: [String: any _AnyStateStorage] {
+        hooks.compactMapValues { $0 as? any _AnyStateStorage }
+    }
 }

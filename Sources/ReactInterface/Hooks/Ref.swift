@@ -24,9 +24,10 @@ public struct Ref<Value>: _AnyRef {
     }
 
     package var _anyRefObject: any _AnyRefObject { object }
+    package var _anyHookObject: any _AnyHookObject { _anyRefObject }
 }
 
-package protocol _AnyRef {
+package protocol _AnyRef: _AnyHookWrapper {
     var _anyRefObject: any _AnyRefObject { get }
 }
 
@@ -37,12 +38,13 @@ public final class RefObject<Value>: IdentityHashable & _AnyRefObject {
 
     public var value: Value?
 
-    public var _anyValue: Any? {
-        get { value }
-        set { value = newValue.flatMap { $0 as? Value } }
+    package func _take(fromAnyHookObject object: any _AnyHookObject) {
+        guard let o = object as? RefObject<Value> else { return }
+
+        value = o.value
     }
 }
 
-package protocol _AnyRefObject: AnyObject {
-    var _anyValue: Any? { get set }
+package protocol _AnyRefObject: _AnyHookObject {
+
 }

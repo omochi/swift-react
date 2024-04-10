@@ -158,7 +158,7 @@ public final class ReactRoot {
 
             if doesRenderChildren {
                 let component = newTree.ghost.component
-                
+
                 willComponentRender?(component)
                 let newChildrenNode: Node = component.render()
                 didComponentRender?(component)
@@ -187,15 +187,9 @@ public final class ReactRoot {
     }
 
     private func renderGhost(newTree: VNode, oldTree: VNode?) {
-        for (name, oldRef) in oldTree?.ghost.refs ?? [:] {
-            if let newRef = newTree.ghost.refs[name] {
-                newRef._anyValue = oldRef._anyValue
-            }
-        }
-
-        for (name, oldState) in oldTree?.ghost.states ?? [:] {
-            if let newState = newTree.ghost.states[name] {
-                newState._takeAny(oldState)
+        for (name, oldHook) in oldTree?.ghost.hooks ?? [:] {
+            if let newHook = newTree.ghost.hooks[name] {
+                newHook._take(fromAnyHookObject: oldHook)
             }
         }
     }

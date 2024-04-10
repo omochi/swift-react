@@ -16,28 +16,22 @@ extension Component {
     public var deps: AnyHashable? { nil }
 
     public static func _extractGhost(_ input: GhostInput<Self>) -> Ghost {
-        var refs: [String: any _AnyRefObject] = [:]
-        var states: [String: any _AnyStateStorage] = [:]
+        var hooks: [String: any _AnyHookObject] = [:]
 
         let mirror = Mirror(reflecting: input.component)
         for mc in mirror.children {
             guard let label = mc.label else { continue }
 
             switch mc.value {
-            case let ref as any _AnyRef:
-                let obj = ref._anyRefObject
-                refs[label] = obj
-            case let state as any _AnyState:
-                let storage = state._anyStateStorage
-                states[label] = storage
+            case let hook as any _AnyHookWrapper:
+                hooks[label] = hook._anyHookObject
             default: break
             }
         }
 
         return Ghost(
             component: input.component,
-            refs: refs,
-            states: states
+            hooks: hooks
         )
     }
 }

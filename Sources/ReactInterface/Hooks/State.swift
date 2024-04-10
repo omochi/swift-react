@@ -18,6 +18,7 @@ public struct State<Value>: _AnyState {
     package var storage: Storage
 
     package var _anyStateStorage: any _AnyStateStorage { storage }
+    package var _anyHookObject: any _AnyHookObject { _anyStateStorage }
 
     package final class Storage: _AnyStateStorage {
         init() {}
@@ -28,7 +29,7 @@ public struct State<Value>: _AnyState {
 
         func getValue() -> Value {
             guard let value else {
-                fatalError("State is uninitialized")
+                preconditionFailure("State is uninitialized")
             }
             return value
         }
@@ -39,17 +40,6 @@ public struct State<Value>: _AnyState {
             didUpdate?()
         }
 
-        func take(_ o: Storage) {
-            value = o.value
-            isDirty = isDirty || o.isDirty
-            didUpdate = o.didUpdate
-        }
-
-        package func _takeAny(_ other: any _AnyStateStorage) {
-            guard let other = other as? Storage else { return }
-            take(other)
-        }
-
         package func _consumeDirty() -> Bool {
             defer { isDirty = false }
             return isDirty
@@ -58,15 +48,22 @@ public struct State<Value>: _AnyState {
         package func _setDidUpdate(_ newValue: (() -> Void)?) {
             didUpdate = newValue
         }
+
+        package func _take(fromAnyHookObject object: any _AnyHookObject) {
+            guard let o = object as? Storage else { return }
+
+            value = o.value
+            isDirty = isDirty || o.isDirty
+            didUpdate = o.didUpdate
+        }
     }
 }
 
-package protocol _AnyState {
+package protocol _AnyState: _AnyHookWrapper {
     var _anyStateStorage: any _AnyStateStorage { get }
 }
 
-package protocol _AnyStateStorage: AnyObject {
-    func _takeAny(_ other: any _AnyStateStorage)
+package protocol _AnyStateStorage: _AnyHookObject {
     func _consumeDirty() -> Bool
     func _setDidUpdate(_ newValue: (() -> Void)?)
 }

@@ -54,7 +54,7 @@ public class WebNode: WebEventTarget & CustomStringConvertible {
     }
 
     internal func write(to p: PrettyPrinter) {
-        fatalError()
+        fatalError("override is unimplemented: type=\(type(of: self))")
     }
 
     public override func _get_property(_ name: String) -> JSValue {
