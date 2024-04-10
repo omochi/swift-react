@@ -218,4 +218,45 @@ final class RenderPlanTests: XCTestCase {
         content.count += 1
         XCTAssertEqual(evs, ["s0", "s1", "s2"])
     }
+
+    func testSkipFragmentChildren() throws {
+        struct Section: Component {
+            var `class`: String
+            var text: String
+
+            var deps: AnyHashable? {
+                AnyDeps(`class`, text)
+            }
+
+            func render() -> Node {
+                return div(attributes: ["class": `class`]) {
+                    text
+                }
+            }
+        }
+
+        var renderCount = 0
+
+        let section = Section(
+            class: "section",
+            text: "hello"
+        )
+
+        let content = Fragment(children: [section])
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+        root.onComponentRender = { (c) in
+            switch c {
+            case is Fragment:
+                renderCount += 1
+            default: break
+            }
+        }
+        root.render(node: content)
+        XCTAssertEqual(renderCount, 1)
+
+        root.render(node: content)
+        XCTAssertEqual(renderCount, 1)
+    }
 }

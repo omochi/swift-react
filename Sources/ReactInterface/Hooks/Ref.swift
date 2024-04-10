@@ -1,3 +1,5 @@
+import SRTCore
+
 @propertyWrapper
 public struct Ref<Value>: _AnyRef {
     public init(
@@ -28,7 +30,7 @@ package protocol _AnyRef {
     var _anyRefObject: any _AnyRefObject { get }
 }
 
-public final class RefObject<Value>: _AnyRefObject {
+public final class RefObject<Value>: IdentityHashable & _AnyRefObject {
     public init(_ value: Value?) {
         self.value = value
     }

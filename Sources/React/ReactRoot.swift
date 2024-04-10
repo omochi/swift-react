@@ -23,6 +23,7 @@ public final class ReactRoot {
     private let scheduler: Scheduler
     public let dom: JSHTMLElement
     package var root: VNode?
+    package var onComponentRender: ((any Component) -> Void)?
 
     private let window: JSWindow
     private let document: JSDocument
@@ -54,7 +55,7 @@ public final class ReactRoot {
 
     private func runRenderRoot(node: Node) throws {
         let newTree = makeVNode(component: Fragment())
-        let newChildren = try normalize(node: node)
+        let newChildren = Nodes.normalize(node: node)
             .map { makeVNode(component: $0) }
         newTree.appendChildren(newChildren)
         try render(newChildren: newChildren, oldChildren: root?.children ?? [])
@@ -155,8 +156,11 @@ public final class ReactRoot {
             }
 
             if doesRenderChildren {
+                if let onComponentRender {
+                    onComponentRender(newTree.ghost.component)
+                }
                 let newChildrenNode: Node = newTree.ghost.component.render()
-                let newChildren = try normalize(node: newChildrenNode).map {
+                let newChildren = Nodes.normalize(node: newChildrenNode).map {
                     makeVNode(component: $0)
                 }
                 newTree.appendChildren(newChildren)
@@ -191,27 +195,6 @@ public final class ReactRoot {
                 newState._takeAny(oldState)
             }
         }
-    }
-
-    private func normalize(node: Node) throws -> [any Component] {
-        guard let node else { return [] }
-
-        switch node {
-        case let nodes as NodeCollection:
-            return try nodes.children.flatMap { (node) in
-                try normalize(node: node)
-            }
-        case let text as String:
-            return [TextElement(text)]
-        case let component as any Component:
-            return [component]
-        default:
-            throw unknownReactNode(node)
-        }
-    }
-
-    private func unknownReactNode(_ node: Node) -> any Error {
-        MessageError("unknown ReactNode: \(type(of: node))")
     }
 
     private func render(

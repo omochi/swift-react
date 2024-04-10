@@ -8,9 +8,13 @@ public struct Fragment: Component {
         self.init(children: children)
     }
 
+    public var deps: AnyHashable? {
+        AnyDeps(children.deps)
+    }
+
     public var children: [Node]
 
     public func render() -> Node {
-        NodeCollection(children)
+        return NodeCollection(children)
     }
 }
