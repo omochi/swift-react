@@ -1,5 +1,3 @@
-extension String: Element {}
-
 package struct TextElement: Component {
     public init(_ value: String) {
         self.value = value
