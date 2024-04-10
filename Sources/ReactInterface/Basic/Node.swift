@@ -2,7 +2,6 @@ import SRTCore
 
 public typealias Node = (any Element)?
 
-
 public typealias NodeArray = Array<Node>
 
 extension NodeArray: ReactInterface.Element {}

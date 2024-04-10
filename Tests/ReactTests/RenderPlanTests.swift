@@ -294,8 +294,8 @@ final class RenderPlanTests: XCTestCase {
         root.render(node: content)
         XCTAssertEqual(renderCount, 1)
     }
-//
-//    func testKey() throws {
+
+//    func testKeyMatchSwap() throws {
 //        struct Section: Component {
 //            var key: AnyHashable?
 //
@@ -311,19 +311,82 @@ final class RenderPlanTests: XCTestCase {
 //        }
 //
 //        struct Content: Component {
-//
 //            var ids: [Int]
 //
 //            func render() -> Node {
-//                return div {
+//                div {
 //                    ids.map { (id) in
-//                        Section(id: id)
+//                        Section(key: id, id: id)
 //                    }
 //                }
 //            }
-//
 //        }
 //
+//        var evs: [Int] = []
 //
+//        let body = try document.createElement("body")
+//        let root = ReactRoot(element: body)
+//        root.willComponentRender = { (c) in
+//            switch c {
+//            case let c as Section:
+//                evs.append(c.id)
+//            default: break
+//            }
+//        }
+//        root.render(node: Content(ids: [1, 2, 3]))
+//        XCTAssertPrint(root.dom, """
+//        <body>
+//            <div>
+//                <div>
+//                    1
+//                </div>
+//                <div>
+//                    2
+//                </div>
+//                <div>
+//                    3
+//                </div>
+//            </div>
+//        </body>
+//        """)
+//        XCTAssertEqual(evs, [1, 2, 3])
+//        evs = []
+//
+//        root.render(node: Content(ids: [2, 3, 4]))
+//        XCTAssertEqual(evs, [4])
+//        XCTAssertPrint(root.dom, """
+//        <body>
+//            <div>
+//                <div>
+//                    2
+//                </div>
+//                <div>
+//                    3
+//                </div>
+//                <div>
+//                    4
+//                </div>
+//            </div>
+//        </body>
+//        """)
+//        evs = []
+//
+//        root.render(node: Content(ids: [4, 3, 2]))
+//        XCTAssertEqual(evs, [5])
+//        XCTAssertPrint(root.dom, """
+//        <body>
+//            <div>
+//                <div>
+//                    4
+//                </div>
+//                <div>
+//                    3
+//                </div>
+//                <div>
+//                    2
+//                </div>
+//            </div>
+//        </body>
+//        """)
 //    }
 }

@@ -238,15 +238,6 @@ public final class ReactRoot {
         nextIndex = newChildren.count
     }
 
-    private func attachDOM(node: VNode) throws {
-        let dom = try node.dom.unwrap("dom")
-        guard dom.parentNode == nil else {
-            throw MessageError("dom already attached")
-        }
-        let location = try self.domNodeLocation(node: node)
-        try dom.insert(at: location)
-    }
-
     private func domNodeLocation(node: VNode) throws -> JSNodeLocation {
         let parent = try parentDOM(node: node)
         let prev = try prevSiblingDOM(node: node)

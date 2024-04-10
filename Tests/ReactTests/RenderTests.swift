@@ -12,7 +12,7 @@ final class RenderTests: XCTestCase {
 
     var document: JSDocument!
 
-    func testRenderCreate() throws {
+    func testCreate() throws {
         let dom = try document.createElement("body")
         XCTAssertPrint(dom, """
         <body />
@@ -27,7 +27,7 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderSingleTagComponent() throws {
+    func testSingleTagComponent() throws {
         struct Content: Component {
             func render() -> Node {
                 div()
@@ -48,7 +48,7 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderGroup1() throws {
+    func testGroup1() throws {
         let dom = try document.createElement("body")
         let root = ReactRoot(element: dom)
         root.render(
@@ -65,7 +65,7 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderGroup2() throws {
+    func testGroup2() throws {
         let dom = try document.createElement("body")
         let root = ReactRoot(element: dom)
         root.render(
@@ -99,7 +99,7 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderTree1() throws {
+    func testTree1() throws {
         let dom = try document.createElement("body")
         let root = ReactRoot(element: dom)
         root.render(
@@ -147,7 +147,7 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderRootText() throws {
+    func testRootText() throws {
         let dom = try document.createElement("body")
         let root = ReactRoot(element: dom)
         root.render(
@@ -161,7 +161,7 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderComplexComponent() throws {
+    func testComplexComponent() throws {
         struct Content: Component {
             func render() -> Node {
                 div {
@@ -192,7 +192,7 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderAttribute() throws {
+    func testAttribute() throws {
         let dom = try document.createElement("body")
         let root = ReactRoot(element: dom)
         root.render(node: div(attributes: ["class": "box"]))
@@ -203,7 +203,7 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderUpdateAttribute() throws {
+    func testUpdateAttribute() throws {
         let dom = try document.createElement("body")
         let root = ReactRoot(element: dom)
         root.render(node: div())
@@ -221,7 +221,7 @@ final class RenderTests: XCTestCase {
         """)
     }
 
-    func testRenderEventListener() throws {
+    func testEventListener() throws {
         let body = try document.createElement("body")
         let root = ReactRoot(element: body)
 
@@ -393,5 +393,102 @@ final class RenderTests: XCTestCase {
             </div>
         </body>
         """)
+    }
+
+
+    func testFragmentDynamicNodeArray() throws {
+        struct Content: Component {
+            var ids: [Int]
+
+            func render() -> Node {
+                Fragment {
+                    ids.map { (id) in
+                        div {
+                            "\(id)"
+                        }
+                    }
+                }
+            }
+        }
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+        root.render(node: Content(ids: [1, 2, 3]))
+        XCTAssertPrint(root.dom, """
+        <body>
+            <div>
+                1
+            </div>
+            <div>
+                2
+            </div>
+            <div>
+                3
+            </div>
+        </body>
+        """)
+        root.render(node: Content(ids: [4, 5]))
+        XCTAssertPrint(root.dom, """
+        <body>
+            <div>
+                4
+            </div>
+            <div>
+                5
+            </div>
+        </body>
+        """)
+    }
+
+    func testKeySwap() throws {
+        struct Section: Component {
+            var key: AnyHashable?
+
+            var id: Int
+
+            var deps: AnyHashable? { AnyDeps(key, id) }
+
+            func render() -> Node {
+                return div {
+                    "\(id)"
+                }
+            }
+        }
+
+        struct Content: Component {
+            var ids: [Int]
+
+            func render() -> Node {
+                ids.map { (id) in
+                    Section(key: id, id: id)
+                }
+            }
+        }
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+        root.render(node: Content(ids: [1, 2]))
+        XCTAssertPrint(root.dom, """
+        <body>
+            <div>
+                1
+            </div>
+            <div>
+                2
+            </div>
+        </body>
+        """)
+        root.render(node: Content(ids: [2, 1]))
+        XCTAssertPrint(root.dom, """
+        <body>
+            <div>
+                2
+            </div>
+            <div>
+                1
+            </div>
+        </body>
+        """)
+
     }
 }
