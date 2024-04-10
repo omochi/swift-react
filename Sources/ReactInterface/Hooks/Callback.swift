@@ -1,3 +1,4 @@
+@propertyWrapper
 public struct Callback<R, each A>: _AnyCallback {
     public init() {
         self.storage = Storage()
