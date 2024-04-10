@@ -15,10 +15,10 @@ final class HookTests: XCTestCase {
     func testRef() throws {
         struct Content: Component {
             @Ref var buttonRef: JSHTMLElement?
-            var renderHook: (Content) -> Void
+            var onRender: (Content) -> Void
 
             func render() -> Node {
-                renderHook(self)
+                onRender(self)
                 return div {
                     button(ref: $buttonRef) { "hi" }
                 }
@@ -31,7 +31,7 @@ final class HookTests: XCTestCase {
         let root = ReactRoot(element: body)
         root.render(
             node: Content(
-                renderHook: { (content) in
+                onRender: { (content) in
                     refs.append(content.buttonRef)
                 }
             )
@@ -42,7 +42,7 @@ final class HookTests: XCTestCase {
 
         root.render(
             node: Content(
-                renderHook: { (content) in
+                onRender: { (content) in
                     refs.append(content.buttonRef)
                 }
             )
@@ -68,10 +68,10 @@ final class HookTests: XCTestCase {
 
         struct Content: Component {
             @Ref var buttonRef: JSHTMLElement?
-            var renderHook: (Content) -> Void
+            var onRender: (Content) -> Void
 
             func render() -> Node {
-                renderHook(self)
+                onRender(self)
                 return Button(buttonRefObject: $buttonRef)
             }
         }
@@ -82,7 +82,7 @@ final class HookTests: XCTestCase {
         let root = ReactRoot(element: body)
         root.render(
             node: Content(
-                renderHook: { (content) in
+                onRender: { (content) in
                     refs.append(content.buttonRef)
                 }
             )
@@ -93,7 +93,7 @@ final class HookTests: XCTestCase {
 
         root.render(
             node: Content(
-                renderHook: { (content) in
+                onRender: { (content) in
                     refs.append(content.buttonRef)
                 }
             )
@@ -157,5 +157,63 @@ final class HookTests: XCTestCase {
             </div>
         </body>
         """)
+    }
+
+    func testPartialRender() throws {
+        struct Content: Component {
+            var onRender: (Self) -> Void
+            var onSectionRender: (Section) -> Void
+
+            func render() -> Node {
+                onRender(self)
+                return Section(
+                    onRender: onSectionRender
+                )
+            }
+        }
+
+        struct Section: Component {
+            @State var count = 0
+            var onRender: (Self) -> Void
+            func render() -> Node {
+                onRender(self)
+                return div {
+                    "\(count)"
+                    button(
+                        listeners: [
+                            "click": Function { (_) in
+                                count += 1
+                            }
+                        ]
+                    )
+                }
+            }
+        }
+
+        var contentRenderCount = 0
+        var sectionRenderCount = 0
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+
+        let content = Content(
+            onRender: { (_) in contentRenderCount += 1 },
+            onSectionRender: { (_) in sectionRenderCount += 1 }
+        )
+
+        root.render(node: content)
+
+        XCTAssertEqual(contentRenderCount, 1)
+        XCTAssertEqual(sectionRenderCount, 1)
+
+        let btn: JSHTMLElement = try XCTUnwrap(
+            root.root?
+                .find { $0.tagElement?.tagName == "button" }?
+                .dom?.asHTMLElement()
+        )
+        try btn.click()
+
+        XCTAssertEqual(contentRenderCount, 1)
+        XCTAssertEqual(sectionRenderCount, 2)
     }
 }

@@ -37,15 +37,21 @@ public final class ReactRoot {
         }
     }
 
-    private func updateRender() {
+    private func update(node oldTree: VNode) throws {
         // ?
         do {
-            let newTree = makeVNode(component: Fragment())
-            let newChildren = (root?.children ?? []).map { (node) in
-                VNode(ghost: node.ghost)
-            }
-            newTree.appendChildren(newChildren)
-            try render(newChildren: newChildren, oldChildren: root?.children ?? [])
+            let newTree = VNode(ghost: oldTree.ghost)
+            try render(newTree: newTree, oldTree: oldTree)
+            let parent = try oldTree.parent.unwrap("oldTree.parent")
+            let index = try parent.index(of: oldTree).unwrap("oldTree index")
+            parent.replaceChild(newTree, at: index)
+
+//            let newTree = makeVNode(component: Fragment())
+//            let newChildren = (root?.children ?? []).map { (node) in
+//                VNode(ghost: node.ghost)
+//            }
+//            newTree.appendChildren(newChildren)
+//            try render(newChildren: newChildren, oldChildren: root?.children ?? [])
         } catch {
             print(error)
         }
@@ -123,9 +129,14 @@ public final class ReactRoot {
                 isDirty = isDirty || state._consumeDirty()
 
                 if oldTree == nil {
-                    state._setDidUpdate { [weak self] () in
-                        // TODO: precise update
-                        self?.updateRender()
+                    state._setDidUpdate { [weak self, weak newTree] () in
+                        guard let self, let newTree else { return }
+
+                        do {
+                            try self.update(node: newTree)
+                        } catch {
+                            print("\(error)")
+                        }
                     }
                 }
             }
