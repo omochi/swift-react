@@ -41,6 +41,7 @@ public final class VNode: Hashable {
     public let equality: Equality
     public var new: VNode??
     public var dom: JSNode?
+    public var domLocation: JSNodeLocationRight?
     public var listeners: [String: ListenerBridge] = [:]
 
     public static func ==(a: VNode, b: VNode) -> Bool {
@@ -62,6 +63,9 @@ public final class VNode: Hashable {
     public var children: [VNode] {
         get { _children }
         set {
+            for x in _children {
+                x._parent = nil
+            }
             _children = newValue
             for x in _children {
                 x._parent = self

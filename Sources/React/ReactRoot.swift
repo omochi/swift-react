@@ -26,6 +26,8 @@ public final class ReactRoot {
     package var willComponentRender: ((any Component) -> Void)?
     package var didComponentRender: ((any Component) -> Void)?
 
+    package var currentLocation: JSNodeLocationRight?
+
     private let window: JSWindow
     private let document: JSDocument
 
@@ -55,27 +57,54 @@ public final class ReactRoot {
     }
 
     private func runRenderRoot(node: Node) throws {
-        let newTree = makeVNode(component: Fragment())
-        let newChildren = Nodes.normalize(node: node)
-            .map { makeVNode(component: $0) }
-        newTree.appendChildren(newChildren)
-        try render(newChildren: newChildren, oldChildren: root?.children ?? [])
-        self.root = newTree
+        let newRoot = Self.makeVNode(component: Fragment())
+        let newChildren = Self.makeChildren(node: node)
+        newRoot.appendChildren(newChildren)
+        let oldChildren = root?.children ?? []
+        try render(newChildren: newChildren, oldChildren: oldChildren, parent: dom.asNode())
+        self.root = newRoot
     }
 
     private func runUpdate(node oldTree: VNode) throws {
         let newTree = VNode(ghost: oldTree.ghost)
-        try render(newTree: newTree, oldTree: oldTree)
+
+        try withLocation(newTree.domLocation) {
+            try render(newTree: newTree, oldTree: oldTree)
+        }
+
         let parent = try oldTree.parent.unwrap("oldTree.parent")
         let index = try parent.index(of: oldTree).unwrap("oldTree index")
         parent.replaceChild(newTree, at: index)
     }
 
-    private func makeVNode<C: Component>(component: C) -> VNode {
+    private static func makeVNode<C: Component>(component: C) -> VNode {
         let ghost = C._extractGhost(
             .init(component: component)
         )
         return VNode(ghost: ghost)
+    }
+
+    private static func makeChildren(node: Node) -> [VNode] {
+        let nodes = Nodes.normalize(node: node)
+        return nodes.map { makeVNode(component: $0) }
+    }
+
+    private func withLocation(_ location: JSNodeLocationRight?, _ body: () throws -> Void) rethrows {
+        let old = currentLocation
+        defer {
+            currentLocation = old
+        }
+        currentLocation = location
+        try body()
+    }
+
+    private func withLocationIfParent(_ parent: JSNode?, _ body: () throws -> Void) rethrows {
+        if let parent {
+            let location = JSNodeLocationRight(parent: parent, prev: nil)
+            try withLocation(location, body)
+        } else {
+            try body()
+        }
     }
 
     private func render(
@@ -126,11 +155,16 @@ public final class ReactRoot {
                 newTree.dom = dom.asNode()
             }
 
-            if let dom = newTree.dom {
-                let location = try domNodeLocation(node: newTree)
-                if location != dom.locationRight {
-                    try dom.remove()
-                    try dom.insert(at: location)
+            if let location = currentLocation {
+                newTree.domLocation = location
+
+                if let dom = newTree.dom {
+                    if location != dom.locationRight {
+                        try dom.remove()
+                        try dom.insert(at: location)
+                    }
+
+                    currentLocation?.prev = dom
                 }
             }
 
@@ -160,12 +194,10 @@ public final class ReactRoot {
                 let component = newTree.ghost.component
 
                 willComponentRender?(component)
-                let newChildrenNode: Node = component.render()
+                let node: Node = component.render()
                 didComponentRender?(component)
 
-                let newChildren = Nodes.normalize(node: newChildrenNode).map {
-                    makeVNode(component: $0)
-                }
+                let newChildren = Self.makeChildren(node: node)
                 newTree.appendChildren(newChildren)
             } else {
                 newTree.appendChildren(oldTree?.children ?? [])
@@ -175,7 +207,8 @@ public final class ReactRoot {
         if doesRenderChildren {
             try render(
                 newChildren: newTree?.children ?? [],
-                oldChildren: oldTree?.children ?? []
+                oldChildren: oldTree?.children ?? [],
+                parent: newTree?.dom
             )
         }
 
@@ -191,6 +224,16 @@ public final class ReactRoot {
             if let newHook = newTree.ghost.hooks[name] {
                 newHook._take(fromAnyHookObject: oldHook)
             }
+        }
+    }
+
+    private func render(
+        newChildren: [VNode],
+        oldChildren: [VNode],
+        parent: JSNode?
+    ) throws {
+        try withLocationIfParent(parent) {
+            try render(newChildren: newChildren, oldChildren: oldChildren)
         }
     }
 
@@ -236,30 +279,6 @@ public final class ReactRoot {
             try render(newTree: newNode, oldTree: oldNode)
         }
         nextIndex = newChildren.count
-    }
-
-    private func domNodeLocation(node: VNode) throws -> JSNodeLocationRight {
-        let parent = try parentDOM(node: node)
-        let prev = try prevSiblingDOM(node: node)
-
-        return JSNodeLocationRight(
-            parent: parent.asNode(),
-            prev: prev
-        )
-    }
-
-    private func parentDOM(node: VNode) throws -> JSHTMLElement {
-        guard let parent = node.parentTagNode else {
-            return dom
-        }
-        return try parent.domTag.unwrap("domTag")
-    }
-
-    private func prevSiblingDOM(node: VNode) throws -> JSNode? {
-        guard let prev = try node.prevSiblingTagNode else {
-            return nil
-        }
-        return try prev.dom.unwrap("dom")
     }
 
     private func renderDOMAttributes(
