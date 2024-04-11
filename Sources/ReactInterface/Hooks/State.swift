@@ -1,5 +1,5 @@
 @propertyWrapper
-public struct State<Value>: _AnyState {
+public struct State<Value: Equatable>: _AnyState {
     public init(wrappedValue: Value) {
         self.storage = Storage()
 
@@ -25,7 +25,7 @@ public struct State<Value>: _AnyState {
 
         var value: Value?
         var isDirty: Bool = false
-        var didUpdate: (() -> Void)?
+        var didChange: (() -> Void)?
 
         func getValue() -> Value {
             guard let value else {
@@ -35,9 +35,11 @@ public struct State<Value>: _AnyState {
         }
 
         func setValue(_ newValue: Value) {
+            if value == newValue { return }
+            
             value = newValue
             isDirty = true
-            didUpdate?()
+            didChange?()
         }
 
         package func _consumeDirty() -> Bool {
@@ -45,8 +47,8 @@ public struct State<Value>: _AnyState {
             return isDirty
         }
 
-        package func _setDidUpdate(_ newValue: (() -> Void)?) {
-            didUpdate = newValue
+        package func _setDidChange(_ newValue: (() -> Void)?) {
+            didChange = newValue
         }
 
         package func _take(fromAnyHookObject object: any _AnyHookObject) {
@@ -54,7 +56,7 @@ public struct State<Value>: _AnyState {
 
             value = o.value
             isDirty = isDirty || o.isDirty
-            didUpdate = o.didUpdate
+            didChange = o.didChange
         }
     }
 }
@@ -65,6 +67,6 @@ package protocol _AnyState: _AnyHookWrapper {
 
 package protocol _AnyStateStorage: _AnyHookObject {
     func _consumeDirty() -> Bool
-    func _setDidUpdate(_ newValue: (() -> Void)?)
+    func _setDidChange(_ newValue: (() -> Void)?)
 }
 

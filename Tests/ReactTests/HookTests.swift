@@ -187,6 +187,39 @@ final class HookTests: XCTestCase {
         """)
     }
 
+    func testStateChange() throws {
+        struct Content: Component {
+            @State var count = 0
+
+            func render() -> Node {
+                return div()
+            }
+        }
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+        var renderCount = 0
+        root.willComponentRender = { (c) in
+            switch c {
+            case is Content:
+                renderCount += 1
+            default: break
+            }
+        }
+
+        let content = Content()
+        root.render(node: content)
+        XCTAssertEqual(renderCount, 1)
+        content.count = 1
+        XCTAssertEqual(renderCount, 2)
+        content.count = 1
+        XCTAssertEqual(renderCount, 2)
+        content.count = 2
+        XCTAssertEqual(renderCount, 3)
+        content.count = 2
+        XCTAssertEqual(renderCount, 3)
+    }
+
     func testCallback() throws {
         struct Form: Component {
             var onSubmit: Function<Void>

@@ -187,7 +187,7 @@ public final class ReactRoot {
             for (_, state) in newTree.ghost.states {
                 isDirty = isDirty || state._consumeDirty()
 
-                state._setDidUpdate { [weak self, weak newTree] () in
+                state._setDidChange { [weak self, weak newTree] () in
                     guard let self, let newTree else { return }
                     self.update(node: newTree)
                 }
