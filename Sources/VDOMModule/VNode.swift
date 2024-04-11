@@ -41,7 +41,6 @@ public final class VNode: Hashable {
     public let equality: Equality
     public var new: VNode??
     public var dom: JSNode?
-    public var domLocation: JSNodeLocationRight?
     public var listeners: [String: ListenerBridge] = [:]
 
     public static func ==(a: VNode, b: VNode) -> Bool {

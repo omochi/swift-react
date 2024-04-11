@@ -68,7 +68,9 @@ public final class ReactRoot {
     private func runUpdate(node oldTree: VNode) throws {
         let newTree = VNode(ghost: oldTree.ghost)
 
-        try withLocation(newTree.domLocation) {
+        let domLocation = try domLocation(of: newTree)
+
+        try withLocation(domLocation) {
             try render(newTree: newTree, oldTree: oldTree)
         }
 
@@ -105,6 +107,12 @@ public final class ReactRoot {
         } else {
             try body()
         }
+    }
+
+    private func domLocation(of node: VNode) throws -> JSNodeLocationRight? {
+        let parent: JSNode = try node.parentTagNode?.dom.unwrap("dom") ?? self.dom.asNode()
+        let prev: JSNode? = try node.prevSiblingTagNode?.dom.unwrap("dom")
+        return JSNodeLocationRight(parent: parent, prev: prev)
     }
 
     private func render(
@@ -156,8 +164,6 @@ public final class ReactRoot {
             }
 
             if let location = currentLocation {
-                newTree.domLocation = location
-
                 if let dom = newTree.dom {
                     if location != dom.locationRight {
                         try dom.remove()
@@ -210,6 +216,8 @@ public final class ReactRoot {
                 oldChildren: oldTree?.children ?? [],
                 parent: newTree?.dom
             )
+        } else {
+            print("skip children")
         }
 
         if newTree == nil {
