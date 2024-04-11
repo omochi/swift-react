@@ -65,6 +65,23 @@ extension VNode {
         }
     }
 
+    public var domChildren: [JSNode] {
+        get {
+            var doms: [JSNode] = []
+
+            walk { (node) in
+                if let dom = node.dom {
+                    doms.append(dom)
+                    return .skipChildren
+                }
+
+                return .continue
+            }
+
+            return doms
+        }
+    }
+
     public enum WalkControl {
         case `continue`
         case skipChildren

@@ -61,7 +61,7 @@ public final class ReactRoot {
         let newChildren = Self.makeChildren(node: node)
         newRoot.appendChildren(newChildren)
         let oldChildren = root?.children ?? []
-        try render(newChildren: newChildren, oldChildren: oldChildren, parent: dom.asNode())
+        try renderChildren(new: newChildren, old: oldChildren, parent: dom.asNode())
         self.root = newRoot
     }
 
@@ -71,7 +71,7 @@ public final class ReactRoot {
         let domLocation = try domLocation(of: newTree)
 
         try withLocation(domLocation) {
-            try render(newTree: newTree, oldTree: oldTree)
+            try renderNode(new: newTree, old: oldTree)
         }
 
         let parent = try oldTree.parent.unwrap("oldTree.parent")
@@ -115,9 +115,10 @@ public final class ReactRoot {
         return JSNodeLocationRight(parent: parent, prev: prev)
     }
 
-    private func render(
-        newTree: VNode?,
-        oldTree: VNode?
+    private func renderNode(
+        new newTree: VNode?,
+        old oldTree: VNode?,
+        isMove: Bool = false
     ) throws {
         var doesRenderChildren = true
 
@@ -211,13 +212,31 @@ public final class ReactRoot {
         }
 
         if doesRenderChildren {
-            try render(
-                newChildren: newTree?.children ?? [],
-                oldChildren: oldTree?.children ?? [],
+            try renderChildren(
+                new: newTree?.children ?? [],
+                old: oldTree?.children ?? [],
                 parent: newTree?.dom
             )
         } else {
-            print("skip children")
+            if let newTree,
+                newTree.dom == nil,
+                let _ = currentLocation
+            {
+                let doms = newTree.domChildren
+                if isMove {
+                    for dom in doms {
+                        try dom.remove()
+                    }
+                    for dom in doms {
+                        try dom.insert(at: currentLocation!)
+                        currentLocation!.prev = dom
+                    }
+                } else {
+                    if let dom = doms.last {
+                        currentLocation!.prev = dom
+                    }
+                }
+            }
         }
 
         if newTree == nil {
@@ -235,19 +254,19 @@ public final class ReactRoot {
         }
     }
 
-    private func render(
-        newChildren: [VNode],
-        oldChildren: [VNode],
+    private func renderChildren(
+        new: [VNode],
+        old: [VNode],
         parent: JSNode?
     ) throws {
         try withLocationIfParent(parent) {
-            try render(newChildren: newChildren, oldChildren: oldChildren)
+            try renderChildren(new: new, old: old)
         }
     }
 
-    private func render(
-        newChildren: [VNode],
-        oldChildren: [VNode]
+    private func renderChildren(
+        new newChildren: [VNode],
+        old oldChildren: [VNode]
     ) throws {
         var patchedOldChildren: [VNode?] = oldChildren
 
@@ -264,27 +283,27 @@ public final class ReactRoot {
                 if let _ = dest {
                     // process on insert
                 } else {
-                    try render(newTree: nil, oldTree: oldNode)
+                    try renderNode(new: nil, old: oldNode)
                 }
             case .insert(offset: let offset, element: let newNode, associatedWith: let source):
                 for index in nextIndex..<offset {
                     let newNode = newChildren[index]
                     let oldNode = try patchedOldChildren[index].unwrap("updating oldNode")
-                    try render(newTree: newNode, oldTree: oldNode)
+                    try renderNode(new: newNode, old: oldNode)
                 }
                 nextIndex = offset + 1
 
                 patchedOldChildren.insert(nil, at: offset)
 
                 let oldNode = source.map { oldChildren[$0] }
-                try render(newTree: newNode, oldTree: oldNode)
+                try renderNode(new: newNode, old: oldNode, isMove: oldNode != nil)
             }
         }
 
         for index in nextIndex..<newChildren.count {
             let newNode = newChildren[index]
             let oldNode = try patchedOldChildren[index].unwrap("updating oldNode")
-            try render(newTree: newNode, oldTree: oldNode)
+            try renderNode(new: newNode, old: oldNode)
         }
         nextIndex = newChildren.count
     }
