@@ -1,5 +1,3 @@
-import SRTDOM
-
 public struct JSNodeLocationLeft: Hashable {
     public init(
         parent: JSNode,
@@ -45,34 +43,5 @@ public struct JSNodeLocationRight: Hashable {
         }
         
         return JSNodeLocationLeft(parent: parent, next: next)
-    }
-}
-
-extension JSNodeProtocol {
-    public func insert(at location: JSNodeLocationLeft) throws {
-        try location.parent.insertBefore(self, location.next)
-    }
-
-    public func insert(at location: JSNodeLocationRight) throws {
-        let location = location.toLeft(self: self)
-        try insert(at: location)
-    }
-
-    public var locationLeft: JSNodeLocationLeft? {
-        guard let parent = parentNode else { return nil }
-
-        return JSNodeLocationLeft(
-            parent: parent,
-            next: nextSibling
-        )
-    }
-
-    public var locationRight: JSNodeLocationRight? {
-        guard let parent = parentNode else { return nil }
-
-        return JSNodeLocationRight(
-            parent: parent,
-            prev: previousSibling
-        )
     }
 }

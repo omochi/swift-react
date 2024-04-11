@@ -65,7 +65,6 @@ extension JSNodeProtocol {
         childNodes.firstIndex { $0 == node }
     }
 
-
     package func write(to p: PrettyPrinter) {
         do {
             // 😔
@@ -79,6 +78,33 @@ extension JSNodeProtocol {
         } catch {
             p.write("(\(error))")
         }
+    }
+
+    public func insert(at location: JSNodeLocationLeft) throws {
+        try location.parent.insertBefore(self, location.next)
+    }
+
+    public func insert(at location: JSNodeLocationRight) throws {
+        let location = location.toLeft(self: self)
+        try insert(at: location)
+    }
+
+    public var locationLeft: JSNodeLocationLeft? {
+        guard let parent = parentNode else { return nil }
+
+        return JSNodeLocationLeft(
+            parent: parent,
+            next: nextSibling
+        )
+    }
+
+    public var locationRight: JSNodeLocationRight? {
+        guard let parent = parentNode else { return nil }
+
+        return JSNodeLocationRight(
+            parent: parent,
+            prev: previousSibling
+        )
     }
 }
 

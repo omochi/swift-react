@@ -18,7 +18,8 @@ extension VNode {
         dom?.asText()
     }
 
-    public var parentTagNode: VNode? {
+    // unused
+    package var parentTagNode: VNode? {
         get {
             var nodeO: VNode? = self.parent
             while true {
@@ -35,7 +36,8 @@ extension VNode {
         }
     }
 
-    public var prevSiblingTagNode: VNode? {
+    // unused
+    package var prevSiblingTagNode: VNode? {
         get throws {
             guard let parent = self.parent else {
                 return nil

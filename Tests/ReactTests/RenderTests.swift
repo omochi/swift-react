@@ -308,6 +308,31 @@ final class RenderTests: XCTestCase {
         XCTAssertEqual(evs1[safe: 0], ev1.asEvent())
     }
 
+    func testSimpleStaticNodeArray() throws {
+        struct Paragraph: Component {
+            func render() -> Node {
+                div(attributes: ["class": "para"])
+            }
+        }
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+
+        root.render(
+            node: [
+                Paragraph(),
+                div()
+            ]
+        )
+
+        XCTAssertPrint(root.dom, """
+        <body>
+            <div class="para" />
+            <div />
+        </body>
+        """)
+    }
+
     func testStaticNodeArray() throws {
         struct Paragraph: Component {
             func render() -> Node {
