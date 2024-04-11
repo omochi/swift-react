@@ -7,6 +7,7 @@ public protocol JSNodeProtocol: JSEventTargetProtocol & CustomStringConvertible 
     var firstChild: JSNode? { get }
     var nextSibling: JSNode? { get }
     var parentNode: JSNode? { get }
+    var previousSibling: JSNode? { get }
     func appendChild(_ node: any JSNodeProtocol) throws
     func insertBefore(_ node: any JSNodeProtocol, _ ref: (any JSNodeProtocol)?) throws
     func remove() throws
@@ -32,6 +33,10 @@ extension JSNodeProtocol {
 
     public var parentNode: JSNode? {
         .unsafeConstruct(from: jsValue.parentNode)
+    }
+
+    public var previousSibling: JSNode? {
+        .unsafeConstruct(from: jsValue.previousSibling)
     }
 
     public func appendChild(_ node: any JSNodeProtocol) throws {
@@ -60,9 +65,6 @@ extension JSNodeProtocol {
         childNodes.firstIndex { $0 == node }
     }
 
-    package func insert(at location: JSNodeLocation) throws {
-        try location.parent.insertBefore(asNode(), location.next)
-    }
 
     package func write(to p: PrettyPrinter) {
         do {
@@ -78,17 +80,9 @@ extension JSNodeProtocol {
             p.write("(\(error))")
         }
     }
-
-    public var location: JSNodeLocation? {
-        guard let parent = parentNode else { return nil }
-        return JSNodeLocation(
-            parent: parent,
-            next: nextSibling
-        )
-    }
 }
 
-public struct JSNode: JSNodeProtocol & Equatable & Hashable & ConstructibleFromJSValue {
+public struct JSNode: JSNodeProtocol & ConstructibleFromJSValue {
     public init(jsObject: JSObject) {
         self.jsObject = jsObject
     }
@@ -119,10 +113,6 @@ public struct JSNode: JSNodeProtocol & Equatable & Hashable & ConstructibleFromJ
         childNodes.firstIndex { $0 == node }
     }
 
-    package func insert(at location: JSNodeLocation) throws {
-        try location.parent.insertBefore(self, location.next)
-    }
-
     package func write(to p: PrettyPrinter) {
         do {
             // 😔
@@ -137,15 +127,6 @@ public struct JSNode: JSNodeProtocol & Equatable & Hashable & ConstructibleFromJ
             p.write("(\(error))")
         }
     }
-
-    public var location: JSNodeLocation? {
-        guard let parent = parentNode else { return nil }
-        return JSNodeLocation(
-            parent: parent,
-            next: nextSibling
-        )
-    }
-
 }
 
 

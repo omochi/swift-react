@@ -1,6 +1,6 @@
 import SRTJavaScriptKitEx
 
-public protocol JSEventTargetProtocol: ConvertibleToJSObject {
+public protocol JSEventTargetProtocol: Hashable & ConvertibleToJSObject {
     func addEventListener(_ type: String, _ listener: JSEventListener) throws
     func removeEventListener(_ type: String, _ listener: JSEventListener) throws
     func dispatchEvent(_ event: any JSEventProtocol) throws

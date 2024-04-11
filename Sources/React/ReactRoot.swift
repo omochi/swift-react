@@ -128,7 +128,7 @@ public final class ReactRoot {
 
             if let dom = newTree.dom {
                 let location = try domNodeLocation(node: newTree)
-                if location != dom.location {
+                if location != dom.locationRight {
                     try dom.remove()
                     try dom.insert(at: location)
                 }
@@ -238,23 +238,13 @@ public final class ReactRoot {
         nextIndex = newChildren.count
     }
 
-    private func domNodeLocation(node: VNode) throws -> JSNodeLocation {
+    private func domNodeLocation(node: VNode) throws -> JSNodeLocationRight {
         let parent = try parentDOM(node: node)
         let prev = try prevSiblingDOM(node: node)
 
-        var next: JSNode? = if let prev {
-            prev.nextSibling
-        } else {
-            parent.firstChild
-        }
-
-        if let n = next, n == node.dom {
-            next = n.nextSibling
-        }
-
-        return JSNodeLocation(
+        return JSNodeLocationRight(
             parent: parent.asNode(),
-            next: next
+            prev: prev
         )
     }
 

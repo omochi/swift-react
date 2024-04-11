@@ -22,6 +22,12 @@ public class WebNode: WebEventTarget & CustomStringConvertible {
 
     public var parentNode: WebNode? { _parentNode }
 
+    public var previousSibling: WebNode? {
+        guard let parent = _parentNode else { return nil }
+        guard let index = parent._childNodes.index(of: self) else { return nil }
+        return parent._childNodes.item(index - 1)
+    }
+
     public func appendChild(_ node: WebNode) {
         _childNodes._items.append(node)
         node._parentNode = self
@@ -63,6 +69,7 @@ public class WebNode: WebEventTarget & CustomStringConvertible {
         case "firstChild": firstChild.jsValue
         case "nextSibling": nextSibling.jsValue
         case "parentNode": parentNode.jsValue
+        case "previousSibling": previousSibling.jsValue
         case "description": description.jsValue
         case "appendChild": JSFunction(Self.appendChild).jsValue
         case "insertBefore": JSFunction(Self.insertBefore).jsValue

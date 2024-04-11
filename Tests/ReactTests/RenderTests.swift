@@ -489,6 +489,5 @@ final class RenderTests: XCTestCase {
             </div>
         </body>
         """)
-
     }
 }

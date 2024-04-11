@@ -1,6 +1,6 @@
 import SRTJavaScriptKitEx
 
-public protocol JSEventProtocol: ConvertibleToJSObject {
+public protocol JSEventProtocol: Hashable & ConvertibleToJSObject {
     func asEvent() -> JSEvent
     var type: String { get }
 }
@@ -15,7 +15,7 @@ extension JSEventProtocol {
     }
 }
 
-public struct JSEvent: Hashable & JSEventProtocol & ConstructibleFromJSValue {
+public struct JSEvent: JSEventProtocol & ConstructibleFromJSValue {
     public init(jsObject: JSObject) {
         self.jsObject = jsObject
     }

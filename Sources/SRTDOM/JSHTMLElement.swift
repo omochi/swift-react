@@ -37,7 +37,7 @@ extension JSHTMLElementProtocol {
     }
 }
 
-public struct JSHTMLElement: Hashable & JSHTMLElementProtocol & ConstructibleFromJSValue {
+public struct JSHTMLElement: JSHTMLElementProtocol & ConstructibleFromJSValue {
     public init(jsObject: JSObject) {
         self.jsObject = jsObject
     }
