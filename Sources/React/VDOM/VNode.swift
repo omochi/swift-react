@@ -38,9 +38,14 @@ package final class VNode: Hashable {
 
     public let ghost: Ghost
     public let equality: Equality
+
+    internal weak var _parent: VNode?
+    private var _children: [VNode] = []
+
     public var new: VNode??
     public var dom: JSNode?
     public var listeners: [String: ListenerBridge] = [:]
+    private var isDirty: Bool = false
 
     public static func ==(a: VNode, b: VNode) -> Bool {
         a.equality == b.equality
@@ -50,13 +55,20 @@ package final class VNode: Hashable {
         hasher.combine(equality)
     }
 
+    public func markDirty() {
+        isDirty = true
+    }
+
+    public func consumeDirty() -> Bool {
+        defer { isDirty = false }
+        return isDirty
+    }
+
     public var parent: VNode? { _parent }
 
     public func removeFromParent() {
         _parent?._removeChild(self)
     }
-
-    internal weak var _parent: VNode?
 
     public var children: [VNode] {
         get { _children }
@@ -70,8 +82,6 @@ package final class VNode: Hashable {
             }
         }
     }
-
-    private var _children: [VNode] = []
 
     public func appendChild(_ child: VNode) {
         _children.append(child)

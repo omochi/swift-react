@@ -24,7 +24,6 @@ public struct State<Value: Equatable>: _AnyState {
         init() {}
 
         var value: Value?
-        var isDirty: Bool = false
         var didChange: (() -> Void)?
 
         func getValue() -> Value {
@@ -38,13 +37,7 @@ public struct State<Value: Equatable>: _AnyState {
             if value == newValue { return }
             
             value = newValue
-            isDirty = true
             didChange?()
-        }
-
-        package func _consumeDirty() -> Bool {
-            defer { isDirty = false }
-            return isDirty
         }
 
         package func _setDidChange(_ newValue: (() -> Void)?) {
@@ -55,7 +48,6 @@ public struct State<Value: Equatable>: _AnyState {
             guard let o = object as? Storage else { return }
 
             value = o.value
-            isDirty = isDirty || o.isDirty
             didChange = o.didChange
         }
     }
@@ -66,7 +58,6 @@ package protocol _AnyState: _AnyHookWrapper {
 }
 
 package protocol _AnyStateStorage: _AnyHookObject {
-    func _consumeDirty() -> Bool
     func _setDidChange(_ newValue: (() -> Void)?)
 }
 

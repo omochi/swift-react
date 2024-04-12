@@ -51,7 +51,7 @@ public final class ReactRoot {
         scheduler.resume()
     }
 
-    private func update(node: VNode) {
+    private func scheduleUpdate(node: VNode) {
         scheduler.schedule(action: .update(node))
     }
 
@@ -176,27 +176,27 @@ public final class ReactRoot {
 
             renderGhost(newTree: newTree, oldTree: oldTree)
 
-            let isSameDeps: Bool = if let newDeps = newTree.ghost.component.deps,
-                newDeps == oldTree?.ghost.component.deps
-            {
-                true
-            } else { false }
-
-            var isDirty = false
             for (_, state) in newTree.ghost.states {
-                isDirty = isDirty || state._consumeDirty()
-
                 state._setDidChange { [weak self, weak newTree] () in
                     guard let self, let newTree else { return }
-                    self.update(node: newTree)
+                    newTree.markDirty()
+                    self.scheduleUpdate(node: newTree)
                 }
             }
 
-            if isSameDeps, !isDirty {
-                doesRenderChildren = false
+            var isDirty = newTree.consumeDirty()
+
+            if !isDirty {
+                if let newDeps = newTree.ghost.component.deps,
+                    newDeps == oldTree?.ghost.component.deps
+                {
+                    // same
+                } else {
+                    isDirty = true
+                }
             }
 
-            if doesRenderChildren {
+            if isDirty {
                 let component = newTree.ghost.component
 
                 willComponentRender?(component)
@@ -207,6 +207,7 @@ public final class ReactRoot {
                 newTree.appendChildren(newChildren)
             } else {
                 newTree.appendChildren(oldTree?.children ?? [])
+                doesRenderChildren = false
             }
         }
 
