@@ -218,4 +218,89 @@ final class ContextHookTests: XCTestCase {
         """)
     }
 
+    func testChangeSubscription() throws {
+        struct Content: Component {
+            var value: Int
+            func render() -> Node {
+                A.Provider(value: A(value)) {
+                    Chapter()
+                }
+            }
+        }
+
+        struct Chapter: Component {
+            var deps: AnyHashable? { AnyDeps() }
+
+            func render() -> Node {
+                div {
+                    Section()
+                }
+            }
+        }
+
+        struct Section: Component {
+            @Context var a: A
+            func render() -> Node {
+                p {
+                    a.value
+                }
+            }
+        }
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+
+        var evs: [String] = []
+        root.willComponentRender = { (c) in
+            switch c {
+            case is Content:
+                evs.append("c")
+            case is Chapter:
+                evs.append("h")
+            case is Section:
+                evs.append("s")
+            default: break
+            }
+        }
+
+        root.render(node: Content(value: 1))
+        XCTAssertPrint(body, """
+        <body>
+            <div>
+                <p>
+                    1
+                </p>
+            </div>
+        </body>
+        """)
+        XCTAssertEqual(evs, ["c", "h", "s"])
+        evs = []
+
+        root.render(node: Content(value: 1))
+        XCTAssertPrint(body, """
+        <body>
+            <div>
+                <p>
+                    1
+                </p>
+            </div>
+        </body>
+        """)
+        XCTAssertEqual(evs, ["c"])
+        evs = []
+
+        root.render(node: Content(value: 2))
+        XCTAssertPrint(body, """
+        <body>
+            <div>
+                <p>
+                    2
+                </p>
+            </div>
+        </body>
+        """)
+        XCTAssertEqual(evs, ["c", "s"])
+        evs = []
+    }
+
 }

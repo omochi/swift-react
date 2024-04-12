@@ -67,15 +67,15 @@ public final class ReactRoot {
     private func runUpdate(node oldTree: VNode) throws {
         let newTree = VNode(ghost: oldTree.ghost)
 
+        let parent = try oldTree.parent.unwrap("oldTree.parent")
+        let index = try parent.index(of: oldTree).unwrap("oldTree index")
+        parent.replaceChild(newTree, at: index)
+
         let domLocation = try domLocation(of: newTree)
 
         try withLocation(domLocation) {
             try renderNode(new: newTree, old: oldTree)
         }
-
-        let parent = try oldTree.parent.unwrap("oldTree.parent")
-        let index = try parent.index(of: oldTree).unwrap("oldTree index")
-        parent.replaceChild(newTree, at: index)
     }
 
     private static func makeVNode<C: Component>(component: C) -> VNode {
