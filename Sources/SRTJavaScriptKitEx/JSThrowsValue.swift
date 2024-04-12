@@ -1,5 +1,4 @@
 import SRTCore
-import JavaScriptKitShim
 
 extension JSValue {
     public var `throws`: JSThrowsValue {

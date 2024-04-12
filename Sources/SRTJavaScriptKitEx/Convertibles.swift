@@ -1,5 +1,3 @@
-import JavaScriptKitShim
-
 public protocol ConvertibleToJSObject: ConvertibleToJSValue {
     var jsObject: JSObject { get }
 }

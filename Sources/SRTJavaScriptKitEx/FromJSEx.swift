@@ -1,5 +1,4 @@
 import SRTCore
-import JavaScriptKitShim
 
 extension ConstructibleFromJSValue {
     public static func mustConstruct(from jsValue: JSValue) throws -> Self {
