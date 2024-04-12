@@ -1,7 +1,6 @@
 import SRTCore
 import SRTDOM
 import SRTJavaScriptKitEx
-package import VDOMModule
 
 public final class ReactRoot {
     public init(

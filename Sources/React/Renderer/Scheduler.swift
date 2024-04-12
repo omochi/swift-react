@@ -1,5 +1,3 @@
-package import VDOMModule
-
 internal final class Scheduler {
     enum State {
         case idle

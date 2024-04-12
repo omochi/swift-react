@@ -4,7 +4,7 @@ public typealias Node = (any Element)?
 
 public typealias NodeArray = Array<Node>
 
-extension NodeArray: ReactInterface.Element {}
+extension NodeArray: React.Element {}
 
 package enum Nodes {
     public static func normalize(node: Node) -> [any Component] {

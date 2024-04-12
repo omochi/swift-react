@@ -1,7 +1,6 @@
 import XCTest
 import SRTTestSupport
-import ReactInterface
-import VDOMModule
+import React
 
 final class VNodeTests: XCTestCase {
 

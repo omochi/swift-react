@@ -1,5 +1,4 @@
 import SRTDOM
-import ReactInterface
 
 extension VNode {
     public var tagElement: TagElement? {

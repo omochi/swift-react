@@ -1,8 +1,7 @@
 import SRTCore
 import SRTDOM
-import ReactInterface
 
-public final class VNode: Hashable {
+package final class VNode: Hashable {
     public struct Equality: Hashable {
         var componentType: ObjectIdentifier
         var tagName: String?

@@ -95,26 +95,10 @@ targets += [
 
 targets += [
     .target(
-        name: "ReactInterface",
-        dependencies: [
-            .target(name: "SRTCore"),
-            .target(name: "SRTDOM")
-        ],
-        swiftSettings: swiftSettings()
-    ),
-    .target(
-        name: "VDOMModule",
-        dependencies: [
-            .target(name: "SRTDOM"),
-            .target(name: "ReactInterface")
-        ],
-        swiftSettings: swiftSettings()
-    ),
-    .target(
         name: "React",
         dependencies: [
+            .target(name: "SRTCore"),
             .target(name: "SRTDOM"),
-            .target(name: "VDOMModule")
         ],
         swiftSettings: swiftSettings()
     )
@@ -155,14 +139,6 @@ targets += [
             .target(name: "SRTDOM"),
             dependencyToWebMock
         ].compacted(),
-        swiftSettings: swiftSettings()
-    ),
-    .testTarget(
-        name: "VDOMModuleTests",
-        dependencies: [
-            .target(name: "SRTTestSupport"),
-            .target(name: "VDOMModule")
-        ],
         swiftSettings: swiftSettings()
     ),
     .testTarget(
