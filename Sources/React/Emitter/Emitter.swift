@@ -28,7 +28,9 @@ package final class Emitter<Value> {
         entries.removeAll { $0 == entry }
     }
 
-    public func on(handler: @escaping (Value) -> Void) -> any Disposable {
+    public func on(
+        handler: @escaping (Value) -> Void
+    ) -> any Disposable {
         let entry = Entry(
             emitter: self,
             handler: handler
