@@ -1,7 +1,7 @@
 import SRTCore
 
 package final class Emitter<Value> {
-    final class EmitterEntry: IdentityHashable & Disposable {
+    final class Entry: IdentityHashable & Disposable {
         init(
             emitter: Emitter<Value>,
             handler: @escaping (Value) -> Void
@@ -19,28 +19,28 @@ package final class Emitter<Value> {
     }
 
     public init() {
-        self.handlers = []
+        self.entries = []
     }
 
-    private var handlers: [EmitterEntry]
+    private var entries: [Entry]
 
-    func remove(entry: EmitterEntry) {
-        handlers.removeAll { $0 == entry }
+    func remove(entry: Entry) {
+        entries.removeAll { $0 == entry }
     }
 
     public func on(handler: @escaping (Value) -> Void) -> any Disposable {
-        let entry = EmitterEntry(
+        let entry = Entry(
             emitter: self,
             handler: handler
         )
-        handlers.append(entry)
+        entries.append(entry)
         return entry
     }
 
     public func emit(_ value: Value) {
-        let handlers = self.handlers
-        for handler in handlers {
-            handler.handler(value)
+        let entries = self.entries
+        for entry in entries {
+            entry.handler(value)
         }
     }
 }
