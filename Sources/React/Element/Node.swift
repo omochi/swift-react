@@ -11,14 +11,18 @@ package enum Nodes {
         guard let node else { return [] }
 
         switch node {
+        case let component as any Component:
+            return [component]
         case let array as NodeArray:
             return array.flatMap { (node) in
                 normalize(node: node)
             }
         case let text as String:
             return [TextElement(text)]
-        case let component as any Component:
-            return [component]
+        case let value as Int:
+            return [TextElement(String(value))]
+        case let value as Double:
+            return [TextElement(String(value))]
         default:
             return []
         }

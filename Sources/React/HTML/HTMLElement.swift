@@ -1,6 +1,6 @@
 import SRTDOM
 
-public struct TagElement: Component {
+public struct HTMLElement: Component {
     public init(
         tagName: String,
         key: AnyHashable? = nil,

@@ -282,7 +282,7 @@ final class RenderPlanTests: XCTestCase {
         let root = ReactRoot(element: body)
         root.willComponentRender = { (c) in
             switch c {
-            case let tag as TagElement where tag.tagName == "div":
+            case let tag as HTMLElement where tag.tagName == "div":
                 renderCount += 1
             default: break
             }

@@ -12,7 +12,7 @@ package final class VNode: Hashable {
 
             self.componentType = ObjectIdentifier(type(of: component))
 
-            if let tag = ghost.component as? TagElement {
+            if let tag = ghost.component as? HTMLElement {
                 self.tagName = tag.tagName
             } else {
                 self.tagName = nil
@@ -129,7 +129,7 @@ package final class VNode: Hashable {
         _ attributes: Attributes = [:],
         _ children: [Node] = []
     ) -> VNode {
-        let tag = TagElement(
+        let tag = HTMLElement(
             tagName: name,
             attributes: attributes,
             children: children

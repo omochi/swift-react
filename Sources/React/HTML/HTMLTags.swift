@@ -6,8 +6,8 @@ public func div(
     attributes: Attributes = [:],
     listeners: EventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
-) -> TagElement {
-    TagElement(
+) -> HTMLElement {
+    HTMLElement(
         tagName: "div",
         key: key,
         ref: ref,
@@ -23,8 +23,8 @@ public func p(
     attributes: Attributes = [:],
     listeners: EventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
-) -> TagElement {
-    TagElement(
+) -> HTMLElement {
+    HTMLElement(
         tagName: "p",
         key: key,
         ref: ref,
@@ -40,8 +40,8 @@ public func h1(
     attributes: Attributes = [:],
     listeners: EventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
-) -> TagElement {
-    TagElement(
+) -> HTMLElement {
+    HTMLElement(
         tagName: "h1",
         key: key,
         ref: ref,
@@ -57,8 +57,8 @@ public func h2(
     attributes: Attributes = [:],
     listeners: EventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
-) -> TagElement {
-    TagElement(
+) -> HTMLElement {
+    HTMLElement(
         tagName: "h2",
         key: key,
         ref: ref,
@@ -74,8 +74,8 @@ public func h3(
     attributes: Attributes = [:],
     listeners: EventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
-) -> TagElement {
-    TagElement(
+) -> HTMLElement {
+    HTMLElement(
         tagName: "h3",
         key: key,
         ref: ref,
@@ -91,8 +91,8 @@ public func h4(
     attributes: Attributes = [:],
     listeners: EventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
-) -> TagElement {
-    TagElement(
+) -> HTMLElement {
+    HTMLElement(
         tagName: "h4",
         key: key,
         ref: ref,
@@ -108,8 +108,8 @@ public func button(
     attributes: Attributes = [:],
     listeners: EventListeners = [:],
     @ChildrenBuilder _ children: () -> [Node] = { [] }
-) -> TagElement {
-    TagElement(
+) -> HTMLElement {
+    HTMLElement(
         tagName: "button",
         key: key,
         ref: ref,

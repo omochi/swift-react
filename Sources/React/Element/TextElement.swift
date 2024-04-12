@@ -1,3 +1,7 @@
+extension Int: Element {}
+extension Double: Element {}
+extension String: Element {}
+
 package struct TextElement: Component {
     public init(_ value: String) {
         self.value = value

@@ -1,8 +1,8 @@
 import SRTDOM
 
 extension VNode {
-    public var tagElement: TagElement? {
-        ghost.component as? TagElement
+    public var tagElement: HTMLElement? {
+        ghost.component as? HTMLElement
     }
 
     package var textElement: TextElement? {
