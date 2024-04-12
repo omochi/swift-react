@@ -174,21 +174,43 @@ public final class ReactRoot {
                 }
             }
 
+            if let contextValue = newTree.ghost.contextValue {
+                let holder: ContextValueHolder = if let oldHolder = oldTree?.contextValueHolder,
+                    oldHolder.type == contextValue.type
+                {
+                    oldHolder
+                } else {
+                    ContextValueHolder(type: contextValue.type)
+                }
+
+                newTree.contextValueHolder = holder
+                holder.value = contextValue.value
+            }
+
             renderGhost(newTree: newTree, oldTree: oldTree)
 
+            let updater = { [weak self, weak newTree] () -> Void in
+                guard let self, let newTree else { return }
+                newTree.markDirty()
+                self.scheduleUpdate(node: newTree)
+            }
+
+            for (_, context) in newTree.ghost.contexts {
+                let holder = self.contextValueHolder(for: newTree, type: context._valueType)
+                let dsp: (any Disposable)? = holder?.emitter.on(handler: updater)
+                context._setHolder(holder, disposable: dsp)
+            }
+
             for (_, state) in newTree.ghost.states {
-                state._setDidChange { [weak self, weak newTree] () in
-                    guard let self, let newTree else { return }
-                    newTree.markDirty()
-                    self.scheduleUpdate(node: newTree)
-                }
+                state._setDidChange(updater)
             }
 
             var isDirty = newTree.consumeDirty()
 
             if !isDirty {
                 if let newDeps = newTree.ghost.component.deps,
-                    newDeps == oldTree?.ghost.component.deps
+                   let oldDeps = oldTree?.ghost.component.deps,
+                    newDeps == oldDeps
                 {
                     // same
                 } else {
@@ -252,6 +274,30 @@ public final class ReactRoot {
                 newHook._take(fromAnyHookObject: oldHook)
             }
         }
+    }
+
+    private func contextValueHolder(
+        for node: VNode,
+        type: any ContextValue.Type
+    ) -> ContextValueHolder? {
+        func find() -> ContextValueHolder? {
+            var node: VNode? = node
+
+            while let n = node {
+                if let holder = n.contextValueHolder,
+                   holder.type == type
+                {
+                    return holder
+                }
+
+                node = n.parent
+            }
+
+            return nil
+        }
+
+        // TODO: cache table
+        return find()
     }
 
     private func renderChildren(

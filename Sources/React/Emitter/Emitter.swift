@@ -39,6 +39,15 @@ package final class Emitter<Value> {
         return entry
     }
 
+    public func on(
+        handler: @escaping () -> Void
+    ) -> any Disposable where Value == Void {
+        func thunk(_ x: Void) {
+            handler()
+        }
+        return self.on(handler: thunk)
+    }
+
     public func emit(_ value: Value) {
         let entries = self.entries
         for entry in entries {

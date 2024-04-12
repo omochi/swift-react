@@ -1,5 +1,4 @@
 import XCTest
-import SRTJavaScriptKitEx
 import SRTTestSupport
 import SRTDOM
 import React
@@ -244,7 +243,7 @@ final class RenderPlanTests: XCTestCase {
             text: "hello"
         )
 
-        let content = Fragment(children: [section])
+        let content = Fragment { section }
 
         let body = try document.createElement("body")
         let root = ReactRoot(element: body)

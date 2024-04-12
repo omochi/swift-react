@@ -15,7 +15,7 @@ extension Component {
 
     public var deps: AnyHashable? { nil }
 
-    public static func _extractGhost(_ input: GhostInput<Self>) -> Ghost {
+    package static func extractGhostDefault(_ input: GhostInput<Self>) -> Ghost {
         var hooks: [String: any _AnyHookObject] = [:]
 
         let mirror = Mirror(reflecting: input.component)
@@ -33,5 +33,9 @@ extension Component {
             component: input.component,
             hooks: hooks
         )
+    }
+
+    public static func _extractGhost(_ input: GhostInput<Self>) -> Ghost {
+        extractGhostDefault(input)
     }
 }

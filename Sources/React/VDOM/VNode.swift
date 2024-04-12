@@ -45,6 +45,7 @@ package final class VNode: Hashable {
     public var new: VNode??
     public var dom: JSNode?
     public var listeners: [String: ListenerBridge] = [:]
+    public var contextValueHolder: ContextValueHolder?
     private var isDirty: Bool = false
 
     public static func ==(a: VNode, b: VNode) -> Bool {

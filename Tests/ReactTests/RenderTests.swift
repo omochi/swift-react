@@ -1,5 +1,4 @@
 import XCTest
-import SRTJavaScriptKitEx
 import SRTTestSupport
 import SRTDOM
 import React
