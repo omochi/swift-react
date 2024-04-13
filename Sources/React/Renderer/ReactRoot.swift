@@ -77,10 +77,12 @@ public final class ReactRoot {
         let index = try parent.index(of: oldTree).unwrap("oldTree index")
         parent.replaceChild(newTree, at: index)
 
+        let holders = buildContextValueHolders(for: newTree)
         let domLocation = try domLocation(of: newTree)
-
-        try withLocation(domLocation) {
-            try renderNode(new: newTree, old: oldTree)
+        try withContextValueHolders(holders) {
+            try withLocation(domLocation) {
+                try renderNode(new: newTree, old: oldTree)
+            }
         }
     }
 
@@ -114,17 +116,26 @@ public final class ReactRoot {
         }
     }
 
+    private func withContextValueHolders(
+        _ holders: [ObjectIdentifier: ContextValueHolder],
+        _ body: () throws -> Void
+    ) rethrows {
+        let old = contextValueHolders
+        defer {
+            contextValueHolders = old
+        }
+        contextValueHolders = holders
+        try body()
+    }
+
     private func withContextValueHolderIfPresent(
         _ holder: ContextValueHolder?,
         _ body: () throws -> Void
     ) rethrows {
         if let holder {
-            let old = contextValueHolders
-            defer {
-                contextValueHolders = old
-            }
-            contextValueHolders[ObjectIdentifier(holder.type)] = holder
-            try body()
+            var holders = contextValueHolders
+            holders[ObjectIdentifier(holder.type)] = holder
+            try withContextValueHolders(holders, body)
         } else {
             try body()
         }
@@ -218,9 +229,12 @@ public final class ReactRoot {
             }
 
             for (_, context) in newTree.ghost.contexts {
-                let holder = self.contextValueHolder(for: newTree, type: context._valueType)
-                let dsp: (any Disposable)? = holder?.emitter.on(handler: updater)
-                context._setHolder(holder, disposable: dsp)
+                if let holder = contextValueHolders[ObjectIdentifier(context._valueType)] {
+                    let dsp = holder.emitter.on(handler: updater)
+                    context._setHolder(holder, disposable: dsp)
+                } else {
+                    context._setHolder(nil, disposable: nil)
+                }
             }
 
             for (_, state) in newTree.ghost.states {
@@ -297,30 +311,6 @@ public final class ReactRoot {
                 newHook._take(fromAnyHookObject: oldHook)
             }
         }
-    }
-
-    private func contextValueHolder(
-        for node: VNode,
-        type: any ContextValue.Type
-    ) -> ContextValueHolder? {
-        func find() -> ContextValueHolder? {
-            var node: VNode? = node
-
-            while let n = node {
-                if let holder = n.contextValueHolder,
-                   holder.type == type
-                {
-                    return holder
-                }
-
-                node = n.parent
-            }
-
-            return nil
-        }
-
-        // TODO: cache table
-        return find()
     }
 
     private func buildContextValueHolders(for node: VNode) -> [ObjectIdentifier: ContextValueHolder] {
