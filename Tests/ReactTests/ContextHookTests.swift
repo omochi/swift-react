@@ -371,4 +371,216 @@ final class ContextHookTests: XCTestCase {
         evs = []
     }
 
+    func testPartialUpdateBorder() throws {
+        struct Content: Component {
+            func render() -> Node {
+                A.Provider(value: A(1)) {
+                    div {
+                        Chapter()
+                    }
+                }
+            }
+        }
+
+        struct Chapter: Component {
+            func render() -> Node {
+                A.Provider(value: A(2)) {
+                    div {
+                        A.Provider(value: A(3)) {
+                            Section()
+                        }
+                    }
+                }
+            }
+        }
+
+        struct Section: Component {
+            @Context var a: A
+            @State var x: Int = 0
+            func render() -> Node {
+                A.Provider(value: A(4)) {
+                    div {
+                        p {
+                            a.value
+                        }
+                        div {
+                            A.Provider(value: A(5)) {
+                                a.value
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+        var section: Section!
+        var evs: [String] = []
+        root.willComponentRender = { (c) in
+            switch c {
+            case is Content:
+                evs.append("c")
+            case is Chapter:
+                evs.append("h")
+            case let c as Section:
+                section = c
+                evs.append("s")
+            default: break
+            }
+        }
+        root.render(node: Content())
+        XCTAssertPrint(body, """
+        <body>
+            <div>
+                <div>
+                    <div>
+                        <p>
+                            3
+                        </p>
+                        <div>
+                            3
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </body>
+        """)
+        XCTAssertEqual(evs, ["c", "h", "s"])
+        evs = []
+
+        section.x = 2
+        XCTAssertPrint(body, """
+        <body>
+            <div>
+                <div>
+                    <div>
+                        <p>
+                            3
+                        </p>
+                        <div>
+                            3
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </body>
+        """)
+        XCTAssertEqual(evs, ["s"])
+    }
+
+    func testMultiplePartialUpdate() throws {
+        struct Content: Component {
+            var value: Int
+            func render() -> Node {
+                A.Provider(value: A(value)) {
+                    div {
+                        Chapter()
+                    }
+                }
+            }
+        }
+
+        struct Chapter: Component {
+            var deps: AnyHashable? { AnyDeps() }
+            func render() -> Node {
+                div {
+                    Section()
+                }
+            }
+        }
+
+        struct Section: Component {
+            @Context var a: A
+            func render() -> Node {
+                div {
+                    p {
+                        a.value
+                    }
+                    Paragraph()
+                }
+            }
+        }
+
+        struct Paragraph: Component {
+            var deps: AnyHashable? { AnyDeps() }
+            func render() -> Node {
+                div {
+                    Line()
+                }
+            }
+        }
+
+        struct Line: Component {
+            @Context var a: A
+            func render() -> Node {
+                div {
+                    a.value
+                }
+            }
+        }
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+        var evs: [String] = []
+        root.willComponentRender = { (c) in
+            switch c {
+            case is Content:
+                evs.append("c")
+            case is Chapter:
+                evs.append("h")
+            case is Section:
+                evs.append("s")
+            case is Paragraph:
+                evs.append("p")
+            case is Line:
+                evs.append("l")
+            default: break
+            }
+        }
+        root.render(node: Content(value: 1))
+        XCTAssertPrint(body, """
+        <body>
+            <div>
+                <div>
+                    <div>
+                        <p>
+                            1
+                        </p>
+                        <div>
+                            <div>
+                                1
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </body>
+        """)
+        XCTAssertEqual(evs, ["c", "h", "s", "p", "l"])
+        evs = []
+
+        root.render(node: Content(value: 2))
+        XCTAssertPrint(body, """
+        <body>
+            <div>
+                <div>
+                    <div>
+                        <p>
+                            2
+                        </p>
+                        <div>
+                            <div>
+                                2
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </body>
+        """)
+        XCTAssertEqual(evs, ["c", "s", "l"])
+        evs = []
+    }
+
 }
