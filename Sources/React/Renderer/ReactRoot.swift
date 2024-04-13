@@ -25,7 +25,8 @@ public final class ReactRoot {
     package var willComponentRender: ((any Component) -> Void)?
     package var didComponentRender: ((any Component) -> Void)?
 
-    package var currentLocation: JSNodeLocationRight?
+    private var currentLocation: JSNodeLocationRight?
+    private var contextValueHolders: [ObjectIdentifier: ContextValueHolder] = [:]
 
     private let window: JSWindow
     private let document: JSDocument
@@ -60,7 +61,12 @@ public final class ReactRoot {
         let newChildren = Self.makeChildren(node: node)
         newRoot.appendChildren(newChildren)
         let oldChildren = root?.children ?? []
-        try renderChildren(new: newChildren, old: oldChildren, parent: dom.asNode())
+        try renderChildren(
+            new: newChildren,
+            old: oldChildren,
+            parent: dom.asNode(),
+            contextValueHolder: nil
+        )
         self.root = newRoot
     }
 
@@ -103,6 +109,22 @@ public final class ReactRoot {
         if let parent {
             let location = JSNodeLocationRight(parent: parent, prev: nil)
             try withLocation(location, body)
+        } else {
+            try body()
+        }
+    }
+
+    private func withContextValueHolderIfPresent(
+        _ holder: ContextValueHolder?,
+        _ body: () throws -> Void
+    ) rethrows {
+        if let holder {
+            let old = contextValueHolders
+            defer {
+                contextValueHolders = old
+            }
+            contextValueHolders[ObjectIdentifier(holder.type)] = holder
+            try body()
         } else {
             try body()
         }
@@ -237,7 +259,8 @@ public final class ReactRoot {
             try renderChildren(
                 new: newTree?.children ?? [],
                 old: oldTree?.children ?? [],
-                parent: newTree?.dom
+                parent: newTree?.dom,
+                contextValueHolder: newTree?.contextValueHolder
             )
         } else {
             if let newTree,
@@ -300,13 +323,35 @@ public final class ReactRoot {
         return find()
     }
 
+    private func buildContextValueHolders(for node: VNode) -> [ObjectIdentifier: ContextValueHolder] {
+        var result: [ObjectIdentifier: ContextValueHolder] = [:]
+
+        // skip self
+        var node: VNode? = node.parent
+        while let n = node {
+            if let holder = n.contextValueHolder {
+                let typeID = ObjectIdentifier(holder.type)
+                if result[typeID] == nil {
+                    result[typeID] = holder
+                }
+            }
+
+            node = n.parent
+        }
+
+        return result
+    }
+
     private func renderChildren(
         new: [VNode],
         old: [VNode],
-        parent: JSNode?
+        parent: JSNode?,
+        contextValueHolder: ContextValueHolder?
     ) throws {
-        try withLocationIfParent(parent) {
-            try renderChildren(new: new, old: old)
+        try withContextValueHolderIfPresent(contextValueHolder) {
+            try withLocationIfParent(parent) {
+                try renderChildren(new: new, old: old)
+            }
         }
     }
 
