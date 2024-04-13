@@ -303,4 +303,72 @@ final class ContextHookTests: XCTestCase {
         evs = []
     }
 
+    func testPartialUpdate() throws {
+        struct Content: Component {
+            func render() -> Node {
+                A.Provider(value: A(1)) {
+                    Section()
+                }
+            }
+        }
+
+        struct Section: Component {
+            @Context var a: A
+            @State var x: Int = 10
+            func render() -> Node {
+                Fragment {
+                    p {
+                        a.value
+                    }
+                    p {
+                        x
+                    }
+                }
+            }
+        }
+
+        let body = try document.createElement("body")
+        let root = ReactRoot(element: body)
+        var section: Section!
+        var evs: [String] = []
+        root.willComponentRender = { (c) in
+            switch c {
+            case is Content:
+                evs.append("c")
+            case let c as Section:
+                section = c
+                evs.append("s")
+            default: break
+            }
+        }
+
+        root.render(node: Content())
+        XCTAssertPrint(body, """
+        <body>
+            <p>
+                1
+            </p>
+            <p>
+                10
+            </p>
+        </body>
+        """)
+        XCTAssertEqual(evs, ["c", "s"])
+        evs = []
+
+        section.x = 11
+        XCTAssertPrint(body, """
+        <body>
+            <p>
+                1
+            </p>
+            <p>
+                11
+            </p>
+        </body>
+        """)
+        XCTAssertEqual(evs, ["s"])
+        evs = []
+    }
+
 }
