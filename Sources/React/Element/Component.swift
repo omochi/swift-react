@@ -16,15 +16,13 @@ extension Component {
     public var deps: AnyHashable? { nil }
 
     package static func extractGhostDefault(_ input: GhostInput<Self>) -> Ghost {
-        var hooks: [String: any _AnyHookObject] = [:]
+        var hooks: [any _AnyHookWrapper] = []
 
         let mirror = Mirror(reflecting: input.component)
         for mc in mirror.children {
-            guard let label = mc.label else { continue }
-
             switch mc.value {
             case let hook as any _AnyHookWrapper:
-                hooks[label] = hook._anyHookObject
+                hooks.append(hook)
             default: break
             }
         }

@@ -10,14 +10,15 @@ public struct GhostInput<C: Component> {
 
 public struct Ghost {
     public var component: any Component
-    package var hooks: [String: any _AnyHookObject]
-    package var contextValue: (type: any ContextValue.Type, value: any ContextValue)?
+    
+    var hooks: [any _AnyHookWrapper]
+    var contextValue: (type: any ContextValue.Type, value: any ContextValue)?
 
-    package var states: [String: any _AnyStateStorage] {
-        hooks.compactMapValues { $0 as? any _AnyStateStorage }
+    var states: [any _AnyStateHook] {
+        hooks.compactMap { $0 as? any _AnyStateHook }
     }
 
-    package var contexts: [String: any _AnyContextStorage] {
-        hooks.compactMapValues { $0 as? any _AnyContextStorage }
+    var contexts: [any _AnyContextHook] {
+        hooks.compactMap { $0 as? any _AnyContextHook }
     }
 }

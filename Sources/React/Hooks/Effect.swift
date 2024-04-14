@@ -1,10 +1,9 @@
 @propertyWrapper
-public struct Effect: _AnyHookWrapper {
+public final class Effect: _AnyHookWrapper {
     public typealias Setup = () -> Cleanup?
     public typealias Cleanup = () -> Void
 
     public init() {
-        self.storage = Storage()
     }
 
     public var wrappedValue: Never {
@@ -12,7 +11,7 @@ public struct Effect: _AnyHookWrapper {
     }
 
     public var projectedValue: Projection {
-        Projection(storage: storage)
+        Projection(object: object!)
     }
 
     public struct Projection {
@@ -20,28 +19,24 @@ public struct Effect: _AnyHookWrapper {
             deps: AnyHashable? = nil,
             setup: @escaping Setup
         ) {
-            storage.deps = deps
-            storage.setup = setup
+            object.deps = deps
+            object.setup = setup
         }
 
-        var storage: Storage
+        var object: Object
     }
 
-    private var storage: Storage
+    func prepare(object: Object?) {
+        self.object = object ?? Object()
+    }
 
-    package var _anyHookObject: any _AnyHookObject { storage }
+    var object: Object?
 
-    package final class Storage: _AnyHookObject {
+    final class Object {
+        init() {}
+
         var deps: AnyHashable?
         var setup: Setup?
         var cleanup: Cleanup?
-
-        init() {}
-
-        public func _take(fromAnyHookObject object: any _AnyHookObject) {
-            guard let o = object as? Storage else { return }
-
-            // ?
-        }
     }
 }

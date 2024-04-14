@@ -30,7 +30,7 @@ final class CallbackHookTests: XCTestCase {
             @Callback var onSubmit: Function<Void>
 
             func render() -> Node {
-                $onSubmit(deps: nil) { () in
+                $onSubmit(deps: 1) { () in
 
                 }
 

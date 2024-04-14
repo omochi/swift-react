@@ -1,47 +1,41 @@
 @propertyWrapper
-public struct Context<Value: ContextValue>: _AnyHookWrapper {
-    public init() {
-        self.storage = Storage()
-    }
+public final class Context<Value: ContextValue>: _AnyContextHook {
+    public init() {}
 
     public var wrappedValue: Value {
-        storage.value
+        object!.value
     }
 
-    package var storage: Storage
+    var object: Object?
 
-    package var _anyHookObject: any _AnyHookObject { storage }
+    func prepare(object: Object?) {
+        self.object = object ?? Object()
+    }
 
-    package final class Storage: _AnyContextStorage {
-        public init() {}
+    var valueType: any ContextValue.Type { Value.self }
 
-        public var disposable: (any Disposable)?
-        public weak var holder: ContextValueHolder?
+    func setHolder(_ holder: ContextValueHolder?, disposable: (any Disposable)?) {
+        object!.holder = holder
+        object!.disposable = disposable
+    }
 
-        public var value: Value {
+    final class Object {
+        init() {}
+
+        var disposable: (any Disposable)?
+        weak var holder: ContextValueHolder?
+
+        var value: Value {
             guard let holder,
                   let value = holder.value as? Value else {
                 return .defaultValue
             }
             return value
         }
-
-        public var _valueType: any ContextValue.Type { Value.self }
-
-        public func _setHolder(_ holder: ContextValueHolder?, disposable: (any Disposable)?) {
-            self.holder = holder
-            self.disposable = disposable
-        }
-
-        public func _take(fromAnyHookObject object: any _AnyHookObject) {
-            guard let o = object as? Storage else { return }
-
-            holder = o.holder
-        }
     }
 }
 
-package protocol _AnyContextStorage: _AnyHookObject {
-    var _valueType: any ContextValue.Type { get }
-    func _setHolder(_ holder: ContextValueHolder?, disposable: (any Disposable)?)
+protocol _AnyContextHook: _AnyHookWrapper {
+    var valueType: any ContextValue.Type { get }
+    func setHolder(_ holder: ContextValueHolder?, disposable: (any Disposable)?)
 }

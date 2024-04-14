@@ -1,57 +1,44 @@
 @propertyWrapper
-public struct Callback<R, each A>: _AnyCallback {
+public final class Callback<R, each A>: _AnyHookWrapper {
     public init() {
-        self.storage = Storage()
     }
 
     public var wrappedValue: Function<R, repeat each A> {
-        guard let function = storage.function else {
+        guard let function = object!.function else {
             preconditionFailure("uninitialized")
         }
         return function
     }
 
     public var projectedValue: Projection {
-        Projection(storage: storage)
+        Projection(object: object!)
     }
+
+    func prepare(object: Object?) {
+        self.object = object ?? Object()
+    }
+
+    var object: Object?
 
     public struct Projection {
         public func callAsFunction(
             deps: AnyHashable,
             impl: @escaping (repeat each A) -> R
         ) {
-            if storage.function == nil ||
-                storage.deps != deps
+            if object.function == nil ||
+                object.deps != deps
             {
-                storage.function = Function(impl)
+                object.function = Function(impl)
             }
 
-            storage.deps = deps
+            object.deps = deps
         }
 
-        var storage: Storage
+        var object: Object
     }
 
-    package final class Storage: _AnyCallbackStorage {
+    final class Object {
         var deps: AnyHashable?
         var function: Function<R, repeat each A>?
-
-        package func _take(fromAnyHookObject object: any _AnyHookObject) {
-            guard let o = object as? Storage else { return }
-
-            deps = o.deps
-            function = o.function
-        }
     }
-
-    var storage: Storage
-    package var _anyCallbackStorage: any _AnyCallbackStorage { storage }
-    package var _anyHookObject: any _AnyHookObject { _anyCallbackStorage }
-}
-
-package protocol _AnyCallback: _AnyHookWrapper {
-    var _anyCallbackStorage: any _AnyCallbackStorage { get }
-}
-
-package protocol _AnyCallbackStorage: _AnyHookObject {
 }

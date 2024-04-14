@@ -1,37 +1,39 @@
 @propertyWrapper
-public struct State<Value: Equatable>: _AnyState {
+public final class State<Value: Equatable>: _AnyStateHook {
     public init(wrappedValue: Value) {
-        self.storage = Storage()
-
-        storage.value = wrappedValue
+        self.initialValue = wrappedValue
     }
 
-    public init() where Value: ExpressibleByNilLiteral {
+    public convenience init() where Value: ExpressibleByNilLiteral {
         self.init(wrappedValue: nil)
     }
 
     public var wrappedValue: Value {
-        get { storage.getValue() }
-        nonmutating set { storage.setValue(newValue) }
+        get { object!.getValue() }
+        set { object!.setValue(newValue) }
     }
 
-    package var storage: Storage
+    private var initialValue: Value
 
-    package var _anyStateStorage: any _AnyStateStorage { storage }
-    package var _anyHookObject: any _AnyHookObject { _anyStateStorage }
+    var object: Object?
 
-    package final class Storage: _AnyStateStorage {
-        init() {}
+    func prepare(object: Object?) {
+        self.object = object ?? Object(value: initialValue)
+    }
 
-        var value: Value?
+    func setDidChange(_ newValue: (() -> Void)?) {
+        object!.didChange = newValue
+    }
+
+    final class Object {
+        init(value: Value) {
+            self.value = value
+        }
+
+        private var value: Value
         var didChange: (() -> Void)?
 
-        func getValue() -> Value {
-            guard let value else {
-                preconditionFailure("State is uninitialized")
-            }
-            return value
-        }
+        func getValue() -> Value { value }
 
         func setValue(_ newValue: Value) {
             if value == newValue { return }
@@ -39,25 +41,9 @@ public struct State<Value: Equatable>: _AnyState {
             value = newValue
             didChange?()
         }
-
-        package func _setDidChange(_ newValue: (() -> Void)?) {
-            didChange = newValue
-        }
-
-        package func _take(fromAnyHookObject object: any _AnyHookObject) {
-            guard let o = object as? Storage else { return }
-
-            value = o.value
-            didChange = o.didChange
-        }
     }
 }
 
-package protocol _AnyState: _AnyHookWrapper {
-    var _anyStateStorage: any _AnyStateStorage { get }
+protocol _AnyStateHook: _AnyHookWrapper {
+    func setDidChange(_ newValue: (() -> Void)?)
 }
-
-package protocol _AnyStateStorage: _AnyHookObject {
-    func _setDidChange(_ newValue: (() -> Void)?)
-}
-

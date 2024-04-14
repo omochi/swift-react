@@ -243,17 +243,17 @@ public final class ReactRoot {
                 self.scheduleUpdate(node: newTree)
             }
 
-            for (_, context) in newTree.ghost.contexts {
-                if let holder = contextValueHolders[ObjectIdentifier(context._valueType)] {
+            for context in newTree.ghost.contexts {
+                if let holder = contextValueHolders[ObjectIdentifier(context.valueType)] {
                     let dsp = holder.emitter.on(handler: updater)
-                    context._setHolder(holder, disposable: dsp)
+                    context.setHolder(holder, disposable: dsp)
                 } else {
-                    context._setHolder(nil, disposable: nil)
+                    context.setHolder(nil, disposable: nil)
                 }
             }
 
-            for (_, state) in newTree.ghost.states {
-                state._setDidChange(updater)
+            for state in newTree.ghost.states {
+                state.setDidChange(updater)
             }
 
             var isDirty = newTree.consumeDirty()
@@ -321,10 +321,10 @@ public final class ReactRoot {
     }
 
     private func renderGhost(newTree: VNode, oldTree: VNode?) {
-        for (name, oldHook) in oldTree?.ghost.hooks ?? [:] {
-            if let newHook = newTree.ghost.hooks[name] {
-                newHook._take(fromAnyHookObject: oldHook)
-            }
+        for (index, newHook) in newTree.ghost.hooks.enumerated() {
+            let oldHook = oldTree?.ghost.hooks[index]
+
+            newHook._prepareAny(object: oldHook?.object)
         }
     }
 
