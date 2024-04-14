@@ -17,7 +17,7 @@ public struct Callback<R, each A>: _AnyCallback {
 
     public struct Projection {
         public func callAsFunction(
-            deps: AnyHashable? = nil,
+            deps: AnyHashable,
             impl: @escaping (repeat each A) -> R
         ) {
             if storage.function == nil ||

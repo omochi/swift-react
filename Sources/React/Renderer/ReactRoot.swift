@@ -37,6 +37,8 @@ public final class ReactRoot {
             try runRenderRoot(node: node)
         case .update(let node):
             try runUpdate(node: node)
+        case .effect(cleanup: let cleanup, setup: let setup):
+            try runEffect(cleanup: cleanup, setup: setup)
         }
     }
 
@@ -54,6 +56,15 @@ public final class ReactRoot {
 
     private func scheduleUpdate(node: VNode) {
         scheduler.schedule(action: .update(node))
+    }
+
+    private func scheduleEffect(
+        cleanup: Effect.Cleanup?,
+        setup: Effect.Setup?
+    ) {
+        scheduler.schedule(
+            action: .effect(cleanup: cleanup, setup: setup)
+        )
     }
 
     private func runRenderRoot(node: Node) throws {
@@ -84,6 +95,10 @@ public final class ReactRoot {
                 try renderNode(new: newTree, old: oldTree)
             }
         }
+    }
+
+    private func runEffect(cleanup: Effect.Cleanup?, setup: Effect.Setup?) throws {
+        // TODO
     }
 
     private static func makeVNode<C: Component>(component: C) -> VNode {

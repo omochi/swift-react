@@ -2,33 +2,18 @@ internal final class Scheduler {
     enum State {
         case idle
         case paused
-        case rendering
+        case executing
     }
 
     enum Action {
         case renderRoot(Node)
         case update(VNode)
+        case effect(cleanup: Effect.Cleanup?, setup: Effect.Setup?)
 
         var update: VNode? {
             switch self {
             case .update(let x): x
             default: nil
-            }
-        }
-
-        func transform(old: VNode, new: VNode?) -> Action? {
-            switch self {
-            case .renderRoot: 
-                return self
-            case .update(let node):
-                // identify
-                guard node === old else { return self }
-
-                if let new {
-                    return .update(new)
-                } else {
-                    return nil
-                }
             }
         }
     }
@@ -45,11 +30,11 @@ internal final class Scheduler {
 
     func resume() {
         switch state {
-        case .idle: return
         case .paused: 
             state = .idle
             run()
-        case .rendering: return
+        case .idle,
+                .executing: return
         }
     }
 
@@ -57,17 +42,13 @@ internal final class Scheduler {
         switch state {
         case .idle: state = .paused
         case .paused: return
-        case .rendering: preconditionFailure("cant pause now")
+        case .executing: preconditionFailure("cant pause now")
         }
     }
 
     func schedule(action: Action) {
         actionQueue.append(action)
         run()
-    }
-
-    func transform(old: VNode, new: VNode?) {
-        actionQueue = actionQueue.compactMap { $0.transform(old: old, new: new) }
     }
 
     private func reorderActions() {
@@ -95,7 +76,8 @@ internal final class Scheduler {
     private func updateActions() {
         actionQueue = actionQueue.compactMap { (action) in
             switch action {
-            case .renderRoot: break
+            case .renderRoot,
+                    .effect: break
             case .update(let node):
                 guard case .some(let new) = node.new else { break }
 
@@ -118,15 +100,16 @@ internal final class Scheduler {
 
                 switch action {
                 case .renderRoot,
-                        .update:
-                    state = .rendering
+                        .update,
+                        .effect:
+                    state = .executing
                     run(action: action)
                     updateActions()
                     state = .idle
                 }
             case .paused:
                 return
-            case .rendering:
+            case .executing:
                 return
             }
         }
