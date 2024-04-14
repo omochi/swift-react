@@ -1,33 +1,18 @@
 import SRTCore
 
-private struct ChildrenDeps: Hashable {
-    final class Token: IdentityHashable {}
-
-    init(children: [Node]) {
-        let components = Nodes.normalize(nodes: children)
-
-        var items: [AnyHashable] = []
-        var token: Token? = nil
-        for c in components {
-            if let deps = c.deps {
-                items.append(deps)
-            } else {
-                token = Token()
-                items = []
-                break
-            }
-        }
-
-        self.items = items
-        self.token = token
-    }
-
-    private var items: [AnyHashable]
-    private var token: Token?
-}
+private final class UniqueToken: IdentityHashable {}
 
 extension [Node] {
-    public var deps: AnyHashable {
-        ChildrenDeps(children: self)
+    public var deps: Deps {
+        let components = Nodes.normalize(nodes: self)
+
+        var result: [AnyHashable] = []
+        for c in components {
+            guard let deps = c.deps else {
+                return [UniqueToken()]
+            }
+            result.append(deps)
+        }
+        return result
     }
 }

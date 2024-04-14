@@ -7,8 +7,8 @@ public struct Fragment: Component {
         self.children = children()
     }
 
-    public var deps: AnyHashable? {
-        AnyDeps(key, children.deps)
+    public var deps: Deps? {
+        [key, children.deps]
     }
 
     public var key: AnyHashable?

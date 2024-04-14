@@ -229,7 +229,7 @@ final class ContextHookTests: XCTestCase {
         }
 
         struct Chapter: Component {
-            var deps: AnyHashable? { AnyDeps() }
+            var deps: Deps? { [] }
 
             func render() -> Node {
                 div {
@@ -482,7 +482,7 @@ final class ContextHookTests: XCTestCase {
         }
 
         struct Chapter: Component {
-            var deps: AnyHashable? { AnyDeps() }
+            var deps: Deps? { [] }
             func render() -> Node {
                 div {
                     Section()
@@ -503,7 +503,7 @@ final class ContextHookTests: XCTestCase {
         }
 
         struct Paragraph: Component {
-            var deps: AnyHashable? { AnyDeps() }
+            var deps: Deps? { [] }
             func render() -> Node {
                 div {
                     Line()

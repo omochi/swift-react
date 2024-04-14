@@ -15,8 +15,8 @@ final class CallbackHookTests: XCTestCase {
         struct Form: Component {
             var onSubmit: Function<Void>
 
-            var deps: AnyHashable? {
-                AnyDeps(onSubmit)
+            var deps: Deps? {
+                [onSubmit]
             }
 
             func render() -> Node {
@@ -30,7 +30,7 @@ final class CallbackHookTests: XCTestCase {
             @Callback var onSubmit: Function<Void>
 
             func render() -> Node {
-                $onSubmit(deps: 1) { () in
+                $onSubmit(deps: []) { () in
 
                 }
 

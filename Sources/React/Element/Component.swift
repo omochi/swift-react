@@ -3,7 +3,7 @@ import SRTCore
 public protocol Component: Element {
     var key: AnyHashable? { get }
 
-    var deps: AnyHashable? { get }
+    var deps: Deps? { get }
 
     func render() -> Node
 
@@ -13,7 +13,7 @@ public protocol Component: Element {
 extension Component {
     public var key: AnyHashable? { nil }
 
-    public var deps: AnyHashable? { nil }
+    public var deps: Deps? { nil }
 
     package static func extractGhostDefault(_ input: GhostInput<Self>) -> Ghost {
         var hooks: [any _AnyHookWrapper] = []

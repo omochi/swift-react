@@ -17,12 +17,12 @@ public struct ContextValueProvider<Value: ContextValue>: Component {
     public var value: Value
     public var children: [Node]
 
-    public var deps: AnyHashable? {
-        AnyDeps(
+    public var deps: Deps? {
+        [
             key,
             value,
             children.deps
-        )
+        ]
     }
 
     public func render() -> Node {

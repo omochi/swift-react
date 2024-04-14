@@ -16,7 +16,7 @@ public final class Effect: _AnyHookWrapper {
 
     public struct Projection {
         public func callAsFunction(
-            deps: AnyHashable? = nil,
+            deps: Deps? = nil,
             setup: @escaping Setup
         ) {
             object.deps = deps
@@ -35,7 +35,7 @@ public final class Effect: _AnyHookWrapper {
     final class Object {
         init() {}
 
-        var deps: AnyHashable?
+        var deps: Deps?
         var setup: Setup?
         var cleanup: Cleanup?
     }

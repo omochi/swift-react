@@ -24,15 +24,15 @@ public struct HTMLElement: Component {
     public var listeners: EventListeners
     public var children: [Node]
 
-    public var deps: AnyHashable? {
-        AnyDeps(
+    public var deps: Deps? {
+        [
             tagName,
             key,
             ref,
             attributes,
             listeners,
             children.deps
-        )
+        ]
     }
 
     public func render() -> Node {

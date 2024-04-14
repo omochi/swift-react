@@ -470,7 +470,7 @@ final class RenderTests: XCTestCase {
 
             var id: Int
 
-            var deps: AnyHashable? { AnyDeps(key, id) }
+            var deps: Deps? { [key, id] }
 
             func render() -> Node {
                 return div {

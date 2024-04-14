@@ -22,7 +22,7 @@ public final class Callback<R, each A>: _AnyHookWrapper {
 
     public struct Projection {
         public func callAsFunction(
-            deps: AnyHashable,
+            deps: Deps,
             impl: @escaping (repeat each A) -> R
         ) {
             if object.function == nil ||
@@ -38,7 +38,7 @@ public final class Callback<R, each A>: _AnyHookWrapper {
     }
 
     final class Object {
-        var deps: AnyHashable?
+        var deps: Deps?
         var function: Function<R, repeat each A>?
     }
 }

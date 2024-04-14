@@ -183,7 +183,7 @@ final class RenderPlanTests: XCTestCase {
         struct Section: Component {
             var value: Int
 
-            var deps: AnyHashable? { value }
+            var deps: Deps? { [value] }
 
             func render() -> Node {
                 return "\(value)"
@@ -225,8 +225,8 @@ final class RenderPlanTests: XCTestCase {
             var `class`: String
             var text: String
 
-            var deps: AnyHashable? {
-                AnyDeps(`class`, text)
+            var deps: Deps? {
+                [`class`, text]
             }
 
             func render() -> Node {
@@ -265,7 +265,7 @@ final class RenderPlanTests: XCTestCase {
         struct Section: Component {
             var text: String
 
-            var deps: AnyHashable? { AnyDeps(text) }
+            var deps: Deps? { [text] }
 
             func render() -> Node {
                 text
@@ -300,7 +300,7 @@ final class RenderPlanTests: XCTestCase {
 
             var id: Int
 
-            var deps: AnyHashable? { AnyDeps(key, id) }
+            var deps: Deps? { [key, id] }
 
             func render() -> Node {
                 return div {
