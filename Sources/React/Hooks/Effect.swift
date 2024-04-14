@@ -3,12 +3,12 @@ public final class Effect: _AnyEffectHook {
     public typealias Setup = () -> Cleanup?
     public typealias Cleanup = () -> Void
 
+    public struct Empty {}
+
     public init() {
     }
 
-    public var wrappedValue: Never {
-        fatalError("Effect has no value")
-    }
+    public var wrappedValue: Empty { Empty() }
 
     public var projectedValue: Projection {
         Projection(object: object!)
