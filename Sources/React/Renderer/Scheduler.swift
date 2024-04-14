@@ -8,7 +8,7 @@ internal final class Scheduler {
     enum Action {
         case renderRoot(Node)
         case update(VNode)
-        case effect(cleanup: Effect.Cleanup?, setup: Effect.Setup?)
+        case effect(Effect.Task)
 
         var update: VNode? {
             switch self {

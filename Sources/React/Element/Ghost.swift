@@ -21,4 +21,8 @@ public struct Ghost {
     var contexts: [any _AnyContextHook] {
         hooks.compactMap { $0 as? any _AnyContextHook }
     }
+
+    var effects: [any _AnyEffectHook] {
+        hooks.compactMap { $0 as? any _AnyEffectHook }
+    }
 }

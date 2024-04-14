@@ -37,8 +37,8 @@ public final class ReactRoot {
             try runRenderRoot(node: node)
         case .update(let node):
             try runUpdate(node: node)
-        case .effect(cleanup: let cleanup, setup: let setup):
-            try runEffect(cleanup: cleanup, setup: setup)
+        case .effect(let effect):
+            effect.run()
         }
     }
 
@@ -58,12 +58,9 @@ public final class ReactRoot {
         scheduler.schedule(action: .update(node))
     }
 
-    private func scheduleEffect(
-        cleanup: Effect.Cleanup?,
-        setup: Effect.Setup?
-    ) {
+    private func scheduleEffect(_ effect: Effect.Task) {
         scheduler.schedule(
-            action: .effect(cleanup: cleanup, setup: setup)
+            action: .effect(effect)
         )
     }
 
@@ -95,10 +92,6 @@ public final class ReactRoot {
                 try renderNode(new: newTree, old: oldTree)
             }
         }
-    }
-
-    private func runEffect(cleanup: Effect.Cleanup?, setup: Effect.Setup?) throws {
-        // TODO
     }
 
     private static func makeVNode<C: Component>(component: C) -> VNode {
@@ -316,6 +309,24 @@ public final class ReactRoot {
         if newTree == nil {
             if let oldTree {
                 try oldTree.dom?.remove()
+            }
+        }
+
+
+        if let newTree {
+            for effect in newTree.ghost.effects {
+                let object = effect.effectObject
+                if let task = object.taskIfShouldExecute() {
+                    scheduleEffect(task)
+                }
+            }
+        } else if let oldTree {
+            for effect in oldTree.ghost.effects {
+                let object = effect.effectObject
+                if let _ = object.cleanup {
+                    let task = Effect.Task(object: object, setup: nil)
+                    scheduleEffect(task)
+                }
             }
         }
     }
