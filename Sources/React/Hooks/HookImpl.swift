@@ -1,4 +1,4 @@
-protocol _AnyHookWrapper {
+protocol _AnyHookWrapper: Hook {
     associatedtype Object
 
     var object: Object? { get }

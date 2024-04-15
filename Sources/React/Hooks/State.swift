@@ -4,10 +4,6 @@ public final class State<Value: Equatable>: _AnyStateHook {
         self.initialValue = wrappedValue
     }
 
-    public convenience init() where Value: ExpressibleByNilLiteral {
-        self.init(wrappedValue: nil)
-    }
-
     public var wrappedValue: Value {
         get { object!.getValue() }
         set { object!.setValue(newValue) }
@@ -41,6 +37,12 @@ public final class State<Value: Equatable>: _AnyStateHook {
             value = newValue
             didChange?()
         }
+    }
+}
+
+extension State where Value: ExpressibleByNilLiteral {
+    public convenience init() {
+        self.init(wrappedValue: nil)
     }
 }
 

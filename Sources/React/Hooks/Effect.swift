@@ -1,9 +1,9 @@
+import SRTCore
+
 @propertyWrapper
 public final class Effect: _AnyEffectHook {
     public typealias Setup = () -> Cleanup?
     public typealias Cleanup = () -> Void
-
-    public struct Empty {}
 
     public init() {
     }
