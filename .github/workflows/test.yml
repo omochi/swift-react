@@ -60,7 +60,7 @@ jobs:
           CHROMEDRIVER_VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json | jq -r ".milestones.\"$CHROME_VERSION\".version")
           curl -L -O https://storage.googleapis.com/chrome-for-testing-public/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip
           unzip chromedriver-linux64.zip
-          sudo mv chromedriver /usr/bin/chromedriver
+          sudo mv chromedriver-linux64/chromedriver /usr/bin/chromedriver
           sudo chmod +x /usr/bin/chromedriver
       - uses: actions/checkout@v4
       - run: curl -L -O https://download.swift.org/development/ubuntu2204/${{ env.SWIFT }}/${{ env.SWIFT }}-ubuntu22.04.tar.gz
