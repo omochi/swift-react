@@ -44,16 +44,18 @@ jobs:
           fonts-liberation
           jq
 
-      - run: |
+      - name: install chrome
+        run: |
           curl -L -O https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo dpkg -i google-chrome-stable_current_amd64.deb
         working-directory: /home/runner
       - run: google-chrome --version
       - run: echo "$(google-chrome --version | cut -f 3 -d ' ' | cut -d '.' -f 1)"
-      - run: curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json | jq -r ".milestones.\"$CHROME_VERSION\".version"
-      - run: |
+      - run: curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json | jq -r '.milestones."'$CHROME_VERSION'".version'
+      - name: install chromedriver
+        run: |
           CHROME_VERSION=$(google-chrome --version | cut -f 3 -d ' ' | cut -d '.' -f 1)
-          CHROMEDRIVER_VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json | jq -r ".milestones.\"$CHROME_VERSION\".version")
+          CHROMEDRIVER_VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json | jq -r '.milestones."'$CHROME_VERSION'".version')
           curl -L -O https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
           unzip chromedriver_linux64.zip
           sudo mv chromedriver /usr/bin/chromedriver
