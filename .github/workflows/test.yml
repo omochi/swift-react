@@ -22,6 +22,7 @@ jobs:
       - uses: vapor/swiftly-action@v0.1
         with:
           toolchain: "swift-DEVELOPMENT-SNAPSHOT-2024-04-02-a"
+      - run: swift --version
       - run: >
           swift experimental-sdk install
           https://github.com/swiftwasm/swift/releases/download/${{ env.SWIFT_WASM }}/${{ env.SWIFT_WASM }}-ubuntu22.04_x86_64.artifactbundle.zip
