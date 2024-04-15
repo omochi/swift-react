@@ -12,7 +12,7 @@ let javaScriptKitDependency: Package.Dependency = usesLocalJavaScriptKit ?
 
 let javaScriptKitMockPlatforms: [Platform] = [
     usesJavaScriptKitMockOnMac ? .macOS : nil,
-    Platform.linux
+    .linux
 ].compacted()
 
 let javaScriptKitRealPlatforms: [Platform] = javaScriptKitMockPlatforms.inverted()
