@@ -11,7 +11,8 @@ let javaScriptKitDependency: Package.Dependency = usesLocalJavaScriptKit ?
     .package(url: "https://github.com/swiftwasm/JavaScriptKit", branch: "main")
 
 let javaScriptKitMockPlatforms: [Platform] = [
-    usesJavaScriptKitMockOnMac ? .macOS : nil
+    usesJavaScriptKitMockOnMac ? .macOS : nil,
+    .linux
 ].compacted()
 
 let javaScriptKitRealPlatforms: [Platform] = javaScriptKitMockPlatforms.inverted()

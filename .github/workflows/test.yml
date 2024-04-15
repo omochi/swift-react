@@ -1,0 +1,26 @@
+name: test
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - .github/workflows/test.yml
+      - bin/test
+      - Sources
+      - Tests
+      - Package.resolved
+      - Package.swift
+
+jobs:
+  test-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: vapor/swiftly-action@v0.1
+        with:
+          toolchain: "5.10"
+      - run: swift package resolve
+      - run: swift build
+      - run: swift build --build-tests
+      - run: swift test
