@@ -75,6 +75,12 @@ jobs:
       - run: echo /home/runner/carton/.build/release >> ${GITHUB_PATH}
 
       - uses: actions/checkout@v4
+
+      - run: swift package resolve
+
+      - run: swift build --build-tests
+      - run: swift test
+
       - run: >
           swift build --experimental-swift-sdk wasm32-unknown-wasi
           --build-tests
@@ -91,8 +97,3 @@ jobs:
           --environment browser --headless
         env:
           WEBDRIVER_PATH: /usr/bin/chromedriver
-      - run: swift package resolve
-      - run: swift build
-      - run: swift build --build-tests
-      - run: swift test
-
