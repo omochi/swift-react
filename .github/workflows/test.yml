@@ -23,7 +23,7 @@ jobs:
         with:
           toolchain: "5.10"
       - run: >
-          swift experimental-sdk install \
+          swift experimental-sdk install
           https://github.com/swiftwasm/swift/releases/download/${{ env.SWIFT_WASM }}/${{ env.SWIFT_WASM }}-ubuntu22.04_x86_64.artifactbundle.zip
       - run: ./bin/test
       - run: swift package resolve
