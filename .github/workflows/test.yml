@@ -14,13 +14,20 @@ on:
 
 jobs:
   test-linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    env:
+      SWIFT_WASM: swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-03-a
     steps:
       - uses: actions/checkout@v4
       - uses: vapor/swiftly-action@v0.1
         with:
           toolchain: "5.10"
+      - run: >
+          swift experimental-sdk install \
+          https://github.com/swiftwasm/swift/releases/download/${{ env.SWIFT_WASM }}/${{ env.SWIFT_WASM }}-ubuntu22.04_x86_64.artifactbundle.zip
+      - run: ./bin/test
       - run: swift package resolve
       - run: swift build
       - run: swift build --build-tests
       - run: swift test
+
