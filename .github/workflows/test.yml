@@ -16,12 +16,39 @@ jobs:
   test-linux:
     runs-on: ubuntu-22.04
     env:
+      SWIFT: swift-DEVELOPMENT-SNAPSHOT-2024-04-02-a
       SWIFT_WASM: swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-03-a
     steps:
+      - run: sudo apt-get install -y \
+          binutils \
+          git \
+          gnupg2 \
+          libc6-dev \
+          libcurl4-openssl-dev \
+          libedit2 \
+          libgcc-9-dev \
+          libpython3.8 \
+          libsqlite3-0 \
+          libstdc++-9-dev \
+          libxml2-dev \
+          libz3-dev \
+          pkg-config \
+          tzdata \
+          unzip \
+          zlib1g-dev \
+          curl
       - uses: actions/checkout@v4
-      - uses: vapor/swiftly-action@v0.1
-        with:
-          toolchain: "swift-DEVELOPMENT-SNAPSHOT-2024-04-02-a"
+      - run: mkdir swift
+      - run: >
+          curl -L -o ${HOME}/swift/swift.tar.gz
+          https://download.swift.org/development/ubuntu2204/${{ env.SWIFT }}/${{ env.SWIFT }}-ubuntu22.04.tar.gz
+      - run: tar xzf swift.tar.gz
+        working-directory: ${HOME}/swift
+      - run: echo ${HOME}/swift/usr/bin >> ${GITHUB_PATH}
+
+      # - uses: vapor/swiftly-action@v0.1
+      #   with:
+      #     toolchain: "swift-DEVELOPMENT-SNAPSHOT-2024-04-02-a"
       - run: swift --version
       - run: >
           swift experimental-sdk install
