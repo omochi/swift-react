@@ -49,11 +49,6 @@ jobs:
           curl -L -O https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo dpkg -i google-chrome-stable_current_amd64.deb
         working-directory: /home/runner
-      - run: google-chrome --version
-      - run: echo "$(google-chrome --version | cut -f 3 -d ' ' | cut -d '.' -f 1)"
-      - run: curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json | jq -r ".milestones.\"$CHROME_VERSION\".version"
-        env:
-          CHROME_VERSION: 123
       - name: install chromedriver
         run: |
           CHROME_VERSION=$(google-chrome --version | cut -f 3 -d ' ' | cut -d '.' -f 1)
@@ -62,7 +57,7 @@ jobs:
           unzip chromedriver-linux64.zip
           sudo mv chromedriver-linux64/chromedriver /usr/bin/chromedriver
           sudo chmod +x /usr/bin/chromedriver
-      - uses: actions/checkout@v4
+
       - run: curl -L -O https://download.swift.org/development/ubuntu2204/${{ env.SWIFT }}/${{ env.SWIFT }}-ubuntu22.04.tar.gz
         working-directory: /home/runner
       - run: tar xzf ${{ env.SWIFT }}-ubuntu22.04.tar.gz
@@ -72,12 +67,14 @@ jobs:
       - run: >
           swift experimental-sdk install
           https://github.com/swiftwasm/swift/releases/download/${{ env.SWIFT_WASM }}/${{ env.SWIFT_WASM }}-ubuntu22.04_x86_64.artifactbundle.zip
+
       - run: git clone --depth 1 https://github.com/swiftwasm/carton
         working-directory: /home/runner
       - run: swift build -c release
         working-directory: /home/runner/carton
       - run: echo /home/runner/carton/.build/release >> ${GITHUB_PATH}
 
+      - uses: actions/checkout@v4
       - run: >
           swift build --experimental-swift-sdk wasm32-unknown-wasi
           --build-tests
