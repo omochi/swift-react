@@ -46,6 +46,8 @@ jobs:
           curl -L -O https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
           sudo dpkg -i google-chrome-stable_current_amd64.deb
         working-directory: /home/runner
+      - run: google-chrome --version
+      - run: echo "$(google-chrome --version | cut -f 3 -d ' ' | cut -d '.' -f 1)"
       - run: |
           CHROME_VERSION=$(google-chrome --version | cut -f 3 -d ' ' | cut -d '.' -f 1)
           CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
