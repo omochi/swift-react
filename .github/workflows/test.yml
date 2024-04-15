@@ -44,9 +44,10 @@ jobs:
       - run: >
           curl -L -o /home/runner/swift/swift.tar.gz
           https://download.swift.org/development/ubuntu2204/${{ env.SWIFT }}/${{ env.SWIFT }}-ubuntu22.04.tar.gz
+      - run: ls -al /home/runner/swift
       - run: tar xzf swift.tar.gz
         working-directory: /home/runner/swift
-      - run: ls -al /home/runner/swift/usr/bin
+      - run: ls -al /home/runner/swift
       - run: echo /home/runner/swift/usr/bin >> ${GITHUB_PATH}
       - run: echo $PATH
 
