@@ -40,15 +40,13 @@ jobs:
           zlib1g-dev
           curl
       - uses: actions/checkout@v4
-      - run: mkdir /home/runner/swift
-      - run: >
-          curl -L -o /home/runner/swift/swift.tar.gz
-          https://download.swift.org/development/ubuntu2204/${{ env.SWIFT }}/${{ env.SWIFT }}-ubuntu22.04.tar.gz
+      - run: curl -L https://download.swift.org/development/ubuntu2204/${{ env.SWIFT }}/${{ env.SWIFT }}-ubuntu22.04.tar.gz
+        working-directory: /home/runner
       - run: ls -al /home/runner/swift
-      - run: tar xzf swift.tar.gz
+      - run: tar xzf ${{ env.SWIFT }}-ubuntu22.04.tar.gz
         working-directory: /home/runner/swift
-      - run: ls -al /home/runner/swift
-      - run: echo /home/runner/swift/usr/bin >> ${GITHUB_PATH}
+      - run: ls -al /home/runner/swift/${{ env.SWIFT }}-ubuntu22.04
+      - run: echo /home/runner/swift/${{ env.SWIFT }}-ubuntu22.04/usr/bin >> ${GITHUB_PATH}
       - run: echo $PATH
 
       # - uses: vapor/swiftly-action@v0.1
