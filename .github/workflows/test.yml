@@ -39,6 +39,20 @@ jobs:
           unzip
           zlib1g-dev
           curl
+          binaryen
+          libappindicator1
+          fonts-liberation
+      - run: |
+          curl -L -O https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome-stable_current_amd64.deb
+        working-directory: /home/runner
+      - run: |
+          CHROME_VERSION=$(google-chrome --version | cut -f 3 -d ' ' | cut -d '.' -f 1)
+          CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+          curl -L -O https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
+          unzip chromedriver_linux64.zip
+          sudo mv chromedriver /usr/bin/chromedriver
+          sudo chmod +x /usr/bin/chromedriver
       - uses: actions/checkout@v4
       - run: curl -L -O https://download.swift.org/development/ubuntu2204/${{ env.SWIFT }}/${{ env.SWIFT }}-ubuntu22.04.tar.gz
         working-directory: /home/runner
@@ -54,8 +68,23 @@ jobs:
       - run: swift build -c release
         working-directory: /home/runner/carton
       - run: echo /home/runner/carton/.build/release >> ${GITHUB_PATH}
-      - run: which CartonFrontend
-      - run: ./bin/test
+
+      - run: >
+          swift build --experimental-swift-sdk wasm32-unknown-wasi
+          --build-tests
+          -Xswiftc -static-stdlib
+          -Xswiftc -Xclang-linker -Xswiftc -mexec-model=reactor
+          -Xlinker --export-if-defined=__main_argc_argv
+          --disable-build-manifest-caching
+          -Xlinker --stack-first
+          -Xlinker --global-base=1048576
+          -Xlinker -z -Xlinker stack-size=1048576
+      - run: >
+          CartonFrontend test
+          --prebuilt-test-bundle-path .build/debug/swift-reactPackageTests.wasm
+          --environment browser --headless
+        env:
+          WEBDRIVER_PATH: /usr/bin/chromedriver
       - run: swift package resolve
       - run: swift build
       - run: swift build --build-tests
