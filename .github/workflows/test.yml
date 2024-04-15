@@ -46,7 +46,9 @@ jobs:
           https://download.swift.org/development/ubuntu2204/${{ env.SWIFT }}/${{ env.SWIFT }}-ubuntu22.04.tar.gz
       - run: tar xzf swift.tar.gz
         working-directory: /home/runner/swift
+      - run: ls -al /home/runner/swift/usr/bin
       - run: echo /home/runner/swift/usr/bin >> ${GITHUB_PATH}
+      - run: echo $PATH
 
       # - uses: vapor/swiftly-action@v0.1
       #   with:
