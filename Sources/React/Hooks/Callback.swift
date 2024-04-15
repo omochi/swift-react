@@ -1,24 +1,28 @@
+import SRTCore
+
 @propertyWrapper
-public final class Callback<R, each A>: _AnyHookWrapper {
+public struct Callback<R, each A>: _AnyHookWrapper {
     public init() {
     }
 
     public var wrappedValue: Function<R, repeat each A> {
-        guard let function = object!.function else {
+        guard let function = object.function else {
             preconditionFailure("uninitialized")
         }
         return function
     }
 
     public var projectedValue: Projection {
-        Projection(object: object!)
+        Projection(object: object)
     }
 
     func prepare(object: Object?) {
-        self.object = object ?? Object()
+        _object.value = object ?? Object()
     }
 
-    var object: Object?
+    private let _object: Box<Object?> = Box()
+
+    var object: Object { _object.value! }
 
     public struct Projection {
         public func callAsFunction(

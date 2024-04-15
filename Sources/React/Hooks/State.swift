@@ -1,24 +1,28 @@
+import SRTCore
+
 @propertyWrapper
-public final class State<Value: Equatable>: _AnyStateHook {
+public struct State<Value: Equatable>: _AnyStateHook {
     public init(wrappedValue: Value) {
         self.initialValue = wrappedValue
     }
 
     public var wrappedValue: Value {
-        get { object!.getValue() }
-        set { object!.setValue(newValue) }
+        get { object.getValue() }
+        nonmutating set { object.setValue(newValue) }
     }
 
     private var initialValue: Value
 
-    var object: Object?
+    private let _object: Box<Object?> = Box()
+
+    var object: Object { _object.value! }
 
     func prepare(object: Object?) {
-        self.object = object ?? Object(value: initialValue)
+        _object.value = object ?? Object(value: initialValue)
     }
 
     func setDidChange(_ newValue: (() -> Void)?) {
-        object!.didChange = newValue
+        object.didChange = newValue
     }
 
     final class Object {
@@ -41,7 +45,7 @@ public final class State<Value: Equatable>: _AnyStateHook {
 }
 
 extension State where Value: ExpressibleByNilLiteral {
-    public convenience init() {
+    public init() {
         self.init(wrappedValue: nil)
     }
 }

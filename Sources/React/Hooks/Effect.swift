@@ -1,7 +1,7 @@
 import SRTCore
 
 @propertyWrapper
-public final class Effect: _AnyEffectHook {
+public struct Effect: _AnyEffectHook {
     public typealias Setup = () -> Cleanup?
     public typealias Cleanup = () -> Void
 
@@ -11,7 +11,7 @@ public final class Effect: _AnyEffectHook {
     public var wrappedValue: Empty { Empty() }
 
     public var projectedValue: Projection {
-        Projection(object: object!)
+        Projection(object: object)
     }
 
     public struct Projection {
@@ -34,12 +34,14 @@ public final class Effect: _AnyEffectHook {
     }
 
     func prepare(object: Object?) {
-        self.object = object ?? Object()
+        _object.value = object ?? Object()
     }
 
-    var object: Object?
+    private let _object: Box<Object?> = Box()
 
-    var effectObject: Effect.Object { object! }
+    var object: Object { _object.value! }
+
+    var effectObject: Effect.Object { object }
 
     final class Object {
         init() {}

@@ -1,22 +1,26 @@
+import SRTCore
+
 @propertyWrapper
-public final class Context<Value: ContextValue>: _AnyContextHook {
+public struct Context<Value: ContextValue>: _AnyContextHook {
     public init() {}
 
     public var wrappedValue: Value {
-        object!.value
+        object.value
     }
 
-    var object: Object?
+    private let _object: Box<Object?> = Box()
+
+    var object: Object { _object.value! }
 
     func prepare(object: Object?) {
-        self.object = object ?? Object()
+        _object.value = object ?? Object()
     }
 
     var valueType: any ContextValue.Type { Value.self }
 
     func setHolder(_ holder: ContextValueHolder?, disposable: (any Disposable)?) {
-        object!.holder = holder
-        object!.disposable = disposable
+        object.holder = holder
+        object.disposable = disposable
     }
 
     final class Object {

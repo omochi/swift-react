@@ -1,7 +1,7 @@
 import SRTCore
 
 @propertyWrapper
-public final class Ref<Value>: _AnyRef {
+public struct Ref<Value>: _AnyRef {
     public init() {}
 
     typealias Object = RefObject<Value>
@@ -10,19 +10,24 @@ public final class Ref<Value>: _AnyRef {
         self.object = object ?? Object()
     }
 
-    var object: Object?
+    private let _object: Box<Object?> = Box()
+
+    var object: Object {
+        get { _object.value! }
+        nonmutating set { _object.value = newValue }
+    }
 
     public var wrappedValue: Value? {
         get {
-            object!.value
+            object.value
         }
-        set {
-            object!.value = newValue
+        nonmutating set {
+            object.value = newValue
         }
     }
 
     public var projectedValue: RefObject<Value> {
-        object!
+        object
     }
 }
 
