@@ -54,7 +54,7 @@ jobs:
           swift experimental-sdk install
           https://github.com/swiftwasm/swift/releases/download/${{ env.SWIFT_WASM }}/${{ env.SWIFT_WASM }}-ubuntu22.04_x86_64.artifactbundle.zip
 
-      - run: curl -L -O https://github.com/omochi/carton-build/releases/download/0.0.2/carton.tar.gz
+      - run: curl -L -O https://github.com/omochi/carton-build/releases/download/snapshot-2024-04-16/carton.tar.gz
         working-directory: /home/runner
       - run: tar xzf carton.tar.gz
         working-directory: /home/runner
