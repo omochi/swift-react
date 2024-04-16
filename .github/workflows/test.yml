@@ -82,5 +82,5 @@ jobs:
           --prebuilt-test-bundle-path .build/debug/swift-reactPackageTests.wasm
           --environment browser --headless
         env:
-          WEBDRIVER_PATH: /usr/bin/chromium-browser
+          WEBDRIVER_PATH: /usr/bin/chromedriver
 
