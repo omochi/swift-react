@@ -18,7 +18,7 @@ struct HTMLTagRenderer: Renderer {
     
     private func renderTagFunc(tag: String) -> String {
         """
-        public func \(tag)(
+        public func \(renderIdentifier(tag))(
             key: AnyHashable? = nil,
             ref: RefObject<JSHTMLElement>? = nil,
             attributes: Attributes = [:],
@@ -36,5 +36,13 @@ struct HTMLTagRenderer: Renderer {
         }
 
         """
+    }
+
+    private func renderIdentifier(_ text: String) -> String {
+        var text = text
+        if keywords.contains(text) {
+            text = "`\(text)`"
+        }
+        return text
     }
 }

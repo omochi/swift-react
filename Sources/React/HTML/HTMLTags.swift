@@ -1956,7 +1956,7 @@ public func ul(
     )
 }
 
-public funcvar(
+public func `var`(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
     attributes: Attributes = [:],
