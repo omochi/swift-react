@@ -44,20 +44,6 @@ jobs:
           fonts-liberation
           jq
 
-      - name: install chrome
-        run: |
-          curl -L -O https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo dpkg -i google-chrome-stable_current_amd64.deb
-        working-directory: /home/runner
-      - name: install chromedriver
-        run: |
-          CHROME_VERSION=$(google-chrome --version | cut -f 3 -d ' ' | cut -d '.' -f 1)
-          CHROMEDRIVER_VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/latest-versions-per-milestone.json | jq -r ".milestones.\"$CHROME_VERSION\".version")
-          curl -L -O https://storage.googleapis.com/chrome-for-testing-public/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip
-          unzip chromedriver-linux64.zip
-          sudo mv chromedriver-linux64/chromedriver /usr/bin/chromedriver
-          sudo chmod +x /usr/bin/chromedriver
-
       - run: curl -L -O https://download.swift.org/development/ubuntu2204/${{ env.SWIFT }}/${{ env.SWIFT }}-ubuntu22.04.tar.gz
         working-directory: /home/runner
       - run: tar xzf ${{ env.SWIFT }}-ubuntu22.04.tar.gz
@@ -96,4 +82,5 @@ jobs:
           --prebuilt-test-bundle-path .build/debug/swift-reactPackageTests.wasm
           --environment browser --headless
         env:
-          WEBDRIVER_PATH: /usr/bin/chromedriver
+          WEBDRIVER_PATH: /usr/bin/chromium-browser
+
