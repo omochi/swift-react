@@ -6,7 +6,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/test.yml
-      - bin/test
+      - bin/ci
       - Sources
       - Tests
       - Package.resolved
@@ -19,6 +19,9 @@ jobs:
       SWIFT: swift-DEVELOPMENT-SNAPSHOT-2024-04-02-a
       SWIFT_WASM: swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-03-a
     steps:
+      - uses: actions/checkout@v4
+      - run: bin/ci/check-package.sh
+
       - run: >
           sudo apt-get update &&
           sudo apt-get install -y
@@ -40,9 +43,6 @@ jobs:
           zlib1g-dev
           curl
           binaryen
-          libappindicator1
-          fonts-liberation
-          jq
 
       - run: curl -L -O https://download.swift.org/development/ubuntu2204/${{ env.SWIFT }}/${{ env.SWIFT }}-ubuntu22.04.tar.gz
         working-directory: /home/runner
@@ -60,8 +60,6 @@ jobs:
         working-directory: /home/runner
       - run: echo /home/runner/carton >> ${GITHUB_PATH}
       - run: carton --version
-
-      - uses: actions/checkout@v4
 
       - run: swift package resolve
 
