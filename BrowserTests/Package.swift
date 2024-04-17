@@ -24,9 +24,22 @@ addPage(name: "QSComponents")
 let package = Package(
     name: "BrowserTests",
     platforms: [.macOS(.v14)],
-    products: products,
+    products: products + [
+        .executable(name: "gen-pages", targets: ["gen-pages"])
+    ],
     dependencies: [
         .package(path: "../")
     ],
-    targets: targets
+    targets: targets + [
+        .target(
+            name: "GenPagesModule",
+            swiftSettings: [.enableUpcomingFeature("BareSlashRegexLiterals")]
+        ),
+        .executableTarget(
+            name: "gen-pages",
+            dependencies: [
+                .target(name: "GenPagesModule", condition: .when(platforms: [.macOS]))
+            ]
+        )
+    ]
 )
