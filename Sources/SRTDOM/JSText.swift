@@ -7,12 +7,8 @@ public protocol JSTextProtocol: JSNodeProtocol {
 
 extension JSTextProtocol {
     public var data: String {
-        get {
-            .unsafeConstruct(from: jsValue.data)
-        }
-        nonmutating set {
-            jsValue.data = newValue.jsValue
-        }
+        get { .unsafeConstruct(from: jsValue.data) }
+        nonmutating set { jsValue.data = newValue.jsValue }
     }
 }
 
