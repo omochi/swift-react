@@ -3,12 +3,12 @@
 import PackageDescription
 
 // for development
-let usesJavaScriptKitMockOnMac = true
+let usesJavaScriptKitMockOnMac = false
 let usesLocalJavaScriptKit = false
 
 let javaScriptKitDependency: Package.Dependency = usesLocalJavaScriptKit ?
     .package(path: "../../swiftwasm/JavaScriptKit") :
-    .package(url: "https://github.com/swiftwasm/JavaScriptKit", branch: "main")
+    .package(url: "https://github.com/swiftwasm/JavaScriptKit", from: "0.19.2")
 
 let javaScriptKitMockPlatforms: [Platform] = [
     usesJavaScriptKitMockOnMac ? .macOS : nil,
