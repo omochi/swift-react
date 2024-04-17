@@ -11,6 +11,16 @@ public struct JSDocument: ConvertibleToJSObject & ConstructibleFromJSValue {
 
     public var jsObject: JSObject
 
+
+    public var body: JSHTMLElement? {
+        get { .unsafeConstruct(from: jsValue.body) }
+        nonmutating set { jsValue.body = newValue.jsValue }
+    }
+
+    public var documentElement: JSHTMLElement {
+        .unsafeConstruct(from: jsValue.documentElement)
+    }
+
     public func createElement(_ tagName: String) throws -> JSHTMLElement {
         try .mustConstruct(from: try jsValue.throws.createElement(tagName))
     }

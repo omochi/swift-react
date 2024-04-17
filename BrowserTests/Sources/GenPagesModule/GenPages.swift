@@ -17,6 +17,7 @@ public struct GenPages {
             try generateEntryHTML(page: page)
         }
         try generateViteConfig()
+        try generateIndexPage()
     }
 
     private static func pages(rootDir: URL) throws -> [String] {
@@ -41,7 +42,7 @@ public struct GenPages {
             <title>\(page)</title>
             <script type="module">
                 import { load } from "/src/loader/load.ts";
-                load("/.build/debug/\(page).wasm");
+                load("/.build/wasm32-unknown-wasi/debug/\(page).wasm");
             </script>
         </head>
         <body>
@@ -80,8 +81,40 @@ public struct GenPages {
         """)
 
         let code = parts.joined(separator: "\n")
-
         let file = rootDir.appending(component: "vite.config.js")
+        try code.write(to: file, atomically: true, encoding: .utf8)
+    }
+
+    private func generateIndexPage() throws {
+        var parts: [String] = []
+
+        parts.append("""
+        <!DOCTYPE html>
+        <html lang="ja">
+        <head>
+            <meta charset="utf-8">
+            <title>index</title>
+        </head>
+        <body>
+            <ul>
+        """)
+
+        for page in pages {
+            parts.append("""
+                <li>
+                    <a href="./pages/\(page).html">\(page)</a>
+                </li>
+        """)
+        }
+
+        parts.append("""
+            </ul>
+        </body>
+        </html>
+        """)
+
+        let code = parts.joined(separator: "\n")
+        let file = rootDir.appending(component: "index.html")
         try code.write(to: file, atomically: true, encoding: .utf8)
     }
 }

@@ -1,4 +1,5 @@
 import React
+import SRTDOM
 import JavaScriptKit
 
 // https://ja.react.dev/learn
@@ -22,4 +23,6 @@ struct MyApp: Component {
     }
 }
 
-print("hello wasm")
+let body = try JSWindow.global.document.body.unwrap("body")
+let root = ReactRoot(element: body)
+root.render(node: MyApp())
