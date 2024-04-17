@@ -1,0 +1,14 @@
+#!/bin/bash
+set -ueo pipefail
+cd "$(dirname "$0")/.."
+
+set -x
+
+swift build --experimental-swift-sdk wasm32-unknown-wasi \
+  -Xswiftc -static-stdlib \
+  -Xswiftc -Xclang-linker -Xswiftc -mexec-model=reactor \
+  -Xlinker --export-if-defined=__main_argc_argv \
+  --disable-build-manifest-caching \
+  -Xlinker --stack-first \
+  -Xlinker --global-base=1048576 \
+  -Xlinker -z -Xlinker stack-size=1048576
