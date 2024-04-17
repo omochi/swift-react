@@ -21,3 +21,5 @@ struct MyApp: Component {
         }
     }
 }
+
+print("hello wasm")
