@@ -4,5 +4,5 @@ cd "$(dirname "$0")/.."
 
 set -x
 
-swift build
+swift build --disable-build-manifest-caching
 swift run gen-pages

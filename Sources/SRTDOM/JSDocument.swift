@@ -11,7 +11,6 @@ public struct JSDocument: ConvertibleToJSObject & ConstructibleFromJSValue {
 
     public var jsObject: JSObject
 
-
     public var body: JSHTMLElement? {
         get { .unsafeConstruct(from: jsValue.body) }
         nonmutating set { jsValue.body = newValue.jsValue }
