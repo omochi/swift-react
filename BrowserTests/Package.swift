@@ -20,6 +20,7 @@ func addPage(name: String) {
 }
 
 addPage(name: "QSComponents")
+addPage(name: "QSMarkup")
 
 let package = Package(
     name: "BrowserTests",

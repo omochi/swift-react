@@ -2,7 +2,7 @@ import React
 import SRTDOM
 import JavaScriptKit
 
-// https://ja.react.dev/learn
+// https://ja.react.dev/learn#components
 
 struct MyButton: Component {
     func render() -> Node {
@@ -18,7 +18,6 @@ struct MyApp: Component {
             h1 {
                 "Welcome to my app"
             }
-            MyButton()
         }
     }
 }

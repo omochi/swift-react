@@ -6,6 +6,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         QSComponents: resolve(__dirname, "pages/QSComponents.html"),
+        QSMarkup: resolve(__dirname, "pages/QSMarkup.html"),
       },
     },
   }
