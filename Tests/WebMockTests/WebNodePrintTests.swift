@@ -1,3 +1,5 @@
+#if USES_JAVASCRIPT_KIT_MOCK
+
 import XCTest
 import SRTTestSupport
 import WebMock
@@ -59,3 +61,5 @@ final class WebNodePrintTests: XCTestCase {
 
     }
 }
+
+#endif

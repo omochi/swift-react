@@ -1,3 +1,5 @@
+#if USES_JAVASCRIPT_KIT_MOCK
+
 import JavaScriptKitMock
 
 extension JSValue {
@@ -10,3 +12,5 @@ extension JSValue {
         }
     }
 }
+
+#endif

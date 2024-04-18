@@ -1,8 +1,8 @@
 import React
-import SRTDOM
 import JavaScriptKit
+import SRTDOM
 
-// https://ja.react.dev/learn
+// https://ja.react.dev/learn#components
 
 struct MyButton: Component {
     func render() -> Node {

@@ -10,7 +10,8 @@ func addPage(name: String) {
         .executableTarget(
             name: name,
             dependencies: [
-                .product(name: "React", package: "swift-react")
+                .product(name: "React", package: "swift-react"),
+                .target(name: "BRTSupport")
             ]
         )
     )
@@ -20,6 +21,9 @@ func addPage(name: String) {
 }
 
 addPage(name: "QSComponents")
+addPage(name: "QSMarkup")
+addPage(name: "QSDisplayingData")
+addPage(name: "QSConditional")
 
 let package = Package(
     name: "BrowserTests",
@@ -30,7 +34,14 @@ let package = Package(
     dependencies: [
         .package(path: "../")
     ],
-    targets: targets + [
+    targets: [
+        .target(
+            name: "BRTSupport",
+            dependencies: [
+                .product(name: "React", package: "swift-react")
+            ]
+        )
+    ] + targets + [
         .target(
             name: "GenPagesModule",
             swiftSettings: [.enableUpcomingFeature("BareSlashRegexLiterals")]

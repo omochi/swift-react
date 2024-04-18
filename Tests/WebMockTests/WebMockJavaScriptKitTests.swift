@@ -1,3 +1,5 @@
+#if USES_JAVASCRIPT_KIT_MOCK
+
 import XCTest
 import JavaScriptKitMock
 import WebMock
@@ -31,3 +33,5 @@ final class WebMockJavaScriptKitTests: XCTestCase {
         )
     }
 }
+
+#endif

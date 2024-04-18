@@ -82,4 +82,7 @@ jobs:
           --environment browser --headless
         env:
           WEBDRIVER_PATH: /usr/bin/chromedriver
+     
+      - run: ./BrowserTests/bin/build
+      
 
