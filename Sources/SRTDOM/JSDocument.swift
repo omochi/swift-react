@@ -28,5 +28,13 @@ public struct JSDocument: ConvertibleToJSObject & ConstructibleFromJSValue {
     public func createTextNode(_ data: String) throws -> JSText {
         try .mustConstruct(from: try jsValue.throws.createTextNode(data))
     }
+
+    public func querySelector(_ selectors: String) throws -> JSHTMLElement? {
+        try .mustConstruct(from: try jsValue.throws.querySelector(selectors))
+    }
+
+    public func querySelectorAll(_ selectors: String) throws -> JSNodeList {
+        try .mustConstruct(from: try jsValue.throws.querySelectorAll(selectors))
+    }
 }
 

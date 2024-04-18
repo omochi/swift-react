@@ -7,6 +7,7 @@ export default defineConfig({
       input: {
         QSComponents: resolve(__dirname, "pages/QSComponents.html"),
         QSMarkup: resolve(__dirname, "pages/QSMarkup.html"),
+        QSDisplayingData: resolve(__dirname, "pages/QSDisplayingData.html"),
       },
     },
   }

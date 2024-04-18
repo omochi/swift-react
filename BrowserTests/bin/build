@@ -12,6 +12,3 @@ swift build --experimental-swift-sdk wasm32-unknown-wasi \
   -Xlinker --stack-first \
   -Xlinker --global-base=1048576 \
   -Xlinker -z -Xlinker stack-size=1048576
-
-swift build
-swift run gen-pages

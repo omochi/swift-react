@@ -1,6 +1,6 @@
 import React
-import SRTDOM
 import JavaScriptKit
+import SRTDOM
 
 // https://ja.react.dev/learn#components
 
@@ -18,6 +18,7 @@ struct MyApp: Component {
             h1 {
                 "Welcome to my app"
             }
+            MyButton()
         }
     }
 }
