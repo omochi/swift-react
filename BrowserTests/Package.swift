@@ -24,6 +24,7 @@ addPage(name: "QSComponents")
 addPage(name: "QSMarkup")
 addPage(name: "QSDisplayingData")
 addPage(name: "QSConditional")
+addPage(name: "QSRenderingLists")
 
 let package = Package(
     name: "BrowserTests",

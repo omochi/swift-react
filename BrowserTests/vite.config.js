@@ -9,6 +9,7 @@ export default defineConfig({
         QSMarkup: resolve(__dirname, "pages/QSMarkup.html"),
         QSDisplayingData: resolve(__dirname, "pages/QSDisplayingData.html"),
         QSConditional: resolve(__dirname, "pages/QSConditional.html"),
+        QSRenderingLists: resolve(__dirname, "pages/QSRenderingLists.html"),
       },
     },
   }
