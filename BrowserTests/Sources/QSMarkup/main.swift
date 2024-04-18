@@ -1,6 +1,7 @@
 import React
 import JavaScriptKit
 import SRTDOM
+import BRTSupport
 
 // https://ja.react.dev/learn#writing-markup-with-jsx
 
@@ -17,6 +18,4 @@ struct AboutPage: Component {
     }
 }
 
-let body = try JSWindow.global.document.body.unwrap("body")
-let root = ReactRoot(element: body)
-root.render(node: AboutPage())
+try renderRoot(component: AboutPage())

@@ -97,8 +97,4 @@ struct Content: Component {
     }
 }
 
-let g = JSWindow.global
-
-let body = try g.document.body.unwrap("body")
-let root = ReactRoot(element: body)
-root.render(node: Content())
+try renderRoot(component: Content())

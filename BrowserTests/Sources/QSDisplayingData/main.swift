@@ -32,9 +32,5 @@ struct Profile: Component {
     }
 }
 
-let g = JSWindow.global
-try g.document.addCSS(path: "/Sources/QSDisplayingData/styles.css")
-
-let body = try g.document.body.unwrap("body")
-let root = ReactRoot(element: body)
-root.render(node: Profile())
+try addCSS(path: "/Sources/QSDisplayingData/styles.css")
+try renderRoot(component: Profile())
