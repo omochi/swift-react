@@ -32,5 +32,5 @@ struct Profile: Component {
     }
 }
 
-try addCSS(path: "/Sources/QSDisplayingData/styles.css")
+try addCSS(path: "BrowserTests_QSDisplayingData.resources/styles.css")
 try renderRoot(component: Profile())
