@@ -12,6 +12,7 @@ export default defineConfig({
         QSLists: resolve(__dirname, "pages/QSLists.html"),
         QSEvents: resolve(__dirname, "pages/QSEvents.html"),
         QSUpdating: resolve(__dirname, "pages/QSUpdating.html"),
+        QSSharing: resolve(__dirname, "pages/QSSharing.html"),
       },
     },
   }

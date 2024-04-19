@@ -3,13 +3,13 @@ import JavaScriptKit
 import SRTDOM
 import BRTSupport
 
-// https://ja.react.dev/learn#responding-to-events
+// https://ja.react.dev/learn#updating-the-screen
 
 struct MyButton: Component {
     @State var count = 0
 
     func render() -> Node {
-        let handleClick = Function<Void, JSEvent> { (_) in
+        let handleClick = EventListener { (_) in
             count += 1
         }
 

@@ -7,7 +7,7 @@ import BRTSupport
 
 struct MyButton: Component {
     func render() -> Node {
-        let handleClick = Function<Void, JSEvent> { (_) in
+        let handleClick = EventListener { (_) in
             do {
                 try JSWindow.global.alert("You clicked me!")
             } catch {
