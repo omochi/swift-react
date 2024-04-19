@@ -18,6 +18,8 @@ public struct JSWindow: ConvertibleToJSObject & ConstructibleFromJSValue {
 
     public var document: JSDocument { .unsafeConstruct(from: jsValue.document) }
 
+    public func alert(_ message: String) throws { try jsValue.throws.alert(message) }
+
     public static var global: JSWindow {
         JSWindow(jsObject: JSObject.global)
     }
