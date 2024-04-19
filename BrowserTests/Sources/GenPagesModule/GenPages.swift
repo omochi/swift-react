@@ -40,6 +40,7 @@ public struct GenPages {
         <head>
             <meta charset="utf-8">
             <title>\(page)</title>
+            <link rel="stylesheet" type="text/css" href="/Sources/BRTSupport/common.css">
             <script type="module">
                 import { load } from "/src/loader/load.ts";
                 load("/.build/wasm32-unknown-wasi/debug/\(page).wasm");

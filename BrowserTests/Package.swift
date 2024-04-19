@@ -26,6 +26,7 @@ addPage(name: "QSDisplayingData")
 addPage(name: "QSConditional")
 addPage(name: "QSLists")
 addPage(name: "QSEvents")
+addPage(name: "QSUpdating")
 
 let package = Package(
     name: "BrowserTests",

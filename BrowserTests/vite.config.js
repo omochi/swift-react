@@ -11,6 +11,7 @@ export default defineConfig({
         QSConditional: resolve(__dirname, "pages/QSConditional.html"),
         QSLists: resolve(__dirname, "pages/QSLists.html"),
         QSEvents: resolve(__dirname, "pages/QSEvents.html"),
+        QSUpdating: resolve(__dirname, "pages/QSUpdating.html"),
       },
     },
   }
