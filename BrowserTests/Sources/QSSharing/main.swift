@@ -36,7 +36,7 @@ struct MyApp: Component {
     }
 }
 
-try addCSS(path: "/Sources/QSSharing/styles.css")
+try addCSS(path: "BrowserTests_QSSharing.resources/styles.css")
 try renderRoot(component: MyApp())
 
 

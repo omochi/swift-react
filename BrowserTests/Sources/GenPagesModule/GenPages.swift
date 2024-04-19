@@ -22,7 +22,7 @@ public struct GenPages {
 
     private static func pages(rootDir: URL) throws -> [String] {
         let packageCode = try String(contentsOf: rootDir.appending(components: "Package.swift"))
-        let pageRegex = /addPage\(name: "(\w*)"\)/
+        let pageRegex = /addPage\(name: "(\w*)"/
         return packageCode.matches(of: pageRegex).map { String($0.output.1) }
     }
 

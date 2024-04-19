@@ -10,7 +10,7 @@ public func addCSS(path: String) throws {
     try tag.setAttributes([
         "rel": "stylesheet",
         "type": "text/css",
-        "href": path
+        "href": "/.build/wasm32-unknown-wasi/debug/" + path
     ])
     try head.appendChild(tag)
 }
