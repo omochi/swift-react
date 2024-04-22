@@ -44,3 +44,7 @@ It depends on [JavaScriptKit](https://github.com/swiftwasm/JavaScriptKit), so wh
 ### For Developers
 
 - [Testing](./docs/testing.md)
+
+## Buildable Example
+
+As a buildable example that runs in the browser, you can build and execute [BrowserTests](./BrowserTests) on your host.
