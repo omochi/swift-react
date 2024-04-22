@@ -47,4 +47,7 @@ It depends on [JavaScriptKit](https://github.com/swiftwasm/JavaScriptKit), so wh
 
 ## Buildable Example
 
-As a buildable example that runs in the browser, you can build and execute [BrowserTests](./BrowserTests) on your host.
+As buildable examples that operate on the browser, there are the following two sub-projects:
+
+- [CartonExample](./CartonExample): This is an example configuration using Carton. It is recommended to try this first.
+- [BrowserTests](./BrowserTests): This is a manually constructed example. It will be helpful as a reference when making complex customizations.

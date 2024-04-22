@@ -58,6 +58,10 @@ $ swift run carton dev
 
 これでプロジェクトのビルド、ウェブサーバのホスト、ブラウザの起動が自動で行われて、あなたのアプリケーションが表示されます。その他のコマンドについては [Carton#420](https://github.com/swiftwasm/carton/pull/420) を参照してください。
 
+### 構成例
+
+実際に構成した例として [CartonExample](../CartonExample) を参照してください。
+
 ## 自分でビルドする方法
 
 ### Wasm に対応した Swift の入手
