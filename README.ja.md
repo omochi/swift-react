@@ -1,6 +1,6 @@
 # Swift React
 
-**Swift React** は [React](https://react.dev) を Swift で新規に実装したライブラリです。これを使って Swift でインタラクティブなウェブサイトを実装しましょう。
+**Swift React** は [React](https://ja.react.dev) を Swift で新規に実装したライブラリです。これを使って Swift でインタラクティブなウェブサイトを実装しましょう。
 
 ## 概要
 
@@ -43,4 +43,6 @@ Swift Packageから依存ライブラリとして追加してください。
 
 - [Testing](./docs/testing.md)
 
+## ビルド可能なサンプル
 
+ブラウザ上で動作するビルド可能なサンプルとして、 [BrowserTests](./BrowserTests) をあなたのホスト上でビルド・実行できます。
