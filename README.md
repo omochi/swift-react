@@ -10,6 +10,7 @@
 
 ```swift
 import React
+
 struct App: Component {
     func render() -> Node {
         div {
