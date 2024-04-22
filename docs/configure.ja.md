@@ -60,12 +60,12 @@ $ swift run carton dev
 
 ## 自分でビルドする方法
 
-### WASM に対応した Swift の入手
+### Wasm に対応した Swift の入手
 
 まずは、WASM に対応したコンパイラを手に入れます。
 [Swiftのダウンロードページ](https://www.swift.org/download/)の、 Snapshots セクションのうち、 Trunk Development (main) の部分を参照します。 Xcode の行に書いてある Universal というリンクからインストーラをダウンロードできます。
 
-インストールウィザードにおいて、インストール先を選ぶ場面では Install for me only を選んでください。
+インストールウィザードにおいて、インストール先を選ぶ場面では「自分だけにインストール」を選んでください。
 
 インストールしたら、以下のコマンドによってパッケージのバンドルIDを取得してください。
 
@@ -82,20 +82,20 @@ org.swift.59202404021a
 
 これをどこかに記録しておいてください。
 
-### WASM に対応した Swift への切り替え
+### Wasm に対応した Swift への切り替え
 
-ビルドをする時は、 WASM に対応した Swift に切り替えます。
+ビルドをする時は、 Wasm に対応した Swift に切り替えます。
 下記のように `TOOLCHAINS` 環境変数に対してバンドルIDを指定します。
 
 ```sh
 export TOOLCHAINS=org.swift.59202404021a
 ```
 
-### WASM SDK の入手
+### Wasm SDK の入手
 
-Swift コンパイラツールチェーンに対して、 WASM SDK を追加します。
+Swift コンパイラツールチェーンに対して、 Wasm SDK を追加します。
 
-[Swift for WASM のリポジトリサイト](https://github.com/swiftwasm/swift) から、あなたがインストールした Swift snapshot と同じ日付の、 Swift for WASM snapshot のリリースページを探します。これは以下のようなURLをしているので、日付の部分を調整してください。
+[Swift for Wasm のリポジトリ](https://github.com/swiftwasm/swift) から、あなたがインストールした Swift snapshot と同じ日付の、 Swift for Wasm snapshot のリリースページを探します。これは以下のようなURLをしているので、日付の部分を編集してアクセスしてください。
 
 [https://github.com/swiftwasm/swift/releases/tag/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-03-a](https://github.com/swiftwasm/swift/releases/tag/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-03-a)
 
@@ -111,7 +111,7 @@ CPUアーキテクチャは arm64 と x86_64 の2つがあるので適切な方�
 $ swift experimental-sdk install <SDK download URL>
 ```
 
-### WASM アプリケーションのビルド
+### Wasm アプリケーションのビルド
 
 以下のコマンドでビルドします。
 
