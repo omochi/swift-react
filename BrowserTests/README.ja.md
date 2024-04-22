@@ -16,7 +16,7 @@ JavaScriptライブラリについては、ローダとJavaScriptKitのランタ
 
 ### Swift の準備
 
-Wasm に対応した Swift が必要です。また、 Wasm SDK がインストールされている必要があります。[インストール方法はこちら](../docs/configure.md)を参照してください。
+Wasm に対応した Swift が必要です。また、 Wasm SDK がインストールされている必要があります。[インストール方法はこちら](../docs/configure.ja.md)を参照してください。
 
 ### Node.js 
 
