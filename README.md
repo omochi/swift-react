@@ -2,6 +2,8 @@
 
 **Swift React** is a library that implements [React](https://react.dev) from scratch in Swift. Use this to implement interactive websites in Swift.
 
+[日本語はこちらです。](./README.ja.md)
+
 ## Overview
 
 **Swift React** aims to be used in the same way as React. However, the API is designed to be Swifty. Below is an example implementation that displays "Hello world."
