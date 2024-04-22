@@ -22,9 +22,9 @@ struct App: Component {
 
 ### Target Environments
 
-Targeted for Swift for WASM. Other Swift environments are not supported.
+Targeted for Swift for Wasm. Other Swift environments are not supported.
 
-Targeted for running in web browsers. Other WASM execution environments are not supported.
+Targeted for running in web browsers. Other Wasm execution environments are not supported.
 
 ## How to Use
 
@@ -34,7 +34,7 @@ Add it as a dependent library from Swift Package.
 .package(url: "https://github.com/omochi/swift-react", from: "0.1.0")
 ```
 
-It depends on [JavaScriptKit](https://github.com/swiftwasm/JavaScriptKit), so when loading the WASM binary in a web browser, it is necessary to import the JavaScript runtime library of *JavaScriptKit*. For more details, refer to [Setting Up Environment](./docs/configure.md).
+It depends on [JavaScriptKit](https://github.com/swiftwasm/JavaScriptKit), so when loading the Wasm binary in a web browser, it is necessary to import the JavaScript runtime library of *JavaScriptKit*. For more details, refer to [Setting Up Environment](./docs/configure.md).
 
 ## Documentation
 
