@@ -1,6 +1,6 @@
 # Swift React
 
-**Swift React** は [React](https://react.dev) を Swift で独自に実装したライブラリです。これを使って Swift でインタラクティブなウェブサイトを実装しましょう。
+**Swift React** は [React](https://react.dev) を Swift で新規に実装したライブラリです。これを使って Swift でインタラクティブなウェブサイトを実装しましょう。
 
 ## 概要
 
