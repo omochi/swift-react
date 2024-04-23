@@ -39,7 +39,7 @@ It depends on [JavaScriptKit](https://github.com/swiftwasm/JavaScriptKit), so wh
 ## Documentation
 
 - [Setting Up Environment](./docs/configure.md)
-- [API Implementation Status](./docs/api.md)
+- [API Manual](./docs/api.md)
 
 ### For Developers
 
