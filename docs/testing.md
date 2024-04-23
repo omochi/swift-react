@@ -14,7 +14,7 @@ These tests have two execution modes for operating the DOM system under React:
 
 ### Browser Execution Mode via Carton
 
-Using Carton's testing features, test code compiled into Wasm is connected with the real DOM for testing in a browser. Carton is used solely for its testing capabilities, with the build to Wasm being configured independently. Therefore, preparing the environment is necessary for building: [Environment Preparation](./configure.md)
+Using Carton's testing features, test code compiled into Wasm is connected with the real DOM for testing in a browser. Carton is used solely for its testing capabilities, with the build to Wasm being configured independently. Therefore, preparing the environment is necessary for building: [Setting Up Environment](./configure.md)
 
 Build and test execution are wrapped in a script, so you use the following command:
 
