@@ -45,3 +45,22 @@ extension Component {
         extractGhostDefault(input)
     }
 }
+
+enum Components {
+    static func extractHooks(_ value: Any) -> [any _AnyHookWrapper] {
+        var hooks: [any _AnyHookWrapper] = []
+
+        let mirror = Mirror(reflecting: value)
+        for mc in mirror.children {
+            switch mc.value {
+            case let hook as any _AnyHookWrapper:
+                hooks.append(hook)
+            case let hook as any Hook:
+                hooks += extractHooks(hook)
+            default: break
+            }
+        }
+
+        return hooks
+    }
+}

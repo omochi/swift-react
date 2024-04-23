@@ -7,10 +7,10 @@ internal final class Scheduler {
 
     enum Action {
         case renderRoot(Node)
-        case update(VNode)
+        case update(Instance)
         case effect(Effect.Task)
 
-        var update: VNode? {
+        var update: Instance? {
             switch self {
             case .update(let x): x
             default: nil
@@ -66,25 +66,11 @@ internal final class Scheduler {
         }
 
         updates.sort { (a, b) in
-            guard let a = a.update, let b = b.update else { return false }
+            guard let a = a.update?.owner, let b = b.update?.owner else { return false }
             return isLess(a, b)
         }
 
         actionQueue.replaceSubrange(..<updates.count, with: updates)
-    }
-
-    private func updateActions() {
-        actionQueue = actionQueue.compactMap { (action) in
-            switch action {
-            case .renderRoot,
-                    .effect: break
-            case .update(let node):
-                guard case .some(let new) = node.new else { break }
-
-                return new.map { .update($0) }
-            }
-            return action
-        }
     }
 
     private func run() {
@@ -104,7 +90,6 @@ internal final class Scheduler {
                         .effect:
                     state = .executing
                     run(action: action)
-                    updateActions()
                     state = .idle
                 }
             case .paused:

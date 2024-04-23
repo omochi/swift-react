@@ -3,50 +3,47 @@ import SRTDOM
 
 package final class VNode: Hashable {
     public struct Equality: Hashable {
-        var componentType: ObjectIdentifier
-        var tagName: String?
+        enum Kind: Hashable {
+            case tag(String)
+            case component(ObjectIdentifier)
+        }
+
+        var kind: Kind
         var key: AnyHashable?
 
-        init(ghost: Ghost) {
-            let component = ghost.component
-
-            self.componentType = ObjectIdentifier(type(of: component))
-
-            if let tag = ghost.component as? HTMLElement {
-                self.tagName = tag.tagName
+        init(component: any Component) {
+            self.kind = if let tag = component as? HTMLElement {
+                .tag(tag.tagName)
             } else {
-                self.tagName = nil
+                .component(ObjectIdentifier(type(of: component)))
             }
 
             self.key = component.key
         }
     }
 
-    public final class ListenerBridge {
-        public init() {}
-
-        public var js: JSEventListener?
-        public var swift: EventListener?
-    }
-
     public init(
-        ghost: Ghost
+        component: any Component
     ) {
-        self.ghost = ghost
-        self.equality = Equality(ghost: ghost)
+        self.component = component
+        self.equality = Equality(component: component)
     }
 
-    public let ghost: Ghost
+    public let component: any Component
     public let equality: Equality
+
+    internal var instance: Instance? {
+        get { _instance }
+        set {
+            _instance = newValue
+            newValue?.owner = self
+        }
+    }
+
+    private var _instance: Instance?
 
     internal weak var _parent: VNode?
     private var _children: [VNode] = []
-
-    public var new: VNode??
-    public var dom: JSNode?
-    public var listeners: [String: ListenerBridge] = [:]
-    public var contextValueHolder: ContextValueHolder?
-    private var isDirty: Bool = false
 
     public static func ==(a: VNode, b: VNode) -> Bool {
         a.equality == b.equality
@@ -54,15 +51,6 @@ package final class VNode: Hashable {
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(equality)
-    }
-
-    public func markDirty() {
-        isDirty = true
-    }
-
-    public func consumeDirty() -> Bool {
-        defer { isDirty = false }
-        return isDirty
     }
 
     public var parent: VNode? { _parent }
@@ -122,24 +110,5 @@ package final class VNode: Hashable {
 
     public static func unknownNode(_ node: VNode) -> any Error {
         MessageError("unknown VNode: \(type(of: node))")
-    }
-
-    package static func tag(
-        _ name: String,
-        _ attributes: Attributes = [:],
-        _ children: [Node] = []
-    ) -> VNode {
-        let tag = HTMLElement(
-            tagName: name,
-            attributes: attributes,
-            children: children
-        )
-        return component(tag)
-    }
-
-    package static func component<C: Component>(_ component: C) -> VNode {
-        let input = GhostInput(component: component)
-        let ghost = C._extractGhost(input)
-        return VNode(ghost: ghost)
     }
 }
