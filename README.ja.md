@@ -37,7 +37,7 @@ Swift Packageから依存ライブラリとして追加してください。
 ## 文書
 
 - [環境構築方法](./docs/configure.ja.md)
-- [APIの実装状況](./docs/api.md)
+- [APIマニュアル](./docs/api.md)
 
 ### 開発者向け
 
