@@ -1,7 +1,7 @@
 import SRTCore
 
 @propertyWrapper
-public struct Effect: _AnyEffectHook {
+public struct Effect: _AnyHookWrapper {
     public typealias Setup = () -> Cleanup?
     public typealias Cleanup = () -> Void
 
@@ -88,8 +88,4 @@ public struct Effect: _AnyEffectHook {
             }
         }
     }
-}
-
-protocol _AnyEffectHook: _AnyHookWrapper {
-    var effectObject: Effect.Object { get }
 }
