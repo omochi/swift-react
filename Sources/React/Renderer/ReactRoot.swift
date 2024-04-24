@@ -382,42 +382,42 @@ public final class ReactRoot {
     ) throws {
         var patchedOldChildren: [VNode?] = oldChildren
 
-        let diff = newChildren.difference(from: oldChildren)
-            .inferringMoves()
+        let diff = VNode.match(newChildren: newChildren, oldChildren: oldChildren)
 
         var nextIndex = 0
 
         for patch in diff {
             switch patch {
-            case .remove(offset: let offset, element: let oldNode, associatedWith: let dest):
+            case .remove(offset: let offset, element: let old, associatedWith: let assoc):
                 patchedOldChildren.remove(at: offset)
 
-                if let _ = dest {
+                if assoc != nil {
                     // process on insert
                 } else {
-                    try renderNode(new: nil, old: oldNode)
+                    try renderNode(new: nil, old: old)
                 }
-            case .insert(offset: let offset, element: let newNode, associatedWith: let source):
-                for index in nextIndex..<offset {
-                    let newNode = newChildren[index]
-                    let oldNode = try patchedOldChildren[index].unwrap("updating oldNode")
+            case .insert(offset: let offset, element: let newNode, associatedWith: let assoc):
+                while nextIndex < offset {
+                    let newNode = newChildren[nextIndex]
+                    let oldNode = try patchedOldChildren[nextIndex].unwrap("updating oldNode")
                     try renderNode(new: newNode, old: oldNode)
+                    nextIndex += 1
                 }
-                nextIndex = offset + 1
 
                 patchedOldChildren.insert(nil, at: offset)
 
-                let oldNode = source.map { oldChildren[$0] }
+                let oldNode = assoc.map { oldChildren[$0] }
                 try renderNode(new: newNode, old: oldNode, isMove: oldNode != nil)
+                nextIndex += 1
             }
         }
 
-        for index in nextIndex..<newChildren.count {
-            let newNode = newChildren[index]
-            let oldNode = try patchedOldChildren[index].unwrap("updating oldNode")
+        while nextIndex < newChildren.count {
+            let newNode = newChildren[nextIndex]
+            let oldNode = try patchedOldChildren[nextIndex].unwrap("updating oldNode")
             try renderNode(new: newNode, old: oldNode)
+            nextIndex += 1
         }
-        nextIndex = newChildren.count
     }
 
     private func skipRenderChildren(newTree: VNode, oldTree: VNode?, isMove: Bool) throws {
