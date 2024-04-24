@@ -159,14 +159,14 @@ public final class ReactRoot {
         if let newTree {
             let oldInstance = oldTree?.instance
             oldTree?.instance = nil
-
             let instance = oldInstance ?? Instance()
             newTree.instance = instance
+            let isFirst = oldInstance == nil
 
             try renderDOM(tree: newTree, instance: instance)
             try moveDOM(instance: instance)
             try updateContextValue(tree: newTree, instance: instance)
-            prepareHooks(component: newTree.component, instance: instance)
+            prepareHooks(component: newTree.component, instance: instance, isFirst: isFirst)
             subscribeHooks(instance: instance)
 
             // short circuit
@@ -180,26 +180,13 @@ public final class ReactRoot {
             try skipRenderChildren(newTree: newTree, oldTree: oldTree, isMove: isMove)
         }
 
-        if newTree == nil {
-            if let oldTree {
-                try oldTree.dom?.remove()
-            }
-        }
-
         if let newTree {
-            for effect in newTree.ghost.effects {
-                let object = effect.effectObject
-                if let task = object.taskIfShouldExecute() {
-                    scheduleEffect(task)
-                }
+            if let instance = newTree.instance {
+                try postRender(instance: instance)
             }
         } else if let oldTree {
-            for effect in oldTree.ghost.effects {
-                let object = effect.effectObject
-                if let _ = object.cleanup {
-                    let task = Effect.Task(object: object, setup: nil)
-                    scheduleEffect(task)
-                }
+            if let instance = oldTree.instance {
+                try cleanup(instance: instance)
             }
         }
     }
@@ -263,16 +250,16 @@ public final class ReactRoot {
         holder.value = value
     }
 
-    private func prepareHooks(component: any Component, instance: Instance) {
+    private func prepareHooks(component: any Component, instance: Instance, isFirst: Bool) {
         let hooks = Components.extractHooks(component)
 
-        if let oldHooks = instance.hooks {
-            for (new, old) in zip(hooks, oldHooks) {
-                new._prepareAny(object: old.object)
-            }
-        } else {
+        if isFirst {
             for hook in hooks {
                 hook._prepareAny(object: nil)
+            }
+        } else {
+            for (new, old) in zip(hooks, instance.hooks) {
+                new._prepareAny(object: old.object)
             }
         }
 
@@ -286,25 +273,41 @@ public final class ReactRoot {
             self.scheduleUpdate(instance: instance)
         }
 
-        for hook in instance.hooks ?? [] {
-            switch hook {
-            case let context as any _AnyContextHook:
-                if let holder = contextValueHolders[ObjectIdentifier(context.valueType)] {
-                    let dsp = holder.emitter.on(handler: updater)
-                    context.setHolder(holder, disposable: dsp)
-                } else {
-                    context.setHolder(nil, disposable: nil)
-                }
-            case let state as any _AnyStateHook:
-                state.setDidChange(updater)
-            default: break
+        for context in instance.contextHooks {
+            if let holder = contextValueHolders[ObjectIdentifier(context.valueType)] {
+                let dsp = holder.emitter.on(handler: updater)
+                context.setHolder(holder, disposable: dsp)
+            } else {
+                context.setHolder(nil, disposable: nil)
             }
+        }
+
+        for state in instance.stateHooks {
+            state.setDidChange(updater)
         }
     }
 
     private func isChanged(new: VNode, old: VNode?) -> Bool {
         guard let newDeps = new.component.deps else { return false }
         return newDeps != old?.component.deps
+    }
+
+    private func postRender(instance: Instance) throws {
+        for effect in instance.effectHooks {
+            if let task = effect.effectObject.taskIfShouldExecute() {
+                scheduleEffect(task)
+            }
+        }
+    }
+
+    private func cleanup(instance: Instance) throws {
+        try instance.dom?.remove()
+
+        for effect in instance.effectHooks {
+            if let task = effect.effectObject.cleanupTask() {
+                scheduleEffect(task)
+            }
+        }
     }
 
     private func buildContextValueHolders(for node: VNode) -> [ObjectIdentifier: ContextValueHolder] {

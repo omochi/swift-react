@@ -57,8 +57,8 @@ final class RenderPlanTests: XCTestCase {
 
         let btn: JSHTMLElement = try XCTUnwrap(
             root.root?
-                .find { $0.tagElement?.tagName == "button" }?
-                .dom?.asHTMLElement()
+                .find { $0.htmlElement?.tagName == "button" }?
+                .instance?.dom?.asHTMLElement()
         )
         try btn.click()
 
@@ -148,8 +148,8 @@ final class RenderPlanTests: XCTestCase {
 
         let section: Section = try XCTUnwrap(
             root.root?
-                .find { $0.ghost.component is Section }?
-                .ghost.component as? Section
+                .find { $0.component is Section }?
+                .component as? Section
         )
         XCTAssertEqual(evs, ["c", "s"])
 

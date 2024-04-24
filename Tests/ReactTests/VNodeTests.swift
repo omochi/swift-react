@@ -2,6 +2,25 @@ import XCTest
 import SRTTestSupport
 import React
 
+extension VNode {
+    fileprivate static func tag(
+        _ name: String,
+        _ attributes: Attributes = [:],
+        _ children: [Node] = []
+    ) -> VNode {
+        let tag = HTMLElement(
+            tagName: name,
+            attributes: attributes,
+            children: children
+        )
+        return VNode(component: tag)
+    }
+
+    fileprivate static func component(_ c: any Component) -> VNode {
+        VNode(component: c)
+    }
+}
+
 final class VNodeTests: XCTestCase {
 
     struct AView: Component {

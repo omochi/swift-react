@@ -239,8 +239,8 @@ final class RenderTests: XCTestCase {
 
         let divDom0: JSHTMLElement = try XCTUnwrap(
             root.root?
-                .find { $0.tagElement?.tagName == "div" }?
-                .dom?.asHTMLElement()
+                .find { $0.htmlElement?.tagName == "div" }?
+                .instance?.dom?.asHTMLElement()
         )
         
         let MouseEvent = JSWindow.global.MouseEvent
@@ -266,8 +266,8 @@ final class RenderTests: XCTestCase {
         // update check
         let divDom1: JSHTMLElement = try XCTUnwrap(
             root.root?
-                .find { $0.tagElement?.tagName == "div" }?
-                .dom?.asHTMLElement()
+                .find { $0.htmlElement?.tagName == "div" }?
+                .instance?.dom?.asHTMLElement()
         )
         XCTAssertEqual(divDom0, divDom1)
         _ = consume divDom1
@@ -289,8 +289,8 @@ final class RenderTests: XCTestCase {
         // update check
         let divDom2: JSHTMLElement = try XCTUnwrap(
             root.root?
-                .find { $0.tagElement?.tagName == "div" }?
-                .dom?.asHTMLElement()
+                .find { $0.htmlElement?.tagName == "div" }?
+                .instance?.dom?.asHTMLElement()
         )
         XCTAssertEqual(divDom0, divDom2)
         _ = consume divDom2

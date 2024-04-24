@@ -1,6 +1,6 @@
 import SRTDOM
 
-internal final class Instance {
+package final class Instance {
     final class ListenerBridge {
         init() {}
 
@@ -13,12 +13,24 @@ internal final class Instance {
     }
 
     weak var owner: VNode?
-    var hooks: [any _AnyHookWrapper]?
-    var dom: JSNode?
+    var hooks: [any _AnyHookWrapper] = []
+    public var dom: JSNode?
     var attributes: Attributes = [:]
     var listeners: [String: ListenerBridge] = [:]
     var contextValueHolder: ContextValueHolder?
     var isDirty: Bool = false
+
+    var contextHooks: [any _AnyContextHook] {
+        hooks.compactMap { $0 as? any _AnyContextHook }
+    }
+
+    var stateHooks: [any _AnyStateHook] {
+        hooks.compactMap { $0 as? any _AnyStateHook }
+    }
+
+    var effectHooks: [any _AnyEffectHook] {
+        hooks.compactMap { $0 as? any _AnyEffectHook }
+    }
 
     func renderDOMAttributes(
         attributes newAttributes: Attributes

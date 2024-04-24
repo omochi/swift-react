@@ -32,7 +32,7 @@ package final class VNode: Hashable {
     public let component: any Component
     public let equality: Equality
 
-    internal var instance: Instance? {
+    package var instance: Instance? {
         get { _instance }
         set {
             _instance = newValue

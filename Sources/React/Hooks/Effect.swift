@@ -56,6 +56,11 @@ public struct Effect: _AnyEffectHook {
             shouldExecute = false
             return Task(object: self, setup: setup)
         }
+
+        func cleanupTask() -> Task? {
+            if cleanup == nil { return nil }
+            return Task(object: self, setup: nil)
+        }
     }
 
     final class Task {
