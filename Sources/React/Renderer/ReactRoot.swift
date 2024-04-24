@@ -382,34 +382,31 @@ public final class ReactRoot {
     ) throws {
         var patchedOldChildren: [VNode?] = oldChildren
 
-        let diff = newChildren.difference(from: oldChildren)
-            .inferringMoves()
+        let match = VNode.match(newChildren: newChildren, oldChildren: oldChildren)
+
+        for remove in match.removes {
+            patchedOldChildren.remove(at: remove.offset)
+
+            if remove.isMove {
+                // process on insert
+            } else {
+                try renderNode(new: nil, old: remove.node)
+            }
+        }
 
         var nextIndex = 0
 
-        for patch in diff {
-            switch patch {
-            case .remove(offset: let offset, element: let oldNode, associatedWith: let dest):
-                patchedOldChildren.remove(at: offset)
-
-                if let _ = dest {
-                    // process on insert
-                } else {
-                    try renderNode(new: nil, old: oldNode)
-                }
-            case .insert(offset: let offset, element: let newNode, associatedWith: let source):
-                for index in nextIndex..<offset {
-                    let newNode = newChildren[index]
-                    let oldNode = try patchedOldChildren[index].unwrap("updating oldNode")
-                    try renderNode(new: newNode, old: oldNode)
-                }
-                nextIndex = offset + 1
-
-                patchedOldChildren.insert(nil, at: offset)
-
-                let oldNode = source.map { oldChildren[$0] }
-                try renderNode(new: newNode, old: oldNode, isMove: oldNode != nil)
+        for insert in match.inserts {
+            for index in nextIndex..<insert.offset {
+                let newNode = newChildren[index]
+                let oldNode = try patchedOldChildren[index].unwrap("updating oldNode")
+                try renderNode(new: newNode, old: oldNode)
             }
+            nextIndex = insert.offset + 1
+
+            patchedOldChildren.insert(nil, at: insert.offset)
+
+            try renderNode(new: insert.newNode, old: insert.oldNode, isMove: insert.oldNode != nil)
         }
 
         for index in nextIndex..<newChildren.count {
@@ -417,6 +414,7 @@ public final class ReactRoot {
             let oldNode = try patchedOldChildren[index].unwrap("updating oldNode")
             try renderNode(new: newNode, old: oldNode)
         }
+        
         nextIndex = newChildren.count
     }
 

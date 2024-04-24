@@ -26,10 +26,20 @@ package final class VNode: Hashable {
         component: any Component
     ) {
         self.component = component
+        self.kind = switch component {
+        case let html as HTMLElement: .html(html.tagName)
+        case is TextElement: .text
+        default: .component(ObjectIdentifier(type(of: component)))
+        }
+        self.discriminator = VNodeDiscriminator(kind: kind, key: component.key)
         self.equality = Equality(component: component)
     }
 
     public let component: any Component
+
+    let kind: VNodeKind
+    let discriminator: VNodeDiscriminator
+
     public let equality: Equality
 
     package var instance: Instance? {
