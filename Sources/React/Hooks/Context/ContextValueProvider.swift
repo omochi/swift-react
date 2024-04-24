@@ -31,12 +31,6 @@ public struct ContextValueProvider<Value: ContextValue>: Component & _AnyContext
 
     var _contextValueType: any ContextValue.Type { Value.self }
     var _contextValue: any ContextValue { value }
-
-    public static func _extractGhost(_ input: GhostInput<Self>) -> Ghost {
-        var ghost = extractGhostDefault(input)
-        ghost.contextValue = (type: Value.self, value: input.component.value)
-        return ghost
-    }
 }
 
 internal protocol _AnyContextValueProvider {
