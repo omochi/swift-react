@@ -4,8 +4,22 @@ enum VNodeKind: Hashable {
     case component(ObjectIdentifier)
 }
 
+extension Component {
+    var vnodeKind: VNodeKind {
+        switch self {
+        case let html as HTMLElement: .html(html.tagName)
+        case is TextElement: .text
+        default: .component(ObjectIdentifier(type(of: self)))
+        }
+    }
+
+    var vnodeDiscriminator: VNodeDiscriminator {
+        VNodeDiscriminator(kind: vnodeKind, key: key)
+    }
+}
+
 struct VNodeDiscriminator: Hashable {
-    public init(
+    init(
         kind: VNodeKind,
         key: AnyHashable?
     ) {
@@ -13,119 +27,48 @@ struct VNodeDiscriminator: Hashable {
         self.key = key
     }
     
-    public var kind: VNodeKind
-    public var key: AnyHashable?
+    var kind: VNodeKind
+    var key: AnyHashable?
 }
 
-struct VNodeMatchRemove {
-    var offset: Int
+struct VNodeMatchAdapter: Hashable {
+    init(node: VNode) {
+        self.node = node
+        self.disc = node.component.vnodeDiscriminator
+    }
+
     var node: VNode
-    var isMove: Bool
-}
+    let disc: VNodeDiscriminator
 
-struct VNodeMatchInsert {
-    var offset: Int
-    var newNode: VNode
-    var oldNode: VNode?
-}
+    static func ==(a: Self, b: Self) -> Bool { a.disc == b.disc }
 
-struct VNodeMatch {
-    var removes: [VNodeMatchRemove]
-    var inserts: [VNodeMatchInsert]
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(disc)
+    }
 }
 
 extension VNode {
-    static func match(newChildren: [VNode], oldChildren: [VNode]) -> VNodeMatch {
+    static func match(newChildren: [VNode], oldChildren: [VNode]) -> CollectionDifference<VNode> {
         matchStdlib(newChildren: newChildren, oldChildren: oldChildren)
     }
 
-    static func matchFast(newChildren: [VNode], oldChildren: [VNode]) {
-        var oldDest: [Int?] = Array(repeating: nil, count: oldChildren.count)
-        var newSource: [Int?] = Array(repeating: nil, count: newChildren.count)
+    static func matchStdlib(newChildren: [VNode], oldChildren: [VNode]) -> CollectionDifference<VNode> {
+        let newChildren = newChildren.map { VNodeMatchAdapter(node: $0) }
+        let oldChildren = oldChildren.map { VNodeMatchAdapter(node: $0) }
 
-        var newKeyTable: [VNodeDiscriminator: Int] = [:]
-        for (index, new) in newChildren.enumerated() {
-            if new.discriminator.key != nil,
-               newKeyTable[new.discriminator] == nil
-            {
-                newKeyTable[new.discriminator] = index
-            }
-        }
-
-        for (oldIndex, old) in oldChildren.enumerated() {
-            if old.discriminator.key != nil {
-                if let newIndex = newKeyTable[old.discriminator] {
-                    oldDest[oldIndex] = newIndex
-                    newSource[newIndex] = oldIndex
-                }
-            }
-        }
-
-        var newTable: [VNodeDiscriminator: [Int]] = [:]
-        for (index, new) in newChildren.enumerated() {
-            if newSource[index] != nil { continue }
-            newTable[new.discriminator, default: []].append(index)
-        }
-
-        for (oldIndex, old) in oldChildren.enumerated() {
-            if oldDest[oldIndex] != nil { continue }
-
-            if var array = newTable[old.discriminator], !array.isEmpty {
-                let newIndex = array.removeFirst()
-                newTable[old.discriminator] = array
-                
-                oldDest[oldIndex] = newIndex
-                newSource[newIndex] = oldIndex
-            }
-        }
-
-        for (oldIndex, old) in oldChildren.enumerated().reversed() {
-            if oldDest[oldIndex] == nil {
-                // remove operation
-
-                // offset
-                newSource = newSource.map { (source) in
-                    if let source,
-                       source >= oldIndex
-                    {
-                        return source - 1
-                    } else {
-                        return source
-                    }
-                }
-            }
-        }
-
-        // ...?
-    }
-
-    static func matchStdlib(newChildren: [VNode], oldChildren: [VNode]) -> VNodeMatch {
-        let diff = newChildren
+        let diff: CollectionDifference<VNodeMatchAdapter> = newChildren
             .difference(from: oldChildren)
             .inferringMoves()
 
-        var removes: [VNodeMatchRemove] = []
-        var inserts: [VNodeMatchInsert] = []
-
-        for patch in diff {
-            switch patch {
-            case .remove(offset: let offset, element: let oldNode, associatedWith: let dest):
-                let x = VNodeMatchRemove(
-                    offset: offset,
-                    node: oldNode,
-                    isMove: dest != nil
-                )
-                removes.append(x)
-            case .insert(offset: let offset, element: let newNode, associatedWith: let source):
-                let x = VNodeMatchInsert(
-                    offset: offset,
-                    newNode: newNode,
-                    oldNode: source.map { oldChildren[$0] }
-                )
-                inserts.append(x)
+        return CollectionDifference<VNode>(
+            diff.map { (patch) in
+                switch patch {
+                case .remove(offset: let o, element: let e, associatedWith: let a):
+                    .remove(offset: o, element: e.node, associatedWith: a)
+                case .insert(offset: let o, element: let e, associatedWith: let a):
+                    .insert(offset: o, element: e.node, associatedWith: a)
+                }
             }
-        }
-
-        return VNodeMatch(removes: removes, inserts: inserts)
+        )!
     }
 }

@@ -1,46 +1,14 @@
 import SRTCore
 import SRTDOM
 
-package final class VNode: Hashable {
-    public struct Equality: Hashable {
-        enum Kind: Hashable {
-            case tag(String)
-            case component(ObjectIdentifier)
-        }
-
-        var kind: Kind
-        var key: AnyHashable?
-
-        init(component: any Component) {
-            self.kind = if let tag = component as? HTMLElement {
-                .tag(tag.tagName)
-            } else {
-                .component(ObjectIdentifier(type(of: component)))
-            }
-
-            self.key = component.key
-        }
-    }
-
+package final class VNode {
     public init(
         component: any Component
     ) {
         self.component = component
-        self.kind = switch component {
-        case let html as HTMLElement: .html(html.tagName)
-        case is TextElement: .text
-        default: .component(ObjectIdentifier(type(of: component)))
-        }
-        self.discriminator = VNodeDiscriminator(kind: kind, key: component.key)
-        self.equality = Equality(component: component)
     }
 
     public let component: any Component
-
-    let kind: VNodeKind
-    let discriminator: VNodeDiscriminator
-
-    public let equality: Equality
 
     package var instance: Instance? {
         get { _instance }
@@ -54,14 +22,6 @@ package final class VNode: Hashable {
 
     internal weak var _parent: VNode?
     private var _children: [VNode] = []
-
-    public static func ==(a: VNode, b: VNode) -> Bool {
-        a.equality == b.equality
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(equality)
-    }
 
     public var parent: VNode? { _parent }
 
