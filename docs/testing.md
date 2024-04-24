@@ -24,7 +24,15 @@ $ bin/test
 
 ### Host Execution Mode via Swift CLI
 
-Like a typical Swift Package, you execute tests on the host machine with the following command:
+In this mode, tests connect to a mock library that emulates the DOM.
+
+To enable the mock, please edit Package.swift as follows:
+
+```swift
+let usesJavaScriptKitMockOnMac = true
+```
+
+After that, just like a normal Swift package, you execute tests on the host machine with the following command:
 
 ```sh
 $ swift test

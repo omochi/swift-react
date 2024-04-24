@@ -1,20 +1,12 @@
 import SRTDOM
 
 extension VNode {
-    public var tagElement: HTMLElement? {
-        ghost.component as? HTMLElement
+    public var htmlElement: HTMLElement? {
+        component as? HTMLElement
     }
 
-    package var textElement: TextElement? {
-        ghost.component as? TextElement
-    }
-
-    public var domTag: JSHTMLElement? {
-        dom?.asHTMLElement()
-    }
-
-    public var domText: JSText? {
-        dom?.asText()
+    public var textElement: TextElement? {
+        component as? TextElement
     }
 
     public var parentTagNode: VNode? {
@@ -25,7 +17,7 @@ extension VNode {
                     return nil
                 }
 
-                if node.tagElement != nil {
+                if node.htmlElement != nil {
                     return node
                 }
 
@@ -48,7 +40,7 @@ extension VNode {
                 if let found = node.find(
                     direction: .left, 
                     predicate: { (node) in
-                        node.tagElement != nil ||
+                        node.htmlElement != nil ||
                         node.textElement != nil
                     }
                 ) {
@@ -56,7 +48,7 @@ extension VNode {
                 }
             }
 
-            if parent.tagElement != nil {
+            if parent.htmlElement != nil {
                 return nil
             }
 
@@ -69,7 +61,7 @@ extension VNode {
             var doms: [JSNode] = []
 
             walk { (node) in
-                if let dom = node.dom {
+                if let dom = node.instance?.dom {
                     doms.append(dom)
                     return .skipChildren
                 }

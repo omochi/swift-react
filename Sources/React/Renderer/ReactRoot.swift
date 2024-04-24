@@ -35,8 +35,8 @@ public final class ReactRoot {
         switch action {
         case .renderRoot(let node):
             try runRenderRoot(node: node)
-        case .update(let node):
-            try runUpdate(node: node)
+        case .update(let instance):
+            try runUpdate(instance: instance)
         case .effect(let effect):
             effect.run()
         }
@@ -54,8 +54,8 @@ public final class ReactRoot {
         scheduler.resume()
     }
 
-    private func scheduleUpdate(node: VNode) {
-        scheduler.schedule(action: .update(node))
+    private func scheduleUpdate(instance: Instance) {
+        scheduler.schedule(action: .update(instance))
     }
 
     private func scheduleEffect(_ effect: Effect.Task) {
@@ -65,7 +65,7 @@ public final class ReactRoot {
     }
 
     private func runRenderRoot(node: Node) throws {
-        let newRoot = Self.makeVNode(component: Fragment())
+        let newRoot = VNode(component: Fragment())
         let newChildren = Self.makeChildren(node: node)
         newRoot.appendChildren(newChildren)
         let oldChildren = root?.children ?? []
@@ -78,8 +78,9 @@ public final class ReactRoot {
         self.root = newRoot
     }
 
-    private func runUpdate(node oldTree: VNode) throws {
-        let newTree = VNode(ghost: oldTree.ghost)
+    private func runUpdate(instance: Instance) throws {
+        let oldTree = try instance.owner.unwrap("instance.owner")
+        let newTree = VNode(component: oldTree.component)
 
         let parent = try oldTree.parent.unwrap("oldTree.parent")
         let index = try parent.index(of: oldTree).unwrap("oldTree index")
@@ -94,16 +95,9 @@ public final class ReactRoot {
         }
     }
 
-    private static func makeVNode<C: Component>(component: C) -> VNode {
-        let ghost = C._extractGhost(
-            .init(component: component)
-        )
-        return VNode(ghost: ghost)
-    }
-
     private static func makeChildren(node: Node) -> [VNode] {
         let nodes = Nodes.normalize(node: node)
-        return nodes.map { makeVNode(component: $0) }
+        return nodes.map { VNode(component: $0) }
     }
 
     private func withLocation(_ location: JSNodeLocationRight?, _ body: () throws -> Void) rethrows {
@@ -150,8 +144,8 @@ public final class ReactRoot {
     }
 
     private func domLocation(of node: VNode) throws -> JSNodeLocationRight? {
-        let parent: JSNode = try node.parentTagNode?.dom.unwrap("dom") ?? self.dom.asNode()
-        let prev: JSNode? = try node.prevSiblingTagNode?.dom.unwrap("dom")
+        let parent: JSNode = try node.parentTagNode?.instance?.dom.unwrap("dom") ?? self.dom.asNode()
+        let prev: JSNode? = try node.prevSiblingTagNode?.instance?.dom.unwrap("dom")
         return JSNodeLocationRight(parent: parent, prev: prev)
     }
 
@@ -162,180 +156,167 @@ public final class ReactRoot {
     ) throws {
         var doesRenderChildren = true
 
-        if let oldTree {
-            oldTree.new = .some(newTree)
-        }
-
         if let newTree {
-            if let newTag = newTree.tagElement {
-                let dom: JSHTMLElement = if let oldTree {
-                    try oldTree.domTag.unwrap("oldTree.domTag")
-                } else {
-                    try document.createElement(newTag.tagName)
-                }
+            let instance = transferInstance(newTree: newTree, oldTree: oldTree)
+            let isFirst = oldTree == nil
 
-                let oldTag = oldTree?.tagElement
-                newTree.dom = dom.asNode()
-                newTree.listeners = oldTree?.listeners ?? [:]
-                newTag.ref?.value = dom
+            try preRender(tree: newTree, instance: instance, isFirst: isFirst)
 
-                try renderDOMAttributes(
-                    dom: dom,
-                    newAttributes: newTag.attributes,
-                    oldAttributes: oldTag?.attributes ?? [:]
-                )
-                try renderDOMEventListeners(
-                    node: newTree,
-                    dom: dom,
-                    newListeners: newTag.listeners,
-                    oldListeners: oldTag?.listeners ?? [:]
-                )
-            } else if let text = newTree.textElement {
-                let dom: JSText = try {
-                    if let oldTree {
-                        let dom = try oldTree.domText.unwrap("oldTree.domText")
-                        dom.data = text.value
-                        return dom
-                    } else {
-                        return try document.createTextNode(text.value)
-                    }
-                }()
-
-                newTree.dom = dom.asNode()
-            }
-
-            if let location = currentLocation {
-                if let dom = newTree.dom {
-                    if location != dom.locationRight {
-                        try dom.remove()
-                        try dom.insert(at: location)
-                    }
-
-                    currentLocation?.prev = dom
-                }
-            }
-
-            if let contextValue = newTree.ghost.contextValue {
-                let holder: ContextValueHolder = if let oldHolder = oldTree?.contextValueHolder,
-                    oldHolder.type == contextValue.type
-                {
-                    oldHolder
-                } else {
-                    ContextValueHolder(type: contextValue.type)
-                }
-
-                newTree.contextValueHolder = holder
-                holder.value = contextValue.value
-            }
-
-            renderGhost(newTree: newTree, oldTree: oldTree)
-
-            let updater = { [weak self, weak newTree] () -> Void in
-                guard let self, let newTree else { return }
-                newTree.markDirty()
-                self.scheduleUpdate(node: newTree)
-            }
-
-            for context in newTree.ghost.contexts {
-                if let holder = contextValueHolders[ObjectIdentifier(context.valueType)] {
-                    let dsp = holder.emitter.on(handler: updater)
-                    context.setHolder(holder, disposable: dsp)
-                } else {
-                    context.setHolder(nil, disposable: nil)
-                }
-            }
-
-            for state in newTree.ghost.states {
-                state.setDidChange(updater)
-            }
-
-            var isDirty = newTree.consumeDirty()
-
-            if !isDirty {
-                if let newDeps = newTree.ghost.component.deps,
-                   let oldDeps = oldTree?.ghost.component.deps,
-                    newDeps == oldDeps
-                {
-                    // same
-                } else {
-                    isDirty = true
-                }
-            }
-
-            if isDirty {
-                let component = newTree.ghost.component
-
-                willComponentRender?(component)
-                let node: Node = component.render()
-                didComponentRender?(component)
-
-                let newChildren = Self.makeChildren(node: node)
-                newTree.appendChildren(newChildren)
-            } else {
-                newTree.appendChildren(oldTree?.children ?? [])
-                doesRenderChildren = false
-            }
+            // short circuit
+            doesRenderChildren = instance.consumeDirty() ||
+                isChanged(new: newTree, old: oldTree)
         }
 
         if doesRenderChildren {
-            try renderChildren(
-                new: newTree?.children ?? [],
-                old: oldTree?.children ?? [],
-                parent: newTree?.dom,
-                contextValueHolder: newTree?.contextValueHolder
-            )
-        } else {
-            if let newTree,
-                newTree.dom == nil,
-                let _ = currentLocation
-            {
-                let doms = newTree.domChildren
-                if isMove {
-                    for dom in doms {
-                        try dom.remove()
-                    }
-                    for dom in doms {
-                        try dom.insert(at: currentLocation!)
-                        currentLocation!.prev = dom
-                    }
-                } else {
-                    if let dom = doms.last {
-                        currentLocation!.prev = dom
-                    }
-                }
-            }
+            try renderChildren(newTree: newTree, oldTree: oldTree)
+        } else if let newTree {
+            try skipRenderChildren(newTree: newTree, oldTree: oldTree, isMove: isMove)
         }
-
-        if newTree == nil {
-            if let oldTree {
-                try oldTree.dom?.remove()
-            }
-        }
-
 
         if let newTree {
-            for effect in newTree.ghost.effects {
-                let object = effect.effectObject
-                if let task = object.taskIfShouldExecute() {
-                    scheduleEffect(task)
-                }
+            if let instance = newTree.instance {
+                try postRender(instance: instance)
             }
         } else if let oldTree {
-            for effect in oldTree.ghost.effects {
-                let object = effect.effectObject
-                if let _ = object.cleanup {
-                    let task = Effect.Task(object: object, setup: nil)
-                    scheduleEffect(task)
-                }
+            if let instance = oldTree.instance {
+                try postRenderCleanup(instance: instance)
             }
         }
     }
 
-    private func renderGhost(newTree: VNode, oldTree: VNode?) {
-        for (index, newHook) in newTree.ghost.hooks.enumerated() {
-            let oldHook = oldTree?.ghost.hooks[index]
+    private func transferInstance(newTree: VNode, oldTree: VNode?) -> Instance {
+        let oldInstance = oldTree?.instance
+        oldTree?.instance = nil
+        let instance = oldInstance ?? Instance()
+        newTree.instance = instance
+        return instance
+    }
 
-            newHook._prepareAny(object: oldHook?.object)
+    private func preRender(tree: VNode, instance: Instance, isFirst: Bool) throws {
+        try renderDOM(tree: tree, instance: instance)
+        try moveDOM(instance: instance)
+        try updateContextValue(tree: tree, instance: instance)
+        prepareHooks(component: tree.component, instance: instance, isFirst: isFirst)
+        subscribeHooks(instance: instance)
+    }
+
+    private func renderDOM(tree: VNode, instance: Instance) throws {
+        switch tree.component {
+        case let newTag as HTMLElement:
+            let dom: JSHTMLElement = try {
+                if let dom = instance.dom?.asHTMLElement() {
+                    return dom
+                }
+
+                let dom = try document.createElement(newTag.tagName)
+                instance.dom = dom.asNode()
+                return dom
+            }()
+
+            newTag.ref?.value = dom
+
+            try instance.renderDOMAttributes(attributes: newTag.attributes)
+            try instance.renderDOMListeners(listeners: newTag.listeners)
+        case let text as TextElement:
+            if let dom = instance.dom?.asText() {
+                dom.data = text.value
+                return
+            }
+            let dom = try document.createTextNode(text.value)
+            instance.dom = dom.asNode()
+        default: break
+        }
+    }
+
+    private func moveDOM(instance: Instance) throws {
+        guard let location = currentLocation else { return }
+
+        if let dom = instance.dom {
+            if location != dom.locationRight {
+                try dom.remove()
+                try dom.insert(at: location)
+            }
+
+            currentLocation?.prev = dom
+        }
+    }
+
+    private func updateContextValue(tree: VNode, instance: Instance) throws {
+        guard let provider = tree.component as? any _AnyContextValueProvider else { return }
+
+        let type = provider._contextValueType
+        let value = provider._contextValue
+
+        let holder: ContextValueHolder = {
+            if let holder = instance.contextValueHolder,
+               holder.type == type { return holder }
+
+            let holder = ContextValueHolder(type: type)
+            instance.contextValueHolder = holder
+            return holder
+        }()
+
+        holder.value = value
+    }
+
+    private func prepareHooks(component: any Component, instance: Instance, isFirst: Bool) {
+        let hooks = Components.extractHooks(component)
+
+        if isFirst {
+            for hook in hooks {
+                hook._prepareAny(object: nil)
+            }
+        } else {
+            for (new, old) in zip(hooks, instance.hooks) {
+                new._prepareAny(object: old.object)
+            }
+        }
+
+        instance.hooks = hooks
+    }
+
+    private func subscribeHooks(instance: Instance) {
+        let updater = { [weak self, weak instance] () -> Void in
+            guard let self, let instance else { return }
+            instance.markDirty()
+            self.scheduleUpdate(instance: instance)
+        }
+
+        for context in instance.contextHooks {
+            if let holder = contextValueHolders[ObjectIdentifier(context.valueType)] {
+                let dsp = holder.emitter.on(handler: updater)
+                context.setHolder(holder, disposable: dsp)
+            } else {
+                context.setHolder(nil, disposable: nil)
+            }
+        }
+
+        for state in instance.stateHooks {
+            state.setDidChange(updater)
+        }
+    }
+
+    private func isChanged(new: VNode, old: VNode?) -> Bool {
+        if let newDeps = new.component.deps,
+           newDeps == old?.component.deps { return false }
+        return true
+    }
+
+    private func postRender(instance: Instance) throws {
+        for effect in instance.effectHooks {
+            if let task = effect.effectObject.taskIfShouldExecute() {
+                scheduleEffect(task)
+            }
+        }
+    }
+
+    private func postRenderCleanup(instance: Instance) throws {
+        try instance.dom?.remove()
+
+        for effect in instance.effectHooks {
+            if let task = effect.effectObject.cleanupTask() {
+                scheduleEffect(task)
+            }
         }
     }
 
@@ -345,7 +326,7 @@ public final class ReactRoot {
         // skip self
         var node: VNode? = node.parent
         while let n = node {
-            if let holder = n.contextValueHolder {
+            if let holder = n.instance?.contextValueHolder {
                 let typeID = ObjectIdentifier(holder.type)
                 if result[typeID] == nil {
                     result[typeID] = holder
@@ -356,6 +337,29 @@ public final class ReactRoot {
         }
 
         return result
+    }
+
+    private func renderChildren(
+        newTree: VNode?,
+        oldTree: VNode?
+    ) throws {
+        if let newTree {
+            let component = newTree.component
+
+            willComponentRender?(component)
+            let node: Node = component.render()
+            didComponentRender?(component)
+
+            let newChildren = Self.makeChildren(node: node)
+            newTree.appendChildren(newChildren)
+        }
+
+        try renderChildren(
+            new: newTree?.children ?? [],
+            old: oldTree?.children ?? [],
+            parent: newTree?.instance?.dom,
+            contextValueHolder: newTree?.instance?.contextValueHolder
+        )
     }
 
     private func renderChildren(
@@ -415,59 +419,25 @@ public final class ReactRoot {
         nextIndex = newChildren.count
     }
 
-    private func renderDOMAttributes(
-        dom: JSHTMLElement,
-        newAttributes: Attributes,
-        oldAttributes: Attributes
-    ) throws {
-        for name in oldAttributes.keys {
-            if newAttributes[name] == nil {
-                try dom.removeAttribute(name)
+    private func skipRenderChildren(newTree: VNode, oldTree: VNode?, isMove: Bool) throws {
+        newTree.appendChildren(oldTree?.children ?? [])
+
+        if let _ = newTree.instance?.dom { return }
+        guard let _ = currentLocation else { return }
+
+        let doms = newTree.domChildren
+
+        if isMove {
+            for dom in doms {
+                try dom.remove()
             }
-        }
-
-        for (name, newValue) in newAttributes {
-            if newValue != oldAttributes[name] {
-                try dom.setAttribute(name, newValue)
+            for dom in doms {
+                try dom.insert(at: currentLocation!)
+                currentLocation!.prev = dom
             }
-        }
-    }
-
-    private func renderDOMEventListeners(
-        node: VNode,
-        dom: JSHTMLElement,
-        newListeners: EventListeners,
-        oldListeners: EventListeners
-    ) throws {
-        for (type, oldListener) in oldListeners {
-            if oldListener != newListeners[type] {
-                if let bridge = node.listeners[type] {
-                    if let js = bridge.js {
-                        try dom.removeEventListener(type, js)
-                    }
-                    node.listeners[type] = nil
-                }
-            }
-        }
-
-        for (type, newListener) in newListeners {
-            if newListener != oldListeners[type] {
-                if let bridge = node.listeners[type] {
-                    bridge.swift = newListener
-                } else {
-                    let bridge = VNode.ListenerBridge()
-                    node.listeners[type] = bridge
-
-                    let js = JSEventListener { [weak bridge] (event) in
-                        guard let bridge, let swift = bridge.swift else { return }
-                        swift(event)
-                    }
-
-                    bridge.js = js
-                    bridge.swift = newListener
-
-                    try dom.addEventListener(type, js)
-                }
+        } else {
+            if let dom = doms.last {
+                currentLocation!.prev = dom
             }
         }
     }

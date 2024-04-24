@@ -43,8 +43,8 @@ final class RefHookTests: XCTestCase {
 
         let btn: JSHTMLElement = try XCTUnwrap(
             root.root?
-                .find { $0.tagElement?.tagName == "button" }?
-                .dom?.asHTMLElement()
+                .find { $0.htmlElement?.tagName == "button" }?
+                .instance?.dom?.asHTMLElement()
         )
 
         XCTAssertEqual(refs.count, 2)
@@ -88,8 +88,8 @@ final class RefHookTests: XCTestCase {
 
         let btn: JSHTMLElement = try XCTUnwrap(
             root.root?
-                .find { $0.tagElement?.tagName == "button" }?
-                .dom?.asHTMLElement()
+                .find { $0.htmlElement?.tagName == "button" }?
+                .instance?.dom?.asHTMLElement()
         )
 
         XCTAssertEqual(refs.count, 2)
