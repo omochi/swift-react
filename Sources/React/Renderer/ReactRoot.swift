@@ -269,12 +269,6 @@ public final class ReactRoot {
         } else {
             for (hook, object) in zip(hooks, instance.hooks) {
                 hook._prepareAny(object: object)
-//                switch old {
-//                case let old as any _AnyHookWrapper:
-//                    new._prepareAny(object: old.object)
-//                default:
-//                    new._prepareAny(object: old)
-//                }
             }
         }
 
