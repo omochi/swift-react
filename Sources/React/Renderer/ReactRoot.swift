@@ -157,17 +157,10 @@ public final class ReactRoot {
         var doesRenderChildren = true
 
         if let newTree {
-            let oldInstance = oldTree?.instance
-            oldTree?.instance = nil
-            let instance = oldInstance ?? Instance()
-            newTree.instance = instance
-            let isFirst = oldInstance == nil
+            let instance = transferInstance(newTree: newTree, oldTree: oldTree)
+            let isFirst = oldTree == nil
 
-            try renderDOM(tree: newTree, instance: instance)
-            try moveDOM(instance: instance)
-            try updateContextValue(tree: newTree, instance: instance)
-            prepareHooks(component: newTree.component, instance: instance, isFirst: isFirst)
-            subscribeHooks(instance: instance)
+            try preRender(tree: newTree, instance: instance, isFirst: isFirst)
 
             // short circuit
             doesRenderChildren = instance.consumeDirty() ||
@@ -186,9 +179,25 @@ public final class ReactRoot {
             }
         } else if let oldTree {
             if let instance = oldTree.instance {
-                try cleanup(instance: instance)
+                try postRenderCleanup(instance: instance)
             }
         }
+    }
+
+    private func transferInstance(newTree: VNode, oldTree: VNode?) -> Instance {
+        let oldInstance = oldTree?.instance
+        oldTree?.instance = nil
+        let instance = oldInstance ?? Instance()
+        newTree.instance = instance
+        return instance
+    }
+
+    private func preRender(tree: VNode, instance: Instance, isFirst: Bool) throws {
+        try renderDOM(tree: tree, instance: instance)
+        try moveDOM(instance: instance)
+        try updateContextValue(tree: tree, instance: instance)
+        prepareHooks(component: tree.component, instance: instance, isFirst: isFirst)
+        subscribeHooks(instance: instance)
     }
 
     private func renderDOM(tree: VNode, instance: Instance) throws {
@@ -288,8 +297,9 @@ public final class ReactRoot {
     }
 
     private func isChanged(new: VNode, old: VNode?) -> Bool {
-        guard let newDeps = new.component.deps else { return false }
-        return newDeps != old?.component.deps
+        if let newDeps = new.component.deps,
+           newDeps == old?.component.deps { return false }
+        return true
     }
 
     private func postRender(instance: Instance) throws {
@@ -300,7 +310,7 @@ public final class ReactRoot {
         }
     }
 
-    private func cleanup(instance: Instance) throws {
+    private func postRenderCleanup(instance: Instance) throws {
         try instance.dom?.remove()
 
         for effect in instance.effectHooks {
