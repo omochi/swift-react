@@ -267,12 +267,18 @@ public final class ReactRoot {
                 hook._prepareAny(object: nil)
             }
         } else {
-            for (new, old) in zip(hooks, instance.hooks) {
-                new._prepareAny(object: old.object)
+            for (hook, object) in zip(hooks, instance.hooks) {
+                hook._prepareAny(object: object)
+//                switch old {
+//                case let old as any _AnyHookWrapper:
+//                    new._prepareAny(object: old.object)
+//                default:
+//                    new._prepareAny(object: old)
+//                }
             }
         }
 
-        instance.hooks = hooks
+        instance.hooks = hooks.map { $0.object }
     }
 
     private func subscribeHooks(instance: Instance) {
@@ -284,15 +290,16 @@ public final class ReactRoot {
 
         for context in instance.contextHooks {
             if let holder = contextValueHolders[ObjectIdentifier(context.valueType)] {
-                let dsp = holder.emitter.on(handler: updater)
-                context.setHolder(holder, disposable: dsp)
+                context.holder = holder
+                context.disposable = holder.emitter.on(handler: updater)
             } else {
-                context.setHolder(nil, disposable: nil)
+                context.holder = nil
+                context.disposable = nil
             }
         }
 
         for state in instance.stateHooks {
-            state.setDidChange(updater)
+            state.didChange = updater
         }
     }
 
@@ -304,7 +311,7 @@ public final class ReactRoot {
 
     private func postRender(instance: Instance) throws {
         for effect in instance.effectHooks {
-            if let task = effect.effectObject.taskIfShouldExecute() {
+            if let task = effect.taskIfShouldExecute() {
                 scheduleEffect(task)
             }
         }
@@ -314,7 +321,7 @@ public final class ReactRoot {
         try instance.dom?.remove()
 
         for effect in instance.effectHooks {
-            if let task = effect.effectObject.cleanupTask() {
+            if let task = effect.cleanupTask() {
                 scheduleEffect(task)
             }
         }

@@ -1,7 +1,7 @@
 import SRTCore
 
 @propertyWrapper
-public struct Context<Value: ContextValue>: _AnyContextHook {
+public struct Context<Value: ContextValue>: _AnyHookWrapper {
     public init() {}
 
     public var wrappedValue: Value {
@@ -16,16 +16,10 @@ public struct Context<Value: ContextValue>: _AnyContextHook {
         _object.value = object ?? Object()
     }
 
-    var valueType: any ContextValue.Type { Value.self }
-
-    func setHolder(_ holder: ContextValueHolder?, disposable: (any Disposable)?) {
-        object.holder = holder
-        object.disposable = disposable
-    }
-
-    final class Object {
+    final class Object: _AnyContextHookObject {
         init() {}
 
+        var valueType: any ContextValue.Type { Value.self }
         var disposable: (any Disposable)?
         weak var holder: ContextValueHolder?
 
@@ -39,7 +33,8 @@ public struct Context<Value: ContextValue>: _AnyContextHook {
     }
 }
 
-protocol _AnyContextHook: _AnyHookWrapper {
+protocol _AnyContextHookObject: AnyObject {
     var valueType: any ContextValue.Type { get }
-    func setHolder(_ holder: ContextValueHolder?, disposable: (any Disposable)?)
+    var holder: ContextValueHolder? { get set }
+    var disposable: (any Disposable)? { get set }
 }

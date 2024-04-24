@@ -1,7 +1,7 @@
 import SRTCore
 
 @propertyWrapper
-public struct Ref<Value>: _AnyRef {
+public struct Ref<Value>: _AnyHookWrapper {
     public init() {}
 
     typealias Object = RefObject<Value>
@@ -29,9 +29,6 @@ public struct Ref<Value>: _AnyRef {
     public var projectedValue: RefObject<Value> {
         object
     }
-}
-
-protocol _AnyRef: _AnyHookWrapper {
 }
 
 public final class RefObject<Value>: IdentityHashable {

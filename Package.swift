@@ -155,7 +155,7 @@ targets += [
 
 let package = Package(
     name: "swift-react",
-    platforms: [.macOS(.v14)],
+    platforms: [.macOS(.v14), .iOS(.v17)],
     products: [
         .library(name: "React", targets: ["React"]),
     ],

@@ -1,7 +1,7 @@
 import SRTCore
 
 @propertyWrapper
-public struct State<Value: Equatable>: _AnyStateHook {
+public struct State<Value: Equatable>: _AnyHookWrapper {
     public init(wrappedValue: Value) {
         self.initialValue = wrappedValue
     }
@@ -21,16 +21,13 @@ public struct State<Value: Equatable>: _AnyStateHook {
         _object.value = object ?? Object(value: initialValue)
     }
 
-    func setDidChange(_ newValue: (() -> Void)?) {
-        object.didChange = newValue
-    }
-
-    final class Object {
+    final class Object: _AnyStateHookObject {
         init(value: Value) {
             self.value = value
         }
 
         private var value: Value
+        
         var didChange: (() -> Void)?
 
         func getValue() -> Value { value }
@@ -50,6 +47,6 @@ extension State where Value: ExpressibleByNilLiteral {
     }
 }
 
-protocol _AnyStateHook: _AnyHookWrapper {
-    func setDidChange(_ newValue: (() -> Void)?)
+protocol _AnyStateHookObject: AnyObject {
+    var didChange: (() -> Void)? { get set }
 }

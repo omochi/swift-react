@@ -13,23 +13,23 @@ package final class Instance {
     }
 
     weak var owner: VNode?
-    var hooks: [any _AnyHookWrapper] = []
+    var hooks: [AnyObject] = []
     public var dom: JSNode?
     var attributes: Attributes = [:]
     var listeners: [String: ListenerBridge] = [:]
     var contextValueHolder: ContextValueHolder?
     var isDirty: Bool = false
 
-    var contextHooks: [any _AnyContextHook] {
-        hooks.compactMap { $0 as? any _AnyContextHook }
+    var contextHooks: [any _AnyContextHookObject] {
+        hooks.compactMap { $0 as? any _AnyContextHookObject }
     }
 
-    var stateHooks: [any _AnyStateHook] {
-        hooks.compactMap { $0 as? any _AnyStateHook }
+    var stateHooks: [any _AnyStateHookObject] {
+        hooks.compactMap { $0 as? any _AnyStateHookObject }
     }
 
-    var effectHooks: [any _AnyEffectHook] {
-        hooks.compactMap { $0 as? any _AnyEffectHook }
+    var effectHooks: [Effect.Object] {
+        hooks.compactMap { $0 as? Effect.Object }
     }
 
     func renderDOMAttributes(
@@ -58,7 +58,6 @@ package final class Instance {
     ) throws {
         let dom = try (self.dom?.asHTMLElement()).unwrap("dom.asHTMLElement")
 
-        // コピー必要なんだっけ？
         for (type, bridge) in Array(self.listeners) {
             if bridge.swift != newListeners[type] {
                 if let js = bridge.js {
