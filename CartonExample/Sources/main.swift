@@ -12,7 +12,7 @@ func addCSS(path: String) throws {
     let tag = try document.createElement("link")
     try tag.setAttribute("rel", "stylesheet")
     try tag.setAttribute("type", "text/css")
-    try tag.setAttribute("href", "/.build/wasm32-unknown-wasi/debug/" + path)
+    try tag.setAttribute("href", "/" + path)
     try head.appendChild(tag)
 }
 
