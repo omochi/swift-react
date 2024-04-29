@@ -16,8 +16,8 @@ jobs:
   test-linux:
     runs-on: ubuntu-22.04
     env:
-      SWIFT: swift-DEVELOPMENT-SNAPSHOT-2024-04-02-a
-      SWIFT_WASM: swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-03-a
+      SWIFT: swift-DEVELOPMENT-SNAPSHOT-2024-04-27-a
+      SWIFT_WASM: swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a
     steps:
       - uses: actions/checkout@v4
       - run: bin/ci/check-package.sh
@@ -51,9 +51,8 @@ jobs:
       - run: echo /home/runner/${{ env.SWIFT }}-ubuntu22.04/usr/bin >> ${GITHUB_PATH}
       - run: swift --version
       - run: >
-          swift experimental-sdk install
-          https://github.com/swiftwasm/swift/releases/download/${{ env.SWIFT_WASM }}/${{ env.SWIFT_WASM }}-ubuntu22.04_x86_64.artifactbundle.zip
-
+          swift sdk install
+          https://github.com/swiftwasm/swift/releases/download/${{ env.SWIFT_WASM }}/${{ env.SWIFT_WASM }}-wasm32-unknown-wasi.artifactbundle.zip
       - run: curl -L -O https://github.com/omochi/carton-build/releases/download/snapshot-2024-04-16/carton.tar.gz
         working-directory: /home/runner
       - run: tar xzf carton.tar.gz
@@ -67,7 +66,7 @@ jobs:
       - run: swift test
 
       - run: >
-          swift build --experimental-swift-sdk wasm32-unknown-wasi
+          swift build --swift-sdk wasm32-unknown-wasi
           --build-tests
           -Xswiftc -static-stdlib
           -Xswiftc -Xclang-linker -Xswiftc -mexec-model=reactor

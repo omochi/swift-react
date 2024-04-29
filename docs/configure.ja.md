@@ -67,7 +67,7 @@ $ swift run carton dev
 ### Wasm に対応した Swift の入手
 
 まずは、Wasm に対応したコンパイラを手に入れます。
-[Swiftのダウンロードページ](https://www.swift.org/download)の、 Snapshots セクションのうち、 Trunk Development (main) の部分を参照します。 Xcode の行に書いてある Universal というリンクからインストーラをダウンロードできます。この時ダウンロードしたファイル名に含まれる、 Swift の git タグを確認しておいてください。例えば `swift-DEVELOPMENT-SNAPSHOT-2024-04-02-a-osx.pkg` の場合は、末尾の `-osx.pkg` を取り除いた `swift-DEVELOPMENT-SNAPSHOT-2024-04-02-a` がタグです。
+[Swiftのダウンロードページ](https://www.swift.org/download)の、 Snapshots セクションのうち、 Trunk Development (main) の部分を参照します。 Xcode の行に書いてある Universal というリンクからインストーラをダウンロードできます。この時ダウンロードしたファイル名に含まれる、 Swift の git タグを確認しておいてください。例えば `swift-DEVELOPMENT-SNAPSHOT-2024-04-27-a-osx.pkg` の場合は、末尾の `-osx.pkg` を取り除いた `swift-DEVELOPMENT-SNAPSHOT-2024-04-27-a` がタグです。
 
 インストールウィザードにおいて、インストール先を選ぶ場面では「自分だけにインストール」を選んでください。
 
@@ -81,7 +81,7 @@ plutil -extract CFBundleIdentifier raw \
 通常、バンドルIDは以下のような形式の文字列です。
 
 ```
-org.swift.59202404021a
+org.swift.59202404271a
 ```
 
 これをどこかに記録しておいてください。
@@ -92,29 +92,29 @@ org.swift.59202404021a
 下記のように `TOOLCHAINS` 環境変数に対してバンドルIDを指定します。
 
 ```sh
-export TOOLCHAINS=org.swift.59202404021a
+export TOOLCHAINS=org.swift.59202404271a
 ```
 
 ### Wasm SDK の入手
 
 Swift コンパイラツールチェーンに対して、 Wasm SDK を追加します。
 
-[Swift for Wasm の Release ページ](https://github.com/swiftwasm/swift/releases) から、あなたがインストールした Swift に対応する Swift for Wasm を探します。個別のリリースページには `apple/swift` のバージョンが書かれているので、これが Swift の git タグと一致しているリリースを探します。例えばタグが `swift-DEVELOPMENT-SNAPSHOT-2024-04-02-a` であれば、以下のリリースが対応しています。
+[Swift for Wasm の Release ページ](https://github.com/swiftwasm/swift/releases) から、あなたがインストールした Swift に対応する Swift for Wasm を探します。個別のリリースページには `apple/swift` のバージョンが書かれているので、これが Swift の git タグと一致しているリリースを探します。例えばタグが `swift-DEVELOPMENT-SNAPSHOT-2024-04-27-a` であれば、以下のリリースが対応しています。
 
-[https://github.com/swiftwasm/swift/releases/tag/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-03-a](https://github.com/swiftwasm/swift/releases/tag/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-03-a)
+[https://github.com/swiftwasm/swift/releases/tag/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a](https://github.com/swiftwasm/swift/releases/tag/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a)
 
 一般的には、 Swift のスナップショットの次の日付になっているスナップショットが対応しているようです。
 
-対応しているリリースページがわかったら、 Assets のセクションから、あなたの mac 向けの artifact bundle を探します。これが Wasm SDK です。 CPU アーキテクチャは arm64 と x86_64 の2つがあるので適切な方を選んでください。 pkg と artifact bundle を間違えないようにしてください。 pkg はコンパイラ本体で、 SDK ではありません。artifact bundle が SDK です。
+対応しているリリースページがわかったら、 Assets のセクションから、Wasm 向けの Swift SDK を含む artifact bundle を探します。ファイル名の末尾が `wasm32-unknown-wasi.artifactbundle.zip` となっているものを選びます。 似た名前の `wasm32-unknown-wasip1-threads.artifactbundle.zip` もありますが、こちらは違うので注意しましょう。
 
 そのリンクを右クリックして、 SDK のダウンロードURLを取得します。例えば以下のような URL でしょう。
 
-[https://github.com/swiftwasm/swift/releases/download/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-03-a/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-03-a-macos_arm64.artifactbundle.zip](https://github.com/swiftwasm/swift/releases/download/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-03-a/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-03-a-macos_arm64.artifactbundle.zip)
+[https://github.com/swiftwasm/swift/releases/download/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a-wasm32-unknown-wasi.artifactbundle.zip](https://github.com/swiftwasm/swift/releases/download/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a-wasm32-unknown-wasi.artifactbundle.zip)
 
 この URL を 以下の SDK インストール用のコマンドに渡すことでインストールします。
 
 ```sh
-$ swift experimental-sdk install <SDK download URL>
+$ swift sdk install <SDK download URL>
 ```
 
 ### Wasm アプリケーションのビルド
@@ -122,7 +122,7 @@ $ swift experimental-sdk install <SDK download URL>
 以下のコマンドでビルドします。
 
 ```sh
-$ swift build --experimental-swift-sdk wasm32-unknown-wasi \
+$ swift build --swift-sdk wasm32-unknown-wasi \
   --disable-build-manifest-caching \
   -Xswiftc -static-stdlib \
   -Xswiftc -Xclang-linker -Xswiftc -mexec-model=reactor \
