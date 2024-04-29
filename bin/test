@@ -4,7 +4,7 @@ cd "$(dirname "$0")/.."
 
 set -x
 
-swift build --experimental-swift-sdk wasm32-unknown-wasi \
+swift build --swift-sdk wasm32-unknown-wasi \
   --build-tests \
   -Xswiftc -static-stdlib \
   -Xswiftc -Xclang-linker -Xswiftc -mexec-model=reactor \
@@ -17,4 +17,3 @@ swift build --experimental-swift-sdk wasm32-unknown-wasi \
 CartonFrontend test \
   --prebuilt-test-bundle-path .build/debug/swift-reactPackageTests.wasm \
   --environment browser
-

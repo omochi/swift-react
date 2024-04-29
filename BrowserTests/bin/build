@@ -4,7 +4,7 @@ cd "$(dirname "$0")/.."
 
 set -x
 
-swift build --experimental-swift-sdk wasm32-unknown-wasi \
+swift build --swift-sdk wasm32-unknown-wasi \
   --disable-build-manifest-caching \
   -Xswiftc -static-stdlib \
   -Xswiftc -Xclang-linker -Xswiftc -mexec-model=reactor \
