@@ -49,3 +49,9 @@ Swift Packageから依存ライブラリとして追加してください。
 
 - [CartonExample](./CartonExample): Carton を利用した構成例です。最初に試してみる時はこれがオススメです。
 - [BrowserTests](./BrowserTests): 手動で構築した例です。複雑なカスタマイズをする時の参考になるでしょう。
+
+## 事例紹介
+
+Swift React を利用したウェブサイトを紹介します。
+
+- [Swift String Counter](https://omochi.github.io/swift-string-counter-web) ([GitHub](https://github.com/omochi/swift-string-counter-web)): 文字を数えるウェブページです。
