@@ -51,3 +51,9 @@ As buildable examples that operate on the browser, there are the following two s
 
 - [CartonExample](./CartonExample): This is an example configuration using Carton. It is recommended to try this first.
 - [BrowserTests](./BrowserTests): This is a manually constructed example. It will be helpful as a reference when making complex customizations.
+
+## Showcase
+
+Introducing websites implemented using Swift React.
+
+- [Swift String Counter](https://omochi.github.io/swift-string-counter-web) ([GitHub](https://github.com/omochi/swift-string-counter-web)): A web page for counting characters.
