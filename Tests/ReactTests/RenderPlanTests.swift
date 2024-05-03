@@ -230,7 +230,7 @@ final class RenderPlanTests: XCTestCase {
             }
 
             func render() -> Node {
-                return div(attributes: ["class": `class`]) {
+                return div(attributes: .init().class(`class`)) {
                     text
                 }
             }

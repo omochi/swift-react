@@ -21,14 +21,16 @@ struct HTMLLeafTagRenderer: Renderer {
         public func \(tag)(
             key: AnyHashable? = nil,
             ref: RefObject<JSHTMLElement>? = nil,
-            attributes: Attributes = [:],
-            listeners: EventListeners = [:]
+            attributes: Attributes? = nil,
+            style: Style? = nil,
+            listeners: EventListeners? = nil
         ) -> HTMLElement {
             HTMLElement(
                 tagName: "\(tag)",
                 key: key,
                 ref: ref,
                 attributes: attributes,
+                style: style,
                 listeners: listeners
             )
         }

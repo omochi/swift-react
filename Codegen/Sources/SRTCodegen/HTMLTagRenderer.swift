@@ -21,8 +21,9 @@ struct HTMLTagRenderer: Renderer {
         public func \(renderIdentifier(tag))(
             key: AnyHashable? = nil,
             ref: RefObject<JSHTMLElement>? = nil,
-            attributes: Attributes = [:],
-            listeners: EventListeners = [:],
+            attributes: Attributes? = nil,
+            style: Style? = nil,
+            listeners: EventListeners? = nil,
             @ChildrenBuilder _ children: () -> [Node] = { [] }
         ) -> HTMLElement {
             HTMLElement(
@@ -30,6 +31,7 @@ struct HTMLTagRenderer: Renderer {
                 key: key,
                 ref: ref,
                 attributes: attributes,
+                style: style,
                 listeners: listeners,
                 children: children()
             )
