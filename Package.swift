@@ -3,7 +3,7 @@
 import PackageDescription
 
 // for development
-let usesJavaScriptKitMockOnMac = true
+let usesJavaScriptKitMockOnMac = false
 let usesLocalJavaScriptKit = false
 
 let javaScriptKitDependency: Package.Dependency = usesLocalJavaScriptKit ?
