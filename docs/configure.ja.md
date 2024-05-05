@@ -124,7 +124,7 @@ $ swift sdk install <SDK download URL>
 ```sh
 $ swift build --swift-sdk wasm32-unknown-wasi \
   --disable-build-manifest-caching \
-  -Xswiftc -static-stdlib \
+  --static-swift-stdlib \
   -Xswiftc -Xclang-linker -Xswiftc -mexec-model=reactor \
   -Xlinker --export-if-defined=__main_argc_argv \
   -Xlinker --stack-first \

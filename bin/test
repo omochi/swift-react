@@ -6,10 +6,10 @@ set -x
 
 swift build --swift-sdk wasm32-unknown-wasi \
   --build-tests \
-  -Xswiftc -static-stdlib \
+  --disable-build-manifest-caching \
+  --static-swift-stdlib \
   -Xswiftc -Xclang-linker -Xswiftc -mexec-model=reactor \
   -Xlinker --export-if-defined=__main_argc_argv \
-  --disable-build-manifest-caching \
   -Xlinker --stack-first \
   -Xlinker --global-base=1048576 \
   -Xlinker -z -Xlinker stack-size=1048576
