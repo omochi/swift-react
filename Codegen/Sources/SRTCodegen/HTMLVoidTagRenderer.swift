@@ -1,15 +1,15 @@
 import Foundation
 import CodegenKit
 
-struct HTMLLeafTagRenderer: Renderer {
-    var tags: [String]
+struct HTMLVoidTagRenderer: Renderer {
+    var def: Def
 
     func isTarget(file: URL) -> Bool {
-        file.lastPathComponent == "HTMLLeafTags.swift"
+        file.lastPathComponent == "HTMLVoidTags.swift"
     }
 
     func render(template: inout CodeTemplateModule.CodeTemplate, file: URL, on runner: CodegenKit.CodegenRunner) throws {
-        let code = tags.map { (tag) in
+        let code = def.voidElements.map { (tag) in
             renderTagFunc(tag: tag)
         }.joined(separator: "\n")
 

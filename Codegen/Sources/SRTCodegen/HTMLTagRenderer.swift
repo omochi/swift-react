@@ -2,14 +2,14 @@ import Foundation
 import CodegenKit
 
 struct HTMLTagRenderer: Renderer {
-    var tags: [String]
-    
+    var def: Def
+
     func isTarget(file: URL) -> Bool {
         file.lastPathComponent == "HTMLTags.swift"
     }
     
     func render(template: inout CodeTemplateModule.CodeTemplate, file: URL, on runner: CodegenKit.CodegenRunner) throws {
-        let code = tags.map { (tag) in
+        let code = def.tagNames.map { (tag) in
             renderTagFunc(tag: tag)
         }.joined(separator: "\n")
 

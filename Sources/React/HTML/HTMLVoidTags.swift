@@ -35,6 +35,40 @@ public func base(
     )
 }
 
+public func basefont(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "basefont",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners
+    )
+}
+
+public func bgsound(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "bgsound",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners
+    )
+}
+
 public func br(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -69,6 +103,23 @@ public func col(
     )
 }
 
+public func command(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "command",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners
+    )
+}
+
 public func embed(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -86,6 +137,23 @@ public func embed(
     )
 }
 
+public func frame(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "frame",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners
+    )
+}
+
 public func hr(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -95,6 +163,23 @@ public func hr(
 ) -> HTMLElement {
     HTMLElement(
         tagName: "hr",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners
+    )
+}
+
+public func image(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "image",
         key: key,
         ref: ref,
         attributes: attributes,
@@ -137,6 +222,23 @@ public func input(
     )
 }
 
+public func keygen(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "keygen",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners
+    )
+}
+
 public func link(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -146,23 +248,6 @@ public func link(
 ) -> HTMLElement {
     HTMLElement(
         tagName: "link",
-        key: key,
-        ref: ref,
-        attributes: attributes,
-        style: style,
-        listeners: listeners
-    )
-}
-
-public func menuitem(
-    key: AnyHashable? = nil,
-    ref: RefObject<JSHTMLElement>? = nil,
-    attributes: Attributes? = nil,
-    style: Style? = nil,
-    listeners: EventListeners? = nil
-) -> HTMLElement {
-    HTMLElement(
-        tagName: "menuitem",
         key: key,
         ref: ref,
         attributes: attributes,

@@ -39,6 +39,25 @@ public func abbr(
     )
 }
 
+public func acronym(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "acronym",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
 public func address(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -58,7 +77,7 @@ public func address(
     )
 }
 
-public func area(
+public func applet(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
     attributes: Attributes? = nil,
@@ -67,7 +86,7 @@ public func area(
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> HTMLElement {
     HTMLElement(
-        tagName: "area",
+        tagName: "applet",
         key: key,
         ref: ref,
         attributes: attributes,
@@ -153,25 +172,6 @@ public func b(
     )
 }
 
-public func base(
-    key: AnyHashable? = nil,
-    ref: RefObject<JSHTMLElement>? = nil,
-    attributes: Attributes? = nil,
-    style: Style? = nil,
-    listeners: EventListeners? = nil,
-    @ChildrenBuilder _ children: () -> [Node] = { [] }
-) -> HTMLElement {
-    HTMLElement(
-        tagName: "base",
-        key: key,
-        ref: ref,
-        attributes: attributes,
-        style: style,
-        listeners: listeners,
-        children: children()
-    )
-}
-
 public func bdi(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -210,6 +210,44 @@ public func bdo(
     )
 }
 
+public func big(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "big",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
+public func blink(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "blink",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
 public func blockquote(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -239,25 +277,6 @@ public func body(
 ) -> HTMLElement {
     HTMLElement(
         tagName: "body",
-        key: key,
-        ref: ref,
-        attributes: attributes,
-        style: style,
-        listeners: listeners,
-        children: children()
-    )
-}
-
-public func br(
-    key: AnyHashable? = nil,
-    ref: RefObject<JSHTMLElement>? = nil,
-    attributes: Attributes? = nil,
-    style: Style? = nil,
-    listeners: EventListeners? = nil,
-    @ChildrenBuilder _ children: () -> [Node] = { [] }
-) -> HTMLElement {
-    HTMLElement(
-        tagName: "br",
         key: key,
         ref: ref,
         attributes: attributes,
@@ -324,6 +343,25 @@ public func caption(
     )
 }
 
+public func center(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "center",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
 public func cite(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -362,25 +400,6 @@ public func code(
     )
 }
 
-public func col(
-    key: AnyHashable? = nil,
-    ref: RefObject<JSHTMLElement>? = nil,
-    attributes: Attributes? = nil,
-    style: Style? = nil,
-    listeners: EventListeners? = nil,
-    @ChildrenBuilder _ children: () -> [Node] = { [] }
-) -> HTMLElement {
-    HTMLElement(
-        tagName: "col",
-        key: key,
-        ref: ref,
-        attributes: attributes,
-        style: style,
-        listeners: listeners,
-        children: children()
-    )
-}
-
 public func colgroup(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -391,6 +410,25 @@ public func colgroup(
 ) -> HTMLElement {
     HTMLElement(
         tagName: "colgroup",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
+public func content(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "content",
         key: key,
         ref: ref,
         attributes: attributes,
@@ -533,6 +571,25 @@ public func dialog(
     )
 }
 
+public func dir(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "dir",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
 public func div(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -590,6 +647,25 @@ public func dt(
     )
 }
 
+public func element(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "element",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
 public func em(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -600,25 +676,6 @@ public func em(
 ) -> HTMLElement {
     HTMLElement(
         tagName: "em",
-        key: key,
-        ref: ref,
-        attributes: attributes,
-        style: style,
-        listeners: listeners,
-        children: children()
-    )
-}
-
-public func embed(
-    key: AnyHashable? = nil,
-    ref: RefObject<JSHTMLElement>? = nil,
-    attributes: Attributes? = nil,
-    style: Style? = nil,
-    listeners: EventListeners? = nil,
-    @ChildrenBuilder _ children: () -> [Node] = { [] }
-) -> HTMLElement {
-    HTMLElement(
-        tagName: "embed",
         key: key,
         ref: ref,
         attributes: attributes,
@@ -685,6 +742,25 @@ public func figure(
     )
 }
 
+public func font(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "font",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
 public func footer(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -714,6 +790,25 @@ public func form(
 ) -> HTMLElement {
     HTMLElement(
         tagName: "form",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
+public func frameset(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "frameset",
         key: key,
         ref: ref,
         attributes: attributes,
@@ -894,25 +989,6 @@ public func hgroup(
     )
 }
 
-public func hr(
-    key: AnyHashable? = nil,
-    ref: RefObject<JSHTMLElement>? = nil,
-    attributes: Attributes? = nil,
-    style: Style? = nil,
-    listeners: EventListeners? = nil,
-    @ChildrenBuilder _ children: () -> [Node] = { [] }
-) -> HTMLElement {
-    HTMLElement(
-        tagName: "hr",
-        key: key,
-        ref: ref,
-        attributes: attributes,
-        style: style,
-        listeners: listeners,
-        children: children()
-    )
-}
-
 public func html(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -970,44 +1046,6 @@ public func iframe(
     )
 }
 
-public func img(
-    key: AnyHashable? = nil,
-    ref: RefObject<JSHTMLElement>? = nil,
-    attributes: Attributes? = nil,
-    style: Style? = nil,
-    listeners: EventListeners? = nil,
-    @ChildrenBuilder _ children: () -> [Node] = { [] }
-) -> HTMLElement {
-    HTMLElement(
-        tagName: "img",
-        key: key,
-        ref: ref,
-        attributes: attributes,
-        style: style,
-        listeners: listeners,
-        children: children()
-    )
-}
-
-public func input(
-    key: AnyHashable? = nil,
-    ref: RefObject<JSHTMLElement>? = nil,
-    attributes: Attributes? = nil,
-    style: Style? = nil,
-    listeners: EventListeners? = nil,
-    @ChildrenBuilder _ children: () -> [Node] = { [] }
-) -> HTMLElement {
-    HTMLElement(
-        tagName: "input",
-        key: key,
-        ref: ref,
-        attributes: attributes,
-        style: style,
-        listeners: listeners,
-        children: children()
-    )
-}
-
 public func ins(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -1018,6 +1056,25 @@ public func ins(
 ) -> HTMLElement {
     HTMLElement(
         tagName: "ins",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
+public func isindex(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "isindex",
         key: key,
         ref: ref,
         attributes: attributes,
@@ -1103,7 +1160,7 @@ public func li(
     )
 }
 
-public func link(
+public func listing(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
     attributes: Attributes? = nil,
@@ -1112,7 +1169,7 @@ public func link(
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> HTMLElement {
     HTMLElement(
-        tagName: "link",
+        tagName: "listing",
         key: key,
         ref: ref,
         attributes: attributes,
@@ -1179,6 +1236,25 @@ public func mark(
     )
 }
 
+public func marquee(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "marquee",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
 public func math(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -1236,25 +1312,6 @@ public func menuitem(
     )
 }
 
-public func meta(
-    key: AnyHashable? = nil,
-    ref: RefObject<JSHTMLElement>? = nil,
-    attributes: Attributes? = nil,
-    style: Style? = nil,
-    listeners: EventListeners? = nil,
-    @ChildrenBuilder _ children: () -> [Node] = { [] }
-) -> HTMLElement {
-    HTMLElement(
-        tagName: "meta",
-        key: key,
-        ref: ref,
-        attributes: attributes,
-        style: style,
-        listeners: listeners,
-        children: children()
-    )
-}
-
 public func meter(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -1274,6 +1331,25 @@ public func meter(
     )
 }
 
+public func multicol(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "multicol",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
 public func nav(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -1284,6 +1360,82 @@ public func nav(
 ) -> HTMLElement {
     HTMLElement(
         tagName: "nav",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
+public func nextid(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "nextid",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
+public func nobr(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "nobr",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
+public func noembed(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "noembed",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
+public func noframes(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "noframes",
         key: key,
         ref: ref,
         attributes: attributes,
@@ -1426,25 +1578,6 @@ public func p(
     )
 }
 
-public func param(
-    key: AnyHashable? = nil,
-    ref: RefObject<JSHTMLElement>? = nil,
-    attributes: Attributes? = nil,
-    style: Style? = nil,
-    listeners: EventListeners? = nil,
-    @ChildrenBuilder _ children: () -> [Node] = { [] }
-) -> HTMLElement {
-    HTMLElement(
-        tagName: "param",
-        key: key,
-        ref: ref,
-        attributes: attributes,
-        style: style,
-        listeners: listeners,
-        children: children()
-    )
-}
-
 public func picture(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -1455,6 +1588,25 @@ public func picture(
 ) -> HTMLElement {
     HTMLElement(
         tagName: "picture",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
+public func plaintext(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "plaintext",
         key: key,
         ref: ref,
         attributes: attributes,
@@ -1531,6 +1683,25 @@ public func rb(
 ) -> HTMLElement {
     HTMLElement(
         tagName: "rb",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
+public func rbc(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "rbc",
         key: key,
         ref: ref,
         attributes: attributes,
@@ -1730,6 +1901,25 @@ public func select(
     )
 }
 
+public func shadow(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "shadow",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
 public func slot(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
@@ -1768,7 +1958,7 @@ public func small(
     )
 }
 
-public func source(
+public func spacer(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
     attributes: Attributes? = nil,
@@ -1777,7 +1967,7 @@ public func source(
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> HTMLElement {
     HTMLElement(
-        tagName: "source",
+        tagName: "spacer",
         key: key,
         ref: ref,
         attributes: attributes,
@@ -1797,6 +1987,25 @@ public func span(
 ) -> HTMLElement {
     HTMLElement(
         tagName: "span",
+        key: key,
+        ref: ref,
+        attributes: attributes,
+        style: style,
+        listeners: listeners,
+        children: children()
+    )
+}
+
+public func strike(
+    key: AnyHashable? = nil,
+    ref: RefObject<JSHTMLElement>? = nil,
+    attributes: Attributes? = nil,
+    style: Style? = nil,
+    listeners: EventListeners? = nil,
+    @ChildrenBuilder _ children: () -> [Node] = { [] }
+) -> HTMLElement {
+    HTMLElement(
+        tagName: "strike",
         key: key,
         ref: ref,
         attributes: attributes,
@@ -2129,7 +2338,7 @@ public func tr(
     )
 }
 
-public func track(
+public func tt(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
     attributes: Attributes? = nil,
@@ -2138,7 +2347,7 @@ public func track(
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> HTMLElement {
     HTMLElement(
-        tagName: "track",
+        tagName: "tt",
         key: key,
         ref: ref,
         attributes: attributes,
@@ -2224,7 +2433,7 @@ public func video(
     )
 }
 
-public func wbr(
+public func xmp(
     key: AnyHashable? = nil,
     ref: RefObject<JSHTMLElement>? = nil,
     attributes: Attributes? = nil,
@@ -2233,7 +2442,7 @@ public func wbr(
     @ChildrenBuilder _ children: () -> [Node] = { [] }
 ) -> HTMLElement {
     HTMLElement(
-        tagName: "wbr",
+        tagName: "xmp",
         key: key,
         ref: ref,
         attributes: attributes,
