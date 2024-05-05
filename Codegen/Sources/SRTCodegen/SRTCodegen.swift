@@ -6,25 +6,25 @@ public struct SRTCodegen {
         self.codegenDir = URL(filePath: ".", directoryHint: .isDirectory)
         self.swiftReactDir = codegenDir.deletingLastPathComponent()
         self.htmlSourceDir = swiftReactDir.appending(components: "Sources", "React", "HTML", directoryHint: .isDirectory)
-        let tagsDir = codegenDir.appending(components: "node_modules", "html-tags")
-        let tagsJSON = try Data(contentsOf: tagsDir.appending(path: "html-tags.json"))
+        let json = try Data(contentsOf: codegenDir.appending(path: "data.json"))
         let decoder = JSONDecoder()
-        self.tags = try decoder.decode(Array<String>.self, from: tagsJSON)
-        let leafJSON = try Data(contentsOf: tagsDir.appending(path: "html-tags-void.json"))
-        self.leafTags = try decoder.decode(Array<String>.self, from: leafJSON)
+        self.def = try decoder.decode(Def.self, from: json)
+        def.fix()
     }
 
     var codegenDir: URL
     var swiftReactDir: URL
     var htmlSourceDir: URL
-    var tags: [String]
-    var leafTags: [String]
+    var def: Def
 
     public func run() throws {
         let runner = CodegenRunner(
             renderers: [
-                HTMLTagRenderer(tags: tags),
-                HTMLLeafTagRenderer(tags: leafTags)
+                HTMLTagRenderer(def: def),
+                HTMLVoidTagRenderer(def: def),
+                AttributesRenderer(def: def),
+                StyleRenderer(def: def),
+                EventListenersRenderer(def: def)
             ]
         )
 

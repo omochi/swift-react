@@ -194,7 +194,7 @@ final class RenderTests: XCTestCase {
     func testAttribute() throws {
         let dom = try document.createElement("body")
         let root = ReactRoot(element: dom)
-        root.render(node: div(attributes: ["class": "box"]))
+        root.render(node: div(attributes: Attributes().class("box")))
         XCTAssertPrint(dom, """
         <body>
             <div class="box" />
@@ -212,7 +212,7 @@ final class RenderTests: XCTestCase {
         </body>
         """)
 
-        root.render(node: div(attributes: ["class": "box"]))
+        root.render(node: div(attributes: .init().class("box")))
         XCTAssertPrint(dom, """
         <body>
             <div class="box" />
@@ -310,7 +310,7 @@ final class RenderTests: XCTestCase {
     func testSimpleStaticNodeArray() throws {
         struct Paragraph: Component {
             func render() -> Node {
-                div(attributes: ["class": "para"])
+                div(attributes: .init().class("para"))
             }
         }
 
@@ -335,7 +335,7 @@ final class RenderTests: XCTestCase {
     func testStaticNodeArray() throws {
         struct Paragraph: Component {
             func render() -> Node {
-                div(attributes: ["class": "para"])
+                div(attributes: .init().class("para"))
             }
         }
 
@@ -343,7 +343,7 @@ final class RenderTests: XCTestCase {
             func render() -> Node {
                 [
                     Paragraph(),
-                    div(attributes: ["class": "array"])
+                    div(attributes: .init().class("array"))
                 ]
             }
         }
@@ -352,7 +352,7 @@ final class RenderTests: XCTestCase {
             func render() -> Node {
                 Fragment {
                     Paragraph()
-                    div(attributes: ["class": "frag"])
+                    div(attributes: .init().class("frag"))
                 }
             }
         }

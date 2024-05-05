@@ -8,3 +8,4 @@ DerivedData/
 .netrc
 .swiftpm
 node_modules
+data.json

@@ -15,7 +15,7 @@ package final class Instance {
     weak var owner: VNode?
     var hooks: [AnyObject] = []
     public var dom: JSNode?
-    var attributes: Attributes = [:]
+    var attributes: Attributes = Attributes()
     var listeners: [String: ListenerBridge] = [:]
     var contextValueHolder: ContextValueHolder?
     var isDirty: Bool = false
@@ -33,8 +33,10 @@ package final class Instance {
     }
 
     func renderDOMAttributes(
-        attributes newAttributes: Attributes
+        attributes newAttributes: Attributes?
     ) throws {
+        let newAttributes = newAttributes ?? Attributes()
+
         let dom = try (self.dom?.asHTMLElement()).unwrap("dom.asHTMLElement")
         let oldAttributes = self.attributes
 
@@ -54,8 +56,10 @@ package final class Instance {
     }
 
     func renderDOMListeners(
-        listeners newListeners: EventListeners
+        listeners newListeners: EventListeners?
     ) throws {
+        let newListeners = newListeners ?? EventListeners()
+
         let dom = try (self.dom?.asHTMLElement()).unwrap("dom.asHTMLElement")
 
         for (type, bridge) in Array(self.listeners) {
