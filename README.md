@@ -31,7 +31,7 @@ Targeted for running in web browsers. Other Wasm execution environments are not 
 Add it as a dependent library from Swift Package.
 
 ```swift
-.package(url: "https://github.com/omochi/swift-react", from: "0.1.0")
+.package(url: "https://github.com/omochi/swift-react", from: "0.2.0")
 ```
 
 It depends on [JavaScriptKit](https://github.com/swiftwasm/JavaScriptKit), so when loading the Wasm binary in a web browser, it is necessary to import the JavaScript runtime library of *JavaScriptKit*. For more details, refer to [Setting Up Environment](./docs/configure.md).

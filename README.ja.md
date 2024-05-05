@@ -29,7 +29,7 @@ Swift for Wasm を対象にしています。他の Swift 環境はサポート�
 Swift Packageから依存ライブラリとして追加してください。
 
 ```swift
-.package(url: "https://github.com/omochi/swift-react", from: "0.1.0")
+.package(url: "https://github.com/omochi/swift-react", from: "0.2.0")
 ```
 
 [JavaScriptKit](https://github.com/swiftwasm/JavaScriptKit) に依存しているので、ウェブブラウザ上でWASMバイナリをロードする際に、 JavaScriptKit の JavaScript ランタイムライブラリをインポートする必要があります。詳しくは [環境構築方法](./docs/configure.ja.md)を参照してください。
