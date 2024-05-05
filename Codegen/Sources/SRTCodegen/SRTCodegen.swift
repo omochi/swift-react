@@ -22,7 +22,8 @@ public struct SRTCodegen {
             renderers: [
                 HTMLTagRenderer(def: def),
                 HTMLVoidTagRenderer(def: def),
-                AttributeRenderer(def: def)
+                AttributeRenderer(def: def),
+                StyleRenderer(def: def)
             ]
         )
 

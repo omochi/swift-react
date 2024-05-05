@@ -4,11 +4,26 @@ struct Def: Codable {
     var tagNames: [String]
     var voidElements: [String]
     var elementAttributes: [String: [String]]
+    var cssProperties: [String]
 
     mutating func fix() {
         tagNames.removeAll { (tagName) in
             voidElements.contains(tagName)
         }
+
+        self.cssProperties = {
+            var css: OrderedSet<String> = []
+            
+            for x in cssProperties {
+                if !x.hasPrefix("-") {
+                    css.remove("-" + x)
+                }
+
+                css.append(x)
+            }
+
+            return css.elements
+        }()
     }
 
     var allAttributes: [String] {
