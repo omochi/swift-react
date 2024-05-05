@@ -4,6 +4,7 @@ struct Def: Codable {
     var tagNames: [String]
     var voidElements: [String]
     var elementAttributes: [String: [String]]
+    var eventAttributes: [String]
     var cssProperties: [String]
 
     mutating func fix() {

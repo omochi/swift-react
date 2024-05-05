@@ -1,7 +1,7 @@
 import Foundation
 import CodegenKit
 
-struct AttributeRenderer: Renderer {
+struct AttributesRenderer: Renderer {
     var def: Def
 
     func isTarget(file: URL) -> Bool {

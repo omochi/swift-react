@@ -10,6 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "html-element-attributes": "^3.4.0",
+    "html-event-attributes": "^2.2.0",
     "html-tag-names": "^2.1.0",
     "html-void-elements": "^3.0.0",
     "known-css-properties": "^0.30.0"
