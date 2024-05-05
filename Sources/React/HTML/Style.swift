@@ -20,7 +20,7 @@ public struct Style: Hashable & RawRepresentable & CustomStringConvertible {
         rawValue.keys
     }
 
-    public func updated(_ name: String, to value: String) -> Style {
+    public func set(_ name: String, to value: String) -> Style {
         var copy = self
         copy[name] = value
         return copy
@@ -60,55 +60,55 @@ extension Style: Sequence {
 
 extension Style {
     public func display(_ x: String) -> Style {
-        updated("display", to: x)
+        set("display", to: x)
     }
 
     public func flexDirection(_ x: String) -> Style {
-        updated("flex-direction", to: x)
+        set("flex-direction", to: x)
     }
 
     public func alignItems(_ x: String) -> Style {
-        updated("align-items", to: x)
+        set("align-items", to: x)
     }
     public func gap(_ x: String) -> Style {
-        updated("gap", to: x)
+        set("gap", to: x)
     }
 
     public func border(_ x: String) -> Style {
-        updated("border", to: x)
+        set("border", to: x)
     }
 
     public func borderRadius(_ x: String) -> Style {
-        updated("border-radius", to: x)
+        set("border-radius", to: x)
     }
 
     public func padding(_ x: String) -> Style {
-        updated("padding", to: x)
+        set("padding", to: x)
     }
     public func margin(_ x: String) -> Style {
-        updated("margin", to: x)
+        set("margin", to: x)
     }
     public func width(_ x: String) -> Style {
-        updated("width", to: x)
+        set("width", to: x)
     }
 
     public func height(_ x: String) -> Style {
-        updated("height", to: x)
+        set("height", to: x)
     }
 
     public func flexWrap(_ x: String) -> Style {
-        updated("flex-wrap", to: x)
+        set("flex-wrap", to: x)
     }
     public func justifyContent(_ x: String) -> Style {
-        updated("justify-content", to: x)
+        set("justify-content", to: x)
     }
     public func fontSize(_ x: String) -> Style {
-        updated("font-size", to: x)
+        set("font-size", to: x)
     }
     public func fontWeight(_ x: String) -> Style {
-        updated("font-weight", to: x)
+        set("font-weight", to: x)
     }
     public func fontFamily(_ x: String) -> Style {
-        updated("font-family", to: x)
+        set("font-family", to: x)
     }
 }

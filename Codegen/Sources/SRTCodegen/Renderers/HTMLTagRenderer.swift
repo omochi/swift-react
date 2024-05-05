@@ -39,12 +39,4 @@ struct HTMLTagRenderer: Renderer {
 
         """
     }
-
-    private func renderIdentifier(_ text: String) -> String {
-        var text = text
-        if keywords.contains(text) {
-            text = "`\(text)`"
-        }
-        return text
-    }
 }

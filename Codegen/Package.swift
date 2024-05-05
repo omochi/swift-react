@@ -12,12 +12,14 @@ let package = Package(
         )
     ],
     dependencies: [
+        .package(url: "https://github.com/apple/swift-collections", from: "1.1.0"),
         .package(url: "https://github.com/omochi/CodegenKit", from: "1.4.1")
     ],
     targets: [
         .target(
             name: "SRTCodegen",
             dependencies: [
+                .product(name: "Collections", package: "swift-collections"),
                 .product(name: "CodegenKit", package: "CodegenKit")
             ]
         ),

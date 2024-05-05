@@ -21,7 +21,8 @@ public struct SRTCodegen {
         let runner = CodegenRunner(
             renderers: [
                 HTMLTagRenderer(def: def),
-                HTMLVoidTagRenderer(def: def)
+                HTMLVoidTagRenderer(def: def),
+                AttributeRenderer(def: def)
             ]
         )
 

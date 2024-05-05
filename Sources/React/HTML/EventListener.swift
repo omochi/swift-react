@@ -24,7 +24,7 @@ public struct EventListeners: Hashable & RawRepresentable {
         rawValue.keys
     }
 
-    public func updated(_ name: String, to value: EventListener) -> EventListeners {
+    public func set(_ name: String, to value: EventListener) -> EventListeners {
         var copy = self
         copy[name] = value
         return copy
@@ -55,15 +55,15 @@ extension EventListeners: Sequence {
 
 extension EventListeners {
     public func click(_ x: EventListener) -> EventListeners {
-        updated("click", to: x)
+        set("click", to: x)
     }
 
     public func change(_ x: EventListener) -> EventListeners {
-        updated("change", to: x)
+        set("change", to: x)
     }
 
     public func input(_ x: EventListener) -> EventListeners {
-        updated("input", to: x)
+        set("input", to: x)
     }
 }
 
