@@ -101,7 +101,7 @@ Swift コンパイラツールチェーンに対して、 Wasm SDK を追加し�
 
 [Swift for Wasm の Release ページ](https://github.com/swiftwasm/swift/releases) から、あなたがインストールした Swift に対応する Swift for Wasm を探します。個別のリリースページには `apple/swift` のバージョンが書かれているので、これが Swift の git タグと一致しているリリースを探します。例えばタグが `swift-DEVELOPMENT-SNAPSHOT-2024-04-27-a` であれば、以下のリリースが対応しています。
 
-[https://github.com/swiftwasm/swift/releases/tag/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a](https://github.com/swiftwasm/swift/releases/tag/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a)
+https://github.com/swiftwasm/swift/releases/tag/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a
 
 一般的には、 Swift のスナップショットの次の日付になっているスナップショットが対応しているようです。
 
@@ -109,7 +109,7 @@ Swift コンパイラツールチェーンに対して、 Wasm SDK を追加し�
 
 そのリンクを右クリックして、 SDK のダウンロードURLを取得します。例えば以下のような URL でしょう。
 
-[https://github.com/swiftwasm/swift/releases/download/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a-wasm32-unknown-wasi.artifactbundle.zip](https://github.com/swiftwasm/swift/releases/download/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a-wasm32-unknown-wasi.artifactbundle.zip)
+https://github.com/swiftwasm/swift/releases/download/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a/swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a-wasm32-unknown-wasi.artifactbundle.zip
 
 この URL を 以下の SDK インストール用のコマンドに渡すことでインストールします。
 
@@ -182,3 +182,12 @@ HTMLを用意します。これが起動スクリプトを読み込むように�
 ### 構成例
 
 実際に構成した例として [BrowserTests](../BrowserTests) が参考になるでしょう。
+
+---
+
+## テンプレートを利用してプロジェクトを構築する
+
+プロジェクトテンプレートを使用すれば構築済みの状態から始めることができます。
+
+- [omochi-template](https://github.com/omochi/swift-react-omochi-template): Carton を使わず、Vite で構築しています。独自のホットリロードを実装しています。
+
