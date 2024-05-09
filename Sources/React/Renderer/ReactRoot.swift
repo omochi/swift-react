@@ -25,21 +25,21 @@ public final class ReactRoot {
     package var willComponentRender: ((any Component) -> Void)?
     package var didComponentRender: ((any Component) -> Void)?
 
+    private var location: JSNodeLocationRight?
+
+    private typealias ContextValueHolders = [ObjectIdentifier: ContextValueHolder]
+    private var contextValueHolders: ContextValueHolders = [:]
+
     private let window: JSWindow
     private let document: JSDocument
 
-    private struct RenderContext {
-        var location: JSNodeLocationRight? = nil
-        var contextValueHolders: [ObjectIdentifier: ContextValueHolder] = [:]
-    }
-
     private enum RenderStep {
-        case renderNode(context: RenderContext, new: VNode?, old: VNode?, isMove: Bool)
+        case renderNode(new: VNode?, old: VNode?, isMove: Bool = false)
         case postRenderNode(new: VNode?, old: VNode?)
-
-        static func renderNode(context: RenderContext, new: VNode?, old: VNode?) -> RenderStep {
-            .renderNode(context: context, new: new, old: old, isMove: false)
-        }
+        case pushLocation(parent: JSNode)
+        case popLocation
+        case pushHolder(holder: ContextValueHolder)
+        case popHolder
     }
 
     private func run(action: Scheduler.Action) throws {
@@ -80,17 +80,15 @@ public final class ReactRoot {
         let newChildren = Self.makeChildren(node: node)
         newRoot.appendChildren(newChildren)
         let oldChildren = root?.children ?? []
-        let context = makeRenderContext(
-            context: RenderContext(),
-            parent: dom.asNode(),
-            holder: nil
-        )
+
+        self.location = JSNodeLocationRight(parent: dom.asNode(), prev: nil)
+        self.contextValueHolders = [:]
+
         let steps = try renderChildren(
-            context: context,
             new: newChildren,
             old: oldChildren
         )
-        try executeRenderSteps(steps)
+        try executeRenderSteps(steps: steps)
         self.root = newRoot
     }
 
@@ -102,16 +100,12 @@ public final class ReactRoot {
         let index = try parent.index(of: oldTree).unwrap("oldTree index")
         parent.replaceChild(newTree, at: index)
 
-        let holders = buildContextValueHolders(for: newTree)
-        let domLocation = try domLocation(of: newTree)
+        self.location = try domLocation(of: newTree)
+        self.contextValueHolders = buildContextValueHolders(for: newTree)
 
-        let context = RenderContext(
-            location: domLocation,
-            contextValueHolders: holders
+        try executeRenderSteps(
+            steps: [ .renderNode(new: newTree, old: oldTree) ]
         )
-
-        let entryStep = RenderStep.renderNode(context: context, new: newTree, old: oldTree)
-        try executeRenderSteps([entryStep])
     }
 
     private static func makeChildren(node: Node) -> [VNode] {
@@ -119,23 +113,23 @@ public final class ReactRoot {
         return nodes.map { VNode(component: $0) }
     }
 
-    private func makeRenderContext(
-        context: RenderContext,
-        parent: JSNode?,
-        holder: ContextValueHolder?
-    ) -> RenderContext {
-        var context = context
-
-        if let parent {
-            context.location = JSNodeLocationRight(parent: parent, prev: nil)
-        }
-
-        if let holder {
-            context.contextValueHolders[ObjectIdentifier(holder.type)] = holder
-        }
-
-        return context
-    }
+//    private func makeRenderContext(
+//        context: RenderContext,
+//        parent: JSNode?,
+//        holder: ContextValueHolder?
+//    ) -> RenderContext {
+//        var context = context
+//
+//        if let parent {
+//            context.location = JSNodeLocationRight(parent: parent, prev: nil)
+//        }
+//
+//        if let holder {
+//            context.contextValueHolders[ObjectIdentifier(holder.type)] = holder
+//        }
+//
+//        return context
+//    }
 
     private func domLocation(of node: VNode) throws -> JSNodeLocationRight? {
         let parent: JSNode = try node.parentTagNode?.instance?.dom.unwrap("dom") ?? self.dom.asNode()
@@ -143,37 +137,47 @@ public final class ReactRoot {
         return JSNodeLocationRight(parent: parent, prev: prev)
     }
 
-    private func executeRenderSteps(_ steps: [RenderStep]) throws {
+    private func executeRenderSteps(steps: [RenderStep]) throws {
         var steps = steps
+
+        var locationStack: [JSNodeLocationRight?] = []
+        var holdersStack: [ContextValueHolders] = []
 
         while !steps.isEmpty {
             let step = steps.removeFirst()
 
             switch step {
-            case .renderNode(context: let context, new: let new, old: let old, isMove: let isMove):
-                let newSteps = try executeRenderNode(context: context, new: new, old: old, isMove: isMove)
+            case .renderNode(new: let new, old: let old, isMove: let isMove):
+                let newSteps = try executeRenderNode(new: new, old: old, isMove: isMove)
                 steps.insert(contentsOf: newSteps, at: 0)
             case .postRenderNode(new: let new, old: let old):
                 try executePostRenderNode(new: new, old: old)
+            case .pushLocation(parent: let parent):
+                locationStack.append(self.location)
+                self.location = JSNodeLocationRight(parent: parent, prev: nil)
+            case .popLocation:
+                self.location = locationStack.removeLast()
+            case .pushHolder(holder: let holder):
+                holdersStack.append(self.contextValueHolders)
+                self.contextValueHolders[ObjectIdentifier(holder.type)] = holder
+            case .popHolder:
+                self.contextValueHolders = holdersStack.removeLast()
             }
         }
     }
 
     private func executeRenderNode(
-        context: RenderContext,
         new newTree: VNode?,
         old oldTree: VNode?,
         isMove: Bool
     ) throws -> [RenderStep] {
-        var context = context
-
         var doesRenderChildren = true
 
         if let newTree {
             let instance = transferInstance(newTree: newTree, oldTree: oldTree)
             let isFirst = oldTree == nil
 
-            context = try preRender(context: context, tree: newTree, instance: instance, isFirst: isFirst)
+            try preRender(tree: newTree, instance: instance, isFirst: isFirst)
 
             // short circuit
             doesRenderChildren = instance.consumeDirty() ||
@@ -183,11 +187,9 @@ public final class ReactRoot {
         var steps: [RenderStep] = []
 
         if doesRenderChildren {
-            steps = try renderChildren(context: context, newTree: newTree, oldTree: oldTree)
-        }
-
-        if let newTree {
-            context = try skipRenderChildren(context: context, newTree: newTree, oldTree: oldTree, isMove: isMove)
+            steps = try renderChildren(newTree: newTree, oldTree: oldTree)
+        } else if let newTree {
+            try skipRenderChildren(newTree: newTree, oldTree: oldTree, isMove: isMove)
         }
 
         steps.append(
@@ -220,14 +222,12 @@ public final class ReactRoot {
         return instance
     }
 
-    private func preRender(context: RenderContext, tree: VNode, instance: Instance, isFirst: Bool) throws -> RenderContext {
-        var context = context
+    private func preRender(tree: VNode, instance: Instance, isFirst: Bool) throws {
         try renderDOM(tree: tree, instance: instance)
-        context = try moveDOM(context: context, instance: instance)
+        try moveDOM(instance: instance)
         try updateContextValue(tree: tree, instance: instance)
         prepareHooks(component: tree.component, instance: instance, isFirst: isFirst)
-        subscribeHooks(context: context, instance: instance)
-        return context
+        subscribeHooks(instance: instance)
     }
 
     private func renderDOM(tree: VNode, instance: Instance) throws {
@@ -258,21 +258,17 @@ public final class ReactRoot {
         }
     }
 
-    private func moveDOM(context: RenderContext, instance: Instance) throws -> RenderContext {
-        var context = context
+    private func moveDOM(instance: Instance) throws {
+        guard let location else { return }
 
-        if let location = context.location,
-           let dom = instance.dom
-        {
+        if let dom = instance.dom {
             if location != dom.locationRight {
                 try dom.remove()
                 try dom.insert(at: location)
             }
 
-            context.location?.prev = dom
+            self.location?.prev = dom
         }
-
-        return context
     }
 
     private func updateContextValue(tree: VNode, instance: Instance) throws {
@@ -309,7 +305,7 @@ public final class ReactRoot {
         instance.hooks = hooks.map { $0.object }
     }
 
-    private func subscribeHooks(context renderContext: RenderContext, instance: Instance) {
+    private func subscribeHooks(instance: Instance) {
         let updater = { [weak self, weak instance] () -> Void in
             guard let self, let instance else { return }
             instance.markDirty()
@@ -317,7 +313,7 @@ public final class ReactRoot {
         }
 
         for context in instance.contextHooks {
-            if let holder = renderContext.contextValueHolders[ObjectIdentifier(context.valueType)] {
+            if let holder = self.contextValueHolders[ObjectIdentifier(context.valueType)] {
                 context.holder = holder
                 context.disposable = holder.emitter.on(handler: updater)
             } else {
@@ -355,8 +351,8 @@ public final class ReactRoot {
         }
     }
 
-    private func buildContextValueHolders(for node: VNode) -> [ObjectIdentifier: ContextValueHolder] {
-        var result: [ObjectIdentifier: ContextValueHolder] = [:]
+    private func buildContextValueHolders(for node: VNode) -> ContextValueHolders {
+        var result: ContextValueHolders = [:]
 
         // skip self
         var node: VNode? = node.parent
@@ -375,7 +371,6 @@ public final class ReactRoot {
     }
 
     private func renderChildren(
-        context: RenderContext,
         newTree: VNode?,
         oldTree: VNode?
     ) throws -> [RenderStep] {
@@ -390,21 +385,25 @@ public final class ReactRoot {
             newTree.appendChildren(newChildren)
         }
 
-        let newContext = makeRenderContext(
-            context: context,
-            parent: newTree?.instance?.dom,
-            holder: newTree?.instance?.contextValueHolder
-        )
-
-        return try renderChildren(
-            context: newContext,
+        var steps: [RenderStep] = try renderChildren(
             new: newTree?.children ?? [],
             old: oldTree?.children ?? []
         )
+
+        if let parent = newTree?.instance?.dom {
+            steps.insert(.pushLocation(parent: parent), at: 0)
+            steps.append(.popLocation)
+        }
+
+        if let holder = newTree?.instance?.contextValueHolder {
+            steps.insert(.pushHolder(holder: holder), at: 0)
+            steps.append(.popHolder)
+        }
+
+        return steps
     }
 
     private func renderChildren(
-        context: RenderContext,
         new newChildren: [VNode],
         old oldChildren: [VNode]
     ) throws -> [RenderStep] {
@@ -426,7 +425,7 @@ public final class ReactRoot {
                     // process on insert
                 } else {
                     steps.append(
-                        .renderNode(context: context, new: nil, old: old)
+                        .renderNode(new: nil, old: old)
                     )
                 }
             case .insert(offset: let offset, element: let newNode, associatedWith: let assoc):
@@ -434,7 +433,7 @@ public final class ReactRoot {
                     let newNode = newChildren[nextIndex]
                     let oldNode = try patchedOldChildren[nextIndex].unwrap("updating oldNode")
                     steps.append(
-                        .renderNode(context: context, new: newNode, old: oldNode)
+                        .renderNode(new: newNode, old: oldNode)
                     )
                     nextIndex += 1
                 }
@@ -444,7 +443,7 @@ public final class ReactRoot {
                 let oldNode = assoc.map { oldChildren[$0] }
 
                 steps.append(
-                    .renderNode(context: context, new: newNode, old: oldNode, isMove: oldNode != nil)
+                    .renderNode(new: newNode, old: oldNode, isMove: oldNode != nil)
                 )
                 nextIndex += 1
             }
@@ -454,7 +453,7 @@ public final class ReactRoot {
             let newNode = newChildren[nextIndex]
             let oldNode = try patchedOldChildren[nextIndex].unwrap("updating oldNode")
             steps.append(
-                .renderNode(context: context, new: newNode, old: oldNode)
+                .renderNode(new: newNode, old: oldNode)
             )
             nextIndex += 1
         }
@@ -463,14 +462,12 @@ public final class ReactRoot {
     }
 
     private func skipRenderChildren(
-        context: RenderContext, newTree: VNode, oldTree: VNode?, isMove: Bool
-    ) throws -> RenderContext {
-        var context = context
-
+        newTree: VNode, oldTree: VNode?, isMove: Bool
+    ) throws {
         newTree.appendChildren(oldTree?.children ?? [])
 
-        if let _ = newTree.instance?.dom { return context }
-        guard let location = context.location else { return context }
+        if let _ = newTree.instance?.dom { return }
+        guard let location else { return }
 
         let doms = newTree.domChildren
 
@@ -480,14 +477,12 @@ public final class ReactRoot {
             }
             for dom in doms {
                 try dom.insert(at: location)
-                context.location?.prev = dom
+                self.location?.prev = dom
             }
         } else {
             if let dom = doms.last {
-                context.location?.prev = dom
+                self.location?.prev = dom
             }
         }
-
-        return context
     }
 }
