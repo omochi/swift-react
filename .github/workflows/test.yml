@@ -44,7 +44,7 @@ jobs:
           curl
           binaryen
 
-      - run: curl -LO https://download.swift.org/development/ubuntu2204/${{ env.SWIFT }}/${{ env.SWIFT }}-ubuntu22.04.tar.gz
+      - run: curl -fLO https://download.swift.org/development/ubuntu2204/${{ env.SWIFT }}/${{ env.SWIFT }}-ubuntu22.04.tar.gz
         working-directory: /home/runner
       - run: sudo tar -xf ${{ env.SWIFT }}-ubuntu22.04.tar.gz --strip-components=2 -C /usr/local
         working-directory: /home/runner
@@ -55,7 +55,7 @@ jobs:
           https://github.com/swiftwasm/swift/releases/download/${{ env.SWIFT_WASM }}/${{ env.SWIFT_WASM }}-wasm32-unknown-wasi.artifactbundle.zip
       - run: swift sdk list
 
-      - run: curl -LO https://github.com/omochi/carton-build/releases/download/snapshot-2024-04-16/carton.tar.gz
+      - run: curl -fLO https://github.com/omochi/carton-build/releases/download/snapshot-2024-04-16/carton.tar.gz
         working-directory: /home/runner
       - run: sudo tar -xf carton.tar.gz --strip-components=1 -C /usr/local/bin
         working-directory: /home/runner
