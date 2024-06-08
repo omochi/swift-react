@@ -113,24 +113,6 @@ public final class ReactRoot {
         return nodes.map { VNode(component: $0) }
     }
 
-//    private func makeRenderContext(
-//        context: RenderContext,
-//        parent: JSNode?,
-//        holder: ContextValueHolder?
-//    ) -> RenderContext {
-//        var context = context
-//
-//        if let parent {
-//            context.location = JSNodeLocationRight(parent: parent, prev: nil)
-//        }
-//
-//        if let holder {
-//            context.contextValueHolders[ObjectIdentifier(holder.type)] = holder
-//        }
-//
-//        return context
-//    }
-
     private func domLocation(of node: VNode) throws -> JSNodeLocationRight? {
         let parent: JSNode = try node.parentTagNode?.instance?.dom.unwrap("dom") ?? self.dom.asNode()
         let prev: JSNode? = try node.prevSiblingTagNode?.instance?.dom.unwrap("dom")
