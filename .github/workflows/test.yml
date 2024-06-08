@@ -16,6 +16,7 @@ jobs:
   test-linux:
     runs-on: ubuntu-22.04
     env:
+      SWIFT_CHANNEL: development
       SWIFT: swift-DEVELOPMENT-SNAPSHOT-2024-04-27-a
       SWIFT_WASM: swift-wasm-DEVELOPMENT-SNAPSHOT-2024-04-28-a
     steps:
@@ -44,7 +45,7 @@ jobs:
           curl
           binaryen
 
-      - run: curl -fLO https://download.swift.org/development/ubuntu2204/${{ env.SWIFT }}/${{ env.SWIFT }}-ubuntu22.04.tar.gz
+      - run: curl -fLO https://download.swift.org/${{ env.SWIFT_CHANNEL }}/ubuntu2204/${{ env.SWIFT }}/${{ env.SWIFT }}-ubuntu22.04.tar.gz
         working-directory: /home/runner
       - run: sudo tar -xf ${{ env.SWIFT }}-ubuntu22.04.tar.gz --strip-components=2 -C /usr/local
         working-directory: /home/runner
