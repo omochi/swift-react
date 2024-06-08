@@ -1,0 +1,8 @@
+#!/bin/bash
+set -ue
+cd "$(dirname "$0")"
+
+dir=$(dirname "$(pwd)")
+
+set -x
+docker run -it "-v${dir}:/work" -w /work -p8080:8080 "$@"
